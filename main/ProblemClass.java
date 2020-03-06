@@ -1,14 +1,23 @@
 import it.units.malelab.jgea.core.Node;
 import it.units.malelab.jgea.grammarbased.Grammar;
+import it.units.malelab.jgea.grammarbased.GrammarBasedProblem;
+import eu.quanticol.moonlight.util.Pair;
+import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.function.Function;
 
 
-public class ProblemClass implements GrammarBasedProblem<String, List<Node<Element>>, Double> {
+public class ProblemClass implements GrammarBasedProblem<String, TemporalMonitor<Pair<Double, Double>, Double>, Double> {
 
     private final Grammar<String> grammar;
-    private final Function<Node<String>, List<Node<Element>>> solutionMapper;
+    private final Function<Node<String>, TemporalMonitor<Pair<Double, Double>, Double>> solutionMapper;
     private final Function<List<Node<Element>>, Double> fitnessFunction;
 
-    public ProblemClass() {}
+    public ProblemClass() throws IOException {
+        grammar = Grammar.fromFile(new File("../grammar.bnf"));
+    }
 
     @Override
     public Grammar<String> getGrammar() {
@@ -16,7 +25,7 @@ public class ProblemClass implements GrammarBasedProblem<String, List<Node<Eleme
     }
 
     @Override
-    public Function<Node<String>, List<Node<Element>>> getSolutionMapper() {
+    public Function<Node<String>, TemporalMonitor<Pair<Double, Double>, Double>> getSolutionMapper() {
         return solutionMapper;
     }
 
