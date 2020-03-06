@@ -3,6 +3,8 @@ package Expressions;
 
 public interface Expression {
 
-    public String toString();
+    String EXPRESSION_STRING = "expr";
+
+    String toString();
 
 }
