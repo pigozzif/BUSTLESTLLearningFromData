@@ -1,4 +1,6 @@
+import Expressions.BooleanConstant;
 import Expressions.Expression;
+import Expressions.Operator;
 import it.units.malelab.jgea.core.Node;
 import it.units.malelab.jgea.core.listener.Listener;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
@@ -23,11 +25,12 @@ public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<
         else {
             leaves = Collections.singletonList(singleMap(root));
         }
+
     }
 
     private Node<String> singleMap(Node<String> currentNode) {
         if (currentNode.getChildren().isEmpty()) {
-            return new Node<>(currentNode.getContent());
+            return new Node<>(fromStringToExpression(currentNode.getContent()));
         }
         if (currentNode.getChildren().size() == 1) {
             return singleMap(currentNode.getChildren().get(0));
@@ -37,6 +40,14 @@ public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<
             node.getChildren().add(singleMap(currentNode.getChildren().get(i)));
         }
         return node;
+    }
+
+    private Expression fromStringToExpression(String string) {
+        for (Operator operator : Operator.values()) {
+            if (operator.toString().equals(string)) {
+                return operator;
+            }
+        }
     }
 
 }

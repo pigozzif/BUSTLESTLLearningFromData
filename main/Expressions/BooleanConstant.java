@@ -1,11 +1,14 @@
 package Expressions;
 
 
-public class BooleanConstant implements Expression {
+public enum BooleanConstant implements Expression {
+
+    TRUE(true),
+    FALSE(false);
 
     private final boolean value;
 
-    public BooleanConstant(boolean value) {
+    BooleanConstant(boolean value) {
         this.value = value;
     }
 
