@@ -1,1 +1,2 @@
-<expr> ::= <var> <const> | not <expr> | <expr> or <expr>
+<expr> ::= <var> <const> | .not <expr> | <expr> .or <expr>
+<const> ::= true | false
