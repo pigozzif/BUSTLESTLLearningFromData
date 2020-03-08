@@ -1,64 +1,43 @@
 import Expressions.BooleanConstant;
-import Expressions.Expression;
 import Expressions.Operator;
-import Expressions.Variable;
+import core.src.main.java.eu.quanticol.moonlight.formula.DoubleDomain;
 import it.units.malelab.jgea.core.Node;
-import it.units.malelab.jgea.core.listener.Listener;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
-import eu.quanticol.moonlight.util.Pair;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
 
-public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<Pair<Double, Double>, Double>> {
+public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<Record, Double>> {
 
     @Override
-    public TemporalMonitor<Pair<Double, Double>, Double> apply(Node<String> root, Listener listener) {
-        /*List<Node<Expression>> leaves = new ArrayList<>();
-        if (root.getContent().equals(Expression.EXPRESSION_STRING)) {
-            for (Node<String> child : root.getChildren()) {
-                leaves.add(singleMap(child));
-            }
-        }
-        else {
-            leaves = Collections.singletonList(singleMap(root));
-        }*/
-
+    public TemporalMonitor<Record, Double> apply(Node<String> root) {
+        return singleMap(root);
     }
 
-    private TemporalMonitor<Pair<Double, Double>, Double> singleMap(Node<String> currentNode) {
+    private TemporalMonitor<Record, Double> singleMap(Node<String> currentNode) {
         String string = currentNode.getContent();
         for (BooleanConstant constant : BooleanConstant.values()) {
             if (constant.toString().equals(string)) {
-                return ;
+                return TemporalMonitor.atomicMonitor(x -> {if (x.getBool(getSiblings(currentNode).get(0).getContent()) == constant.getValue()) {
+                                                                    return 1.0;} else { return 0.0;}
+                                                            });
             }
         }
         List<Node<String>> children = currentNode.getChildren();
         for (Node<String> child : children) {
             if (child.getContent().equals(Operator.NOT.toString())) {
-                return ;
+                return TemporalMonitor.notMonitor(singleMap(getSiblings(child).get(0)), new DoubleDomain());
             }
             else if (child.getContent().equals(Operator.OR.toString())) {
-                return ;
+                List<Node<String>> siblings = getSiblings(child);
+                return TemporalMonitor.orMonitor(singleMap(siblings.get(0)), new DoubleDomain(), singleMap(siblings.get(1)));
             }
         }
-        /*if (currentNode.getChildren().isEmpty()) {
-            return new Node<>(fromStringToExpression(currentNode.getContent()));
-        }
-        if (currentNode.getChildren().size() == 1) {
-            return singleMap(currentNode.getChildren().get(0));
-        }
-        Node<Expression> node = singleMap(currentNode.getChildren().get(0));
-        for (int i = 1; i < node.getChildren().size(); ++i) {
-            node.getChildren().add(singleMap(currentNode.getChildren().get(i)));
-        }
-        return node;*/
+        return TemporalMonitor.atomicMonitor(x -> 0.0);
     }
 
-    private Expression fromStringToExpression(String string) {
+    /*private Expression fromStringToExpression(String string) {
         for (Operator operator : Operator.values()) {
             if (operator.toString().equals(string)) {
                 return operator;
@@ -72,7 +51,7 @@ public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<
         //if (string.matches("[a-zA-Z]+[0-9.]+")) {
         return new Variable(string);
         //}
-    }
+    }*/
 
     private List<Node<String>> getSiblings(Node<String> node) {
         List<Node<String>> res = node.getParent().getChildren();
