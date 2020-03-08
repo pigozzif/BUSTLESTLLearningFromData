@@ -2,16 +2,17 @@ import Expressions.BooleanConstant;
 import Expressions.Operator;
 import core.src.main.java.eu.quanticol.moonlight.formula.DoubleDomain;
 import it.units.malelab.jgea.core.Node;
+import it.units.malelab.jgea.core.function.Function;
+import it.units.malelab.jgea.core.listener.Listener;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 
 import java.util.List;
-import java.util.function.Function;
 
 
 public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<Record, Double>> {
 
     @Override
-    public TemporalMonitor<Record, Double> apply(Node<String> root) {
+    public TemporalMonitor<Record, Double> apply(Node<String> root, Listener listener) {
         return singleMap(root);
     }
 

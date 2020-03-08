@@ -1,22 +1,23 @@
 import it.units.malelab.jgea.core.Node;
 import it.units.malelab.jgea.grammarbased.Grammar;
 import it.units.malelab.jgea.grammarbased.GrammarBasedProblem;
-import eu.quanticol.moonlight.util.Pair;
+import it.units.malelab.jgea.core.function.Function;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.function.Function;
+//import java.util.function.Function;
 
 
-public class ProblemClass implements GrammarBasedProblem<String, TemporalMonitor<Pair<Double, Double>, Double>, Double> {
+public class ProblemClass implements GrammarBasedProblem<String, TemporalMonitor<Record, Double>, Double> {
 
     private final Grammar<String> grammar;
-    private final Function<Node<String>, TemporalMonitor<Pair<Double, Double>, Double>> solutionMapper;
-    private final Function<List<Node<Element>>, Double> fitnessFunction;
+    private final Function<Node<String>, TemporalMonitor<Record, Double>> solutionMapper;
+    private final Function<, Double> fitnessFunction;
 
     public ProblemClass() throws IOException {
         grammar = Grammar.fromFile(new File("../grammar.bnf"));
+        solutionMapper = new STLFormulaMapper();
     }
 
     @Override
@@ -25,12 +26,12 @@ public class ProblemClass implements GrammarBasedProblem<String, TemporalMonitor
     }
 
     @Override
-    public Function<Node<String>, TemporalMonitor<Pair<Double, Double>, Double>> getSolutionMapper() {
+    public Function<Node<String>, TemporalMonitor<Record, Double>> getSolutionMapper() {
         return solutionMapper;
     }
 
     @Override
-    public Function<List<Node<Element>>, Double> getFitnessFunction() {
+    public Function<, Double> getFitnessFunction() {
         return fitnessFunction;
     }
 
