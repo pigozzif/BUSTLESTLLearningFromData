@@ -1,7 +1,7 @@
 package Expressions;
 
 
-public enum BooleanConstant implements Expression {
+public enum BooleanConstant implements Expression<Boolean> {
 
     TRUE(true),
     FALSE(false);
@@ -17,7 +17,8 @@ public enum BooleanConstant implements Expression {
         return Boolean.toString(value);
     }
 
-    public boolean getValue() {
+    @Override
+    public Boolean getValue() {
         return this.value;
     }
 

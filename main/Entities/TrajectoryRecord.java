@@ -1,12 +1,14 @@
+package Entities;
+
 import java.util.HashMap;
 
 
-public class Record {
+public class TrajectoryRecord {
 
     private final HashMap<String, Boolean> boolVariables;
     private final HashMap<String, Double> doubleVariables;
 
-    public Record(String[] boolNames, String[] doubleNames, boolean[] boolValues, double[] doubleValues) {
+    public TrajectoryRecord(String[] boolNames, String[] doubleNames, boolean[] boolValues, double[] doubleValues) {
         boolVariables = new HashMap<>();
         doubleVariables = new HashMap<>();
         for (int i=0; i < boolNames.length; ++i) {

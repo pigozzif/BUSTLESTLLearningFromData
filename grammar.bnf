@@ -1,2 +1,4 @@
-<expr> ::= <var> <const> | .not <expr> | <expr> .or <expr>
+<expr> ::= <var> <const> | <var> <comp> <num> | .not <expr> | <expr> .or <expr>
 <const> ::= true | false
+<comp> ::= < | >
+<num> ::= 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0

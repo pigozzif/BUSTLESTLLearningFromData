@@ -1,3 +1,5 @@
+package Entities;
+
 import it.units.malelab.jgea.core.Node;
 import it.units.malelab.jgea.grammarbased.Grammar;
 import it.units.malelab.jgea.grammarbased.GrammarBasedProblem;
@@ -6,14 +8,13 @@ import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 
 import java.io.File;
 import java.io.IOException;
-//import java.util.function.Function;
 
 
-public class ProblemClass implements GrammarBasedProblem<String, TemporalMonitor<Record, Double>, Double> {
+public class ProblemClass implements GrammarBasedProblem<String, TemporalMonitor<TrajectoryRecord, Double>, Double> {
 
     private final Grammar<String> grammar;
-    private final Function<Node<String>, TemporalMonitor<Record, Double>> solutionMapper;
-    private final Function<, Double> fitnessFunction;
+    private final Function<Node<String>, TemporalMonitor<TrajectoryRecord, Double>> solutionMapper;
+    private final Function<TemporalMonitor<TrajectoryRecord, Double>, Double> fitnessFunction;
 
     public ProblemClass() throws IOException {
         grammar = Grammar.fromFile(new File("../grammar.bnf"));
@@ -26,12 +27,12 @@ public class ProblemClass implements GrammarBasedProblem<String, TemporalMonitor
     }
 
     @Override
-    public Function<Node<String>, TemporalMonitor<Record, Double>> getSolutionMapper() {
+    public Function<Node<String>, TemporalMonitor<TrajectoryRecord, Double>> getSolutionMapper() {
         return solutionMapper;
     }
 
     @Override
-    public Function<, Double> getFitnessFunction() {
+    public Function<TemporalMonitor<TrajectoryRecord, Double>, Double> getFitnessFunction() {
         return fitnessFunction;
     }
 
