@@ -3,7 +3,7 @@ package Expressions;
 import java.util.function.BiFunction;
 
 
-public enum CompareSign implements Expression<BiFunction<Double, Double, Double>> {
+public enum CompareSign implements ValueExpression<BiFunction<Double, Double, Double>> {
 
     SMALLER("<", (Double a, Double b) -> b - a),
     GREATER(">", (Double a, Double b) -> a - b);

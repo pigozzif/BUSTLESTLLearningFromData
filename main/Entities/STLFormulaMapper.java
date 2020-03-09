@@ -18,37 +18,21 @@ public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<
 
     public static TemporalMonitor<TrajectoryRecord, Double> singleMap(Node<String> currentNode) {
         List<Node<String>> children = currentNode.getChildren();
-        Node<String> testChild = (!children.get(0).getContent().equals(Expression.EXPRESSION_STRING)) ? children.get(0) : children.get(1);
-        Expression<?> expression = fromStringToExpression(testChild.getContent());
+        Node<String> testChild = (!children.get(0).getContent().equals(ValueExpression.EXPRESSION_STRING)) ? children.get(0) : children.get(1);
+        MonitorExpression expression = fromStringToMonitorExpression(testChild.getContent());
         return expression.createMonitor(getSiblings(currentNode));
     }
-        /*String string = currentNode.getContent();
-        for (BooleanConstant constant : BooleanConstant.values()) {
-            if (constant.toString().equals(string)) {
-                return TemporalMonitor.atomicMonitor(x -> {if (x.getBool(getSiblings(currentNode).get(0).getContent()) == constant.getValue()) {
-                                                                    return 1.0;} else { return 0.0;}
-                                                            });
-            }
-        }
-        List<Node<String>> children = currentNode.getChildren();
-        for (Node<String> child : children) {
-            if (child.getContent().equals(Operator.NOT.toString())) {
-                return TemporalMonitor.notMonitor(singleMap(getSiblings(child).get(0)), new DoubleDomain());
-            }
-            else if (child.getContent().equals(Operator.OR.toString())) {
-                List<Node<String>> siblings = getSiblings(child);
-                return TemporalMonitor.orMonitor(singleMap(siblings.get(0)), new DoubleDomain(), singleMap(siblings.get(1)));
-            }
-        }
-        return TemporalMonitor.atomicMonitor(x -> 0.0);
-    }*/
 
-    public static Expression<?> fromStringToExpression(String string) {
+    public static MonitorExpression fromStringToMonitorExpression(String string) {
         for (Operator operator : Operator.values()) {
             if (operator.toString().equals(string)) {
                 return operator;
             }
         }
+        return new Variable(string);
+    }
+
+    public static ValueExpression<?> fromStringToExpression(String string) {
         for (BooleanConstant constant : BooleanConstant.values()) {
             if (constant.toString().equals(string)) {
                 return constant;
@@ -59,11 +43,7 @@ public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<
                 return comp;
             }
         }
-        if (string.matches("[0-9.]+")) {
-            return new Digit(string);
-        }
-        return new Variable(string);
-        //}
+        return new Digit(string);
     }
 
     private static List<Node<String>> getSiblings(Node<String> node) {

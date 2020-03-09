@@ -1,7 +1,7 @@
 package Expressions;
 
 
-public class Digit implements Expression<Integer> {
+public class Digit implements ValueExpression<Integer> {
 
     private final int number;
 

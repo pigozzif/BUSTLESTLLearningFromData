@@ -1,7 +1,7 @@
 package Expressions;
 
 
-public enum BooleanConstant implements Expression<Boolean> {
+public enum BooleanConstant implements ValueExpression<Boolean> {
 
     TRUE(true),
     FALSE(false);

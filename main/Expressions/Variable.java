@@ -8,7 +8,7 @@ import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import java.util.List;
 
 
-public class Variable implements Expression<String> {
+public class Variable implements MonitorExpression {
 
     private final String string;
 
@@ -21,6 +21,7 @@ public class Variable implements Expression<String> {
         return this.string;
     }
 
+    @Override
     public TemporalMonitor<TrajectoryRecord, Double> createMonitor(List<Node<String>> siblings) {
         if (siblings.size() == 1) {
             return createMonitorForBoolean(siblings);
@@ -42,11 +43,6 @@ public class Variable implements Expression<String> {
         Digit secondSibling = (Digit) STLFormulaMapper.fromStringToExpression(siblings.get(1).getContent());
         return TemporalMonitor.atomicMonitor(x -> firstSibling.getValue().apply(x.getDouble(this.string),
                 Double.valueOf(secondSibling.getValue())));
-    }
-
-    @Override
-    public String getValue() {
-        return this.string;
     }
 
 }
