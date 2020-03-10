@@ -29,10 +29,13 @@ public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<
                 return operator;
             }
         }
-        return new Variable(string);
+        if (string.contains("_bool_")) {
+            return new BooleanVariable(string);
+        }
+        return new NumericalVariable(string);
     }
 
-    public static ValueExpression<?> fromStringToExpression(String string) {
+    public static ValueExpression<?> fromStringToValueExpression(String string) {
         for (BooleanConstant constant : BooleanConstant.values()) {
             if (constant.toString().equals(string)) {
                 return constant;
