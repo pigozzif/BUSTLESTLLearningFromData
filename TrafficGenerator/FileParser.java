@@ -16,7 +16,7 @@ public class FileParser {
 
     public FileParser() {
         try {
-            Path path = Paths.get(".", "Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data6.csv");
+            Path path = Paths.get(".", "../data/Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data6.csv");
             InputStream in = Files.newInputStream(path);
             reader = new BufferedReader(new InputStreamReader(in));
             reader.readLine();

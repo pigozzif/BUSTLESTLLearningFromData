@@ -20,7 +20,7 @@ public class ProblemClass implements GrammarBasedProblem<String, TemporalMonitor
     public ProblemClass() throws IOException {
         this.grammar = Grammar.fromFile(new File("../grammar.bnf"));
         this.solutionMapper = new STLFormulaMapper();
-        this.fitnessFunction = new FitnessFunction("Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data6.csv");
+        this.fitnessFunction = new FitnessFunction("../../data/Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data6.csv");
     }
 
     @Override
