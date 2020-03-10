@@ -1,4 +1,4 @@
-package Entities;
+package BuildingBlocks;
 
 import it.units.malelab.jgea.core.Node;
 import it.units.malelab.jgea.core.function.NonDeterministicFunction;

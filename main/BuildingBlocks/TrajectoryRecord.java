@@ -1,4 +1,4 @@
-package Entities;
+package BuildingBlocks;
 
 import java.util.HashMap;
 

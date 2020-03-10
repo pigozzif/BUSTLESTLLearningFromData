@@ -1,7 +1,7 @@
 package Expressions;
 
-import Entities.STLFormulaMapper;
-import Entities.TrajectoryRecord;
+import BuildingBlocks.STLFormulaMapper;
+import BuildingBlocks.TrajectoryRecord;
 import it.units.malelab.jgea.core.Node;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import core.src.main.java.eu.quanticol.moonlight.formula.DoubleDomain;

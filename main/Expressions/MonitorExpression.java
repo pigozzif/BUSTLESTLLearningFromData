@@ -1,6 +1,6 @@
 package Expressions;
 
-import Entities.TrajectoryRecord;
+import BuildingBlocks.TrajectoryRecord;
 import it.units.malelab.jgea.core.Node;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 

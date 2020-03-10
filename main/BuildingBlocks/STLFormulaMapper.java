@@ -1,4 +1,4 @@
-package Entities;
+package BuildingBlocks;
 
 import Expressions.*;
 import it.units.malelab.jgea.core.Node;
@@ -29,7 +29,7 @@ public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<
                 return operator;
             }
         }
-        if (string.contains("_bool_")) {
+        if (string.endsWith("_bool_")) {
             return new BooleanVariable(string);
         }
         return new NumericalVariable(string);
