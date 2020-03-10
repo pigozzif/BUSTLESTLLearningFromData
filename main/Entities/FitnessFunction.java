@@ -56,8 +56,8 @@ public class FitnessFunction implements NonDeterministicFunction<TemporalMonitor
                 }
                 boolean[] boolVars = new boolean[boolNames.length];
                 double[] doubleVars = new double[doubleNames.length];
-                for (Integer idx : boolIndexes) boolVars[idx] = Boolean.parseBoolean(line[boolIndexes.get(idx)]);
-                for (Integer idx : doubleIndexes) doubleVars[idx] = Double.parseDouble(line[doubleIndexes.get(idx)]);
+                for (int idx=0; idx < boolIndexes.size(); ++idx) boolVars[idx] = Boolean.parseBoolean(line[boolIndexes.get(idx)]);
+                for (int idx=0; idx < doubleIndexes.size(); ++idx) doubleVars[idx] = Double.parseDouble(line[doubleIndexes.get(idx)]);
                 currSignal.add(Double.parseDouble(line[22]), new TrajectoryRecord(boolNames, doubleNames, boolVars, doubleVars));
             } while (vehicleIdx == Integer.parseInt(line[21]));
             currSignal.endAt(Double.parseDouble(line[22]));
