@@ -19,7 +19,7 @@ public class FitnessFunction implements NonDeterministicFunction<TemporalMonitor
     public FitnessFunction(String fileName) throws IOException {
         BufferedReader reader = FileHandler.createReaderFromFile(fileName);
         reader.readLine();
-        String[] boolNames = new String[]{"isChangingLane", "isApproachingOnramp", "isByGuardrail"};
+        String[] boolNames = new String[]{"isChangingLane_bool_", "isApproachingOnramp_bool_", "isByGuardrail_bool_"};
         String[] doubleNames = new String[]{"V_vel", "Lane_ID", "NE_dist", "N_dist", "NW_dist", "W_dist", "SW_dist",
                 "S_dist", "SE_dist", "NE_vel", "N_vel", "NW_vel", "W_vel", "SW_vel", "S_vel", "SE_vel"};
         List<Integer> boolIndexes = new ArrayList<>() {{ add(3); add(20); add(21); }};
