@@ -27,8 +27,8 @@ public enum Operator implements MonitorExpression {
 
     @Override
     public TemporalMonitor<TrajectoryRecord, Double> createMonitor(List<Node<String>> siblings) {
-        return (this == NOT) ? TemporalMonitor.notMonitor(STLFormulaMapper.singleMap(siblings.get(0)), new DoubleDomain()) :
-                TemporalMonitor.orMonitor(STLFormulaMapper.singleMap(siblings.get(0)), new DoubleDomain(), STLFormulaMapper.singleMap(siblings.get(1)));
+        return (this == NOT) ? TemporalMonitor.notMonitor(STLFormulaMapper.parseSubTree(siblings.get(0)), new DoubleDomain()) :
+                TemporalMonitor.orMonitor(STLFormulaMapper.parseSubTree(siblings.get(0)), new DoubleDomain(), STLFormulaMapper.parseSubTree(siblings.get(1)));
     }
 
 }

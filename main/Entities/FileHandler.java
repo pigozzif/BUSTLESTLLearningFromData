@@ -20,7 +20,7 @@ public class FileHandler {
         InputStream in = Files.newInputStream(path);
         return new BufferedReader(new InputStreamReader(in));
     }
-
+    // TODO: fix Long Method
     public static List<Signal<TrajectoryRecord>> parseSignals(BufferedReader reader, String[] boolNames, String[] doubleNames, List<Integer> boolIndexes,
                                                                                              List<Integer> doubleIndexes) {
         List<Signal<TrajectoryRecord>> signals = new ArrayList<>();

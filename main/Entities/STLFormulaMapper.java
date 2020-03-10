@@ -13,10 +13,10 @@ public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<
 
     @Override
     public TemporalMonitor<TrajectoryRecord, Double> apply(Node<String> root, Listener listener) {
-        return singleMap(root);
+        return parseSubTree(root);
     }
 
-    public static TemporalMonitor<TrajectoryRecord, Double> singleMap(Node<String> currentNode) {
+    public static TemporalMonitor<TrajectoryRecord, Double> parseSubTree(Node<String> currentNode) {
         List<Node<String>> children = currentNode.getChildren();
         Node<String> testChild = (!children.get(0).getContent().equals(ValueExpression.EXPRESSION_STRING)) ? children.get(0) : children.get(1);
         MonitorExpression expression = fromStringToMonitorExpression(testChild.getContent());
