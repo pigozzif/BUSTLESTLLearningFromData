@@ -24,29 +24,14 @@ public class NumericalVariable implements MonitorExpression {
     @Override
     public TemporalMonitor<TrajectoryRecord, Double> createMonitor(List<Node<String>> siblings) {
         CompareSign firstSibling = (CompareSign) STLFormulaMapper.fromStringToValueExpression(siblings.get(0).getContent());
-        Digit secondSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(siblings.get(1).getContent());
-        return TemporalMonitor.atomicMonitor(x -> firstSibling.getValue().apply(x.getDouble(this.string),
-                Double.valueOf(secondSibling.getValue())));
-        /*if (siblings.size() == 1) {
-            return createMonitorForBoolean(siblings);
-        }
-        else {
-            return createMonitorForDouble(siblings);
-        }*/
+        return TemporalMonitor.atomicMonitor(x -> firstSibling.getValue().apply(x.getDouble(this.string), convertNumber(siblings)));
     }
 
-    /*private TemporalMonitor<TrajectoryRecord, Double> createMonitorForBoolean(List<Node<String>> siblings) {
-        BooleanConstant firstSibling = (BooleanConstant) STLFormulaMapper.fromStringToValueExpression(siblings.get(0).getContent());
-        return TemporalMonitor.atomicMonitor(x -> {if (x.getBool(this.string) == firstSibling.getValue()) {
-            return 1.0;} else { return 0.0;}
-        });
-    }*/
-
-    /*private TemporalMonitor<TrajectoryRecord, Double> createMonitorForDouble(List<Node<String>> siblings) {
-        CompareSign firstSibling = (CompareSign) STLFormulaMapper.fromStringToValueExpression(siblings.get(0).getContent());
+    private double convertNumber(List<Node<String>> siblings) {
         Digit secondSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(siblings.get(1).getContent());
-        return TemporalMonitor.atomicMonitor(x -> firstSibling.getValue().apply(x.getDouble(this.string),
-                Double.valueOf(secondSibling.getValue())));
-    }*/
+        Digit thirdSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(siblings.get(2).getContent());
+        Digit fourthSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(siblings.get(3).getContent());
+        return secondSibling.getValue() * thirdSibling.getValue() * (Math.pow(10, fourthSibling.getValue()));
+    }
 
 }
