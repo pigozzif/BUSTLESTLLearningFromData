@@ -1,6 +1,7 @@
 package Entities;
 
 import it.units.malelab.jgea.core.function.Function;
+import it.units.malelab.jgea.core.listener.Listener;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import eu.quanticol.moonlight.signal.Signal;
 
@@ -62,6 +63,11 @@ public class FitnessFunction implements Function<TemporalMonitor<TrajectoryRecor
             signals.add(currSignal);
             currSignal = new Signal<>();
         }
+    }
+
+    @Override
+    public Double apply(TemporalMonitor<TrajectoryRecord, Double> monitor, Listener listener) {
+        return signals.stream().mapToDouble(x -> monitor.monitor(x).valueAt(0)).average().orElse(-1.0);
     }
 
 }
