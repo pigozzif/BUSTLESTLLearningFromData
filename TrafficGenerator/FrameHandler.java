@@ -1,5 +1,3 @@
-package TrafficGenerator;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import java.io.IOException;
@@ -9,11 +7,11 @@ import java.util.HashSet;
 
 public class FrameHandler implements EventHandler<ActionEvent> {
 
-    private Main gui;
+    private GUIMain gui;
     private FileParser parser;
     private CarPool carPool;
 
-    public FrameHandler(Main g, CarPool cp) {
+    public FrameHandler(GUIMain g, CarPool cp) {
         gui = g;
         parser = new FileParser();
         carPool = cp;

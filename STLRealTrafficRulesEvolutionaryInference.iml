@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/main" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/jgea" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/MoonLight" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/TrafficGenerator" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

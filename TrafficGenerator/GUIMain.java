@@ -1,5 +1,3 @@
-package TrafficGenerator;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -16,7 +14,7 @@ import javafx.util.Duration;
 import java.text.SimpleDateFormat;
 
 
-public class Main extends Application {
+public class GUIMain extends Application {
 
     private double frameDuration = 0.1;
     public static double resizeRate = 1.0;

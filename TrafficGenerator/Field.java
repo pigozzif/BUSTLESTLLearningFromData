@@ -1,5 +1,3 @@
-package TrafficGenerator;
-
 import java.util.Arrays;
 
 
