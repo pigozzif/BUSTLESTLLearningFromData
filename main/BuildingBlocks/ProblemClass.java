@@ -18,24 +18,24 @@ public class ProblemClass implements GrammarBasedProblem<String, TemporalMonitor
     private final FitnessFunction fitnessFunction;
 
     public ProblemClass() throws IOException {
-        grammar = Grammar.fromFile(new File("../grammar.bnf"));
-        solutionMapper = new STLFormulaMapper();
-        fitnessFunction = new FitnessFunction("Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data6.csv");
+        this.grammar = Grammar.fromFile(new File("../grammar.bnf"));
+        this.solutionMapper = new STLFormulaMapper();
+        this.fitnessFunction = new FitnessFunction("Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data6.csv");
     }
 
     @Override
     public Grammar<String> getGrammar() {
-        return grammar;
+        return this.grammar;
     }
 
     @Override
     public Function<Node<String>, TemporalMonitor<TrajectoryRecord, Double>> getSolutionMapper() {
-        return solutionMapper;
+        return this.solutionMapper;
     }
 
     @Override
     public NonDeterministicFunction<TemporalMonitor<TrajectoryRecord, Double>, Double> getFitnessFunction() {
-        return fitnessFunction;
+        return this.fitnessFunction;
     }
 
 }

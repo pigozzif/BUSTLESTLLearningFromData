@@ -31,7 +31,7 @@ public class FitnessFunction implements NonDeterministicFunction<TemporalMonitor
 
     @Override
     public Double apply(TemporalMonitor<TrajectoryRecord, Double> monitor, Random random, Listener listener) {
-        return signals.stream().mapToDouble(x -> monitor.monitor(x).valueAt(0)).average().orElse(-1.0);
+        return this.signals.stream().mapToDouble(x -> monitor.monitor(x).valueAt(0)).average().orElse(-1.0);
     }
 
 }
