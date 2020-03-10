@@ -1,6 +1,6 @@
 package Entities;
 
-import it.units.malelab.jgea.core.function.Function;
+import it.units.malelab.jgea.core.function.NonDeterministicFunction;
 import it.units.malelab.jgea.core.listener.Listener;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import eu.quanticol.moonlight.signal.Signal;
@@ -14,9 +14,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
-public class FitnessFunction implements Function<TemporalMonitor<TrajectoryRecord, Double>, Double> {
+public class FitnessFunction implements NonDeterministicFunction<TemporalMonitor<TrajectoryRecord, Double>, Double> {
 
     private final List<Signal<TrajectoryRecord>> signals;
 
@@ -66,7 +67,7 @@ public class FitnessFunction implements Function<TemporalMonitor<TrajectoryRecor
     }
 
     @Override
-    public Double apply(TemporalMonitor<TrajectoryRecord, Double> monitor, Listener listener) {
+    public Double apply(TemporalMonitor<TrajectoryRecord, Double> monitor, Random random, Listener listener) {
         return signals.stream().mapToDouble(x -> monitor.monitor(x).valueAt(0)).average().orElse(-1.0);
     }
 
