@@ -12,7 +12,8 @@ import java.util.List;
 public enum Operator implements MonitorExpression {
 
     NOT(".not"),
-    OR(".or");
+    OR(".or"),
+    UNTIL(".until");
 
     private final String string;
 
@@ -27,8 +28,16 @@ public enum Operator implements MonitorExpression {
 
     @Override
     public TemporalMonitor<TrajectoryRecord, Double> createMonitor(List<Node<String>> siblings) {
-        return (this == NOT) ? TemporalMonitor.notMonitor(STLFormulaMapper.parseSubTree(siblings.get(0)), new DoubleDomain()) :
-                TemporalMonitor.orMonitor(STLFormulaMapper.parseSubTree(siblings.get(0)), new DoubleDomain(), STLFormulaMapper.parseSubTree(siblings.get(1)));
+        switch(this) {
+            case NOT:
+                return TemporalMonitor.notMonitor(STLFormulaMapper.parseSubTree(siblings.get(0)), new DoubleDomain());
+            case OR:
+                return TemporalMonitor.orMonitor(STLFormulaMapper.parseSubTree(siblings.get(0)), new DoubleDomain(),
+                        STLFormulaMapper.parseSubTree(siblings.get(1)));
+            default:
+                return TemporalMonitor.untilMonitor(STLFormulaMapper.parseSubTree(siblings.get(0)),
+                        STLFormulaMapper.parseSubTree(siblings.get(1)), new DoubleDomain());
+        }
     }
 
 }
