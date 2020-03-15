@@ -1,9 +1,4 @@
-repositories {
-    flatDir {
-        dirs 'libs'
-    }
-}
 
 dependencies {
-    implementation name: "moonlight"
+    compile fileTree(include: ["*.jar"], dir: "libs")
 }
