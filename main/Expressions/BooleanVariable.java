@@ -25,8 +25,8 @@ public class BooleanVariable implements MonitorExpression {
     public TemporalMonitor<TrajectoryRecord, Double> createMonitor(List<Node<String>> siblings) {
         //BooleanConstant firstSibling = (BooleanConstant) STLFormulaMapper.fromStringToValueExpression(siblings.get(0).getContent());
         return TemporalMonitor.atomicMonitor(x -> {if (x.getBool(this.string)) {
-            return 1.0;} else { return 0.0;}
-        });
+                                                return Double.POSITIVE_INFINITY;} else { return Double.NEGATIVE_INFINITY;}
+                                                });
     }
 
 }
