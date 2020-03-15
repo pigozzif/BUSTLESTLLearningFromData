@@ -36,11 +36,11 @@ public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<
     }
 
     public static ValueExpression<?> fromStringToValueExpression(String string) {
-        for (BooleanConstant constant : BooleanConstant.values()) {
+        /*for (BooleanConstant constant : BooleanConstant.values()) {
             if (constant.toString().equals(string)) {
                 return constant;
             }
-        }
+        }*/
         for (CompareSign comp : CompareSign.values()) {
             if (comp.toString().equals(string)) {
                 return comp;
