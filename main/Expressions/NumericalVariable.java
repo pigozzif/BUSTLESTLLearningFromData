@@ -31,8 +31,10 @@ public class NumericalVariable implements MonitorExpression {
     private double parseNumber(List<Node<String>> siblings) {
         Digit secondSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(siblings.get(1).getContent());
         Digit thirdSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(siblings.get(2).getContent());
-        Digit fourthSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(siblings.get(3).getContent());
-        return secondSibling.getValue() * thirdSibling.getValue() * (Math.pow(10, fourthSibling.getValue()));
+        Sign fourthSibling = (Sign) STLFormulaMapper.fromStringToValueExpression(siblings.get(3).getContent());
+        Digit fifthSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(siblings.get(4).getContent());
+        return secondSibling.getValue() * thirdSibling.getValue() * (Math.pow(10, fourthSibling.getValue().apply(
+                                                                            Double.valueOf(fifthSibling.getValue()))));
     }
 
 }
