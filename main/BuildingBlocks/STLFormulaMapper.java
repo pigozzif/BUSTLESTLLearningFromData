@@ -30,30 +30,10 @@ public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<
 
     public static MonitorExpression fromStringToMonitorExpression(String string) {
         return monitorExpressions.stream().filter(x -> x.toString().equals(string)).findAny().get();
-        /*for (Operator operator : Operator.values()) {
-            if (operator.toString().equals(string)) {
-                return operator;
-            }
-        }
-        if (string.endsWith("_bool_")) {
-            return new BooleanVariable(string);
-        }
-        return new NumericalVariable(string);*/
     }
 
     public static ValueExpression<?> fromStringToValueExpression(String string) {
         return valueExpressions.stream().filter(x -> x.toString().equals(string)).findAny().get();
-        /*for (Sign sign : Sign.values()) {
-            if (sign.toString().equals(string)) {
-                return sign;
-            }
-        }
-        for (CompareSign comp : CompareSign.values()) {
-            if (comp.toString().equals(string)) {
-                return comp;
-            }
-        }
-        return new Digit(string);*/
     }
 
     private static List<Node<String>> getSiblings(Node<String> node) {
