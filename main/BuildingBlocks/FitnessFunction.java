@@ -17,7 +17,7 @@ public class FitnessFunction implements NonDeterministicFunction<TemporalMonitor
     private final List<Signal<TrajectoryRecord>> signals;
 
     public FitnessFunction(String fileName) throws IOException {
-        BufferedReader reader = FileHandler.createReaderFromFile(fileName);
+        BufferedReader reader = SignalBuilder.createReaderFromFile(fileName);
         reader.readLine();
         // TODO: read names directly from file
         String[] boolNames = new String[]{"isChangingLane_bool_", "isApproachingOnramp_bool_", "isByGuardrail_bool_"};
@@ -26,7 +26,7 @@ public class FitnessFunction implements NonDeterministicFunction<TemporalMonitor
         List<Integer> boolIndexes = new ArrayList<>() {{ add(3); add(20); add(21); }};
         List<Integer> doubleIndexes = new ArrayList<>() {{ add(1); add(2); add(4); add(5); add(6); add(7); add(8); add(9);
             add(10); add(11); add(12); add(13); add(14); add(15); add(16); add(17); add(18); add(19); }};
-        signals = FileHandler.parseSignals(reader, boolNames, doubleNames, boolIndexes, doubleIndexes);
+        signals = SignalBuilder.parseSignals(reader, boolNames, doubleNames, boolIndexes, doubleIndexes);
     }
 
     @Override

@@ -13,14 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class FileHandler {
+public class SignalBuilder {
 
     public static BufferedReader createReaderFromFile(String fileName) throws IOException {
         Path path = Paths.get(".", fileName);
         InputStream in = Files.newInputStream(path);
         return new BufferedReader(new InputStreamReader(in));
     }
-    // TODO: fix Long Method
+    // TODO: maybe fix Long Method
     public static List<Signal<TrajectoryRecord>> parseSignals(BufferedReader reader, String[] boolNames, String[] doubleNames, List<Integer> boolIndexes,
                                                                                              List<Integer> doubleIndexes) {
         List<Signal<TrajectoryRecord>> signals = new ArrayList<>();

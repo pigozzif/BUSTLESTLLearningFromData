@@ -11,6 +11,9 @@ import java.util.List;
 
 public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<TrajectoryRecord, Double>> {
 
+    private static final List<ValueExpression<?>> valueExpressions = ExpressionsFactory.createValueExpressions();
+    private static final List<MonitorExpression> monitorExpressions = ExpressionsFactory.createMonitorExpressions();
+
     @Override
     public TemporalMonitor<TrajectoryRecord, Double> apply(Node<String> root, Listener listener) {
         return parseSubTree(root);
@@ -24,7 +27,8 @@ public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<
     }
 
     public static MonitorExpression fromStringToMonitorExpression(String string) {
-        for (Operator operator : Operator.values()) {
+        return monitorExpressions.stream().filter(x -> x.toString().equals(string)).findAny().get();
+        /*for (Operator operator : Operator.values()) {
             if (operator.toString().equals(string)) {
                 return operator;
             }
@@ -32,11 +36,12 @@ public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<
         if (string.endsWith("_bool_")) {
             return new BooleanVariable(string);
         }
-        return new NumericalVariable(string);
+        return new NumericalVariable(string);*/
     }
 
     public static ValueExpression<?> fromStringToValueExpression(String string) {
-        for (Sign sign : Sign.values()) {
+        return valueExpressions.stream().filter(x -> x.toString().equals(string)).findAny().get();
+        /*for (Sign sign : Sign.values()) {
             if (sign.toString().equals(string)) {
                 return sign;
             }
@@ -46,7 +51,7 @@ public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<
                 return comp;
             }
         }
-        return new Digit(string);
+        return new Digit(string);*/
     }
 
     private static List<Node<String>> getSiblings(Node<String> node) {
