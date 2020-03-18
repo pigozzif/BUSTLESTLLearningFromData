@@ -1,6 +1,5 @@
 package Expressions;
 
-import BuildingBlocks.STLFormulaMapper;
 import BuildingBlocks.TrajectoryRecord;
 import it.units.malelab.jgea.core.Node;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
@@ -23,7 +22,6 @@ public class BooleanVariable implements MonitorExpression {
 
     @Override
     public TemporalMonitor<TrajectoryRecord, Double> createMonitor(List<Node<String>> siblings) {
-        //BooleanConstant firstSibling = (BooleanConstant) STLFormulaMapper.fromStringToValueExpression(siblings.get(0).getContent());
         return TemporalMonitor.atomicMonitor(x -> {if (x.getBool(this.string)) {
                                                 return Double.POSITIVE_INFINITY;} else { return Double.NEGATIVE_INFINITY;}
                                                 });
