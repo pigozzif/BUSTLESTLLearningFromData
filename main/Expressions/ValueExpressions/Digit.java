@@ -1,4 +1,4 @@
-package Expressions;
+package Expressions.ValueExpressions;
 
 
 public class Digit implements ValueExpression<Integer> {

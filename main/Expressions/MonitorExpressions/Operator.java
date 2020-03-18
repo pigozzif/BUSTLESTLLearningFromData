@@ -1,4 +1,4 @@
-package Expressions;
+package Expressions.MonitorExpressions;
 
 import BuildingBlocks.STLFormulaMapper;
 import BuildingBlocks.TrajectoryRecord;

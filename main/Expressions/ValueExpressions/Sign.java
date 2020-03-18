@@ -1,4 +1,4 @@
-package Expressions;
+package Expressions.ValueExpressions;
 
 import java.util.function.Function;
 

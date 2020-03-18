@@ -1,7 +1,10 @@
-package Expressions;
+package Expressions.MonitorExpressions;
 
 import BuildingBlocks.STLFormulaMapper;
 import BuildingBlocks.TrajectoryRecord;
+import Expressions.ValueExpressions.CompareSign;
+import Expressions.ValueExpressions.Digit;
+import Expressions.ValueExpressions.Sign;
 import it.units.malelab.jgea.core.Node;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 

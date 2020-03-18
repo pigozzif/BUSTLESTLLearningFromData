@@ -1,6 +1,8 @@
 package BuildingBlocks;
 
 import Expressions.*;
+import Expressions.MonitorExpressions.MonitorExpression;
+import Expressions.ValueExpressions.ValueExpression;
 import it.units.malelab.jgea.core.Node;
 import it.units.malelab.jgea.core.function.Function;
 import it.units.malelab.jgea.core.listener.Listener;

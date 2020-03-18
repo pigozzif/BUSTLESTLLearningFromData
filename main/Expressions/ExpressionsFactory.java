@@ -1,5 +1,14 @@
 package Expressions;
 
+import Expressions.MonitorExpressions.BooleanVariable;
+import Expressions.MonitorExpressions.MonitorExpression;
+import Expressions.MonitorExpressions.NumericalVariable;
+import Expressions.MonitorExpressions.Operator;
+import Expressions.ValueExpressions.CompareSign;
+import Expressions.ValueExpressions.Digit;
+import Expressions.ValueExpressions.Sign;
+import Expressions.ValueExpressions.ValueExpression;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
