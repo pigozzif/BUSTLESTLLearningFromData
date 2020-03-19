@@ -28,14 +28,14 @@ public class NumericalVariable implements MonitorExpression {
     public TemporalMonitor<TrajectoryRecord, Double> createMonitor(List<Node<String>> siblings) {
         CompareSign firstSibling = (CompareSign) STLFormulaMapper.fromStringToValueExpression(siblings.get(0).getContent());
         return TemporalMonitor.atomicMonitor(x -> firstSibling.getValue().apply(x.getDouble(this.string),
-                parseNumber(siblings)));
+                parseNumber(siblings.get(1).getChildren())));
     }
 
-    private double parseNumber(List<Node<String>> siblings) {
-        Digit secondSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(siblings.get(1).getContent());
-        Digit thirdSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(siblings.get(2).getContent());
-        Sign fourthSibling = (Sign) STLFormulaMapper.fromStringToValueExpression(siblings.get(3).getContent());
-        Digit fifthSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(siblings.get(4).getContent());
+    private double parseNumber(List<Node<String>> leaves) {
+        Digit secondSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(0).getContent());
+        Digit thirdSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(1).getContent());
+        Sign fourthSibling = (Sign) STLFormulaMapper.fromStringToValueExpression(leaves.get(2).getContent());
+        Digit fifthSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(3).getContent());
         return secondSibling.getValue() * thirdSibling.getValue() * (Math.pow(10, fourthSibling.getValue().apply(
                                                                             Double.valueOf(fifthSibling.getValue()))));
     }
