@@ -21,35 +21,43 @@ public class SignalBuilder {
         return new BufferedReader(new InputStreamReader(in));
     }
     // TODO: maybe fix Long Method
-    public static List<Signal<TrajectoryRecord>> parseSignals(BufferedReader reader, String[] boolNames, String[] doubleNames, List<Integer> boolIndexes,
-                                                                                             List<Integer> doubleIndexes) {
+    public static List<Signal<TrajectoryRecord>> parseSignals(BufferedReader reader, String[] boolNames,
+                                                              String[] doubleNames, List<Integer> boolIndexes,
+                                                              List<Integer> doubleIndexes) {
         List<Signal<TrajectoryRecord>> signals = new ArrayList<>();
         int vehicleIdx = 1;
         boolean isFinished = false;
-        String[] line;
+        String[] line = new String[boolNames.length + doubleNames.length + 1];
         List<TrajectoryRecord> trajectory = new ArrayList<>();
         List<Double> times = new ArrayList<>();
+        boolean[] boolVars = new boolean[boolNames.length];
+        double[] doubleVars = new double[doubleNames.length];
         while (!isFinished) {
-            do {
+            while (true) {
                 try {
                     line = reader.readLine().split(",");
                 } catch (IOException e) {
                     isFinished = true;
                     break;
                 }
-                boolean[] boolVars = new boolean[boolNames.length];
-                double[] doubleVars = new double[doubleNames.length];
-                for (Integer idx : boolIndexes) boolVars[idx] = Boolean.parseBoolean(line[boolIndexes.get(idx)]);
-                for (Integer idx : doubleIndexes) doubleVars[idx] = Double.parseDouble(line[doubleIndexes.get(idx)]);
+                for (int idx=0; idx < boolIndexes.size(); ++idx) boolVars[idx] = Boolean.parseBoolean(line[boolIndexes.get(idx)]);
+                for (int idx=0; idx < doubleIndexes.size(); ++idx) doubleVars[idx] = Double.parseDouble(line[doubleIndexes.get(idx)]);
+                if (vehicleIdx != Integer.parseInt(line[21])) {
+                    break;
+                }
                 trajectory.add(new TrajectoryRecord(boolNames, doubleNames, boolVars, doubleVars));
                 times.add(Double.parseDouble(line[22]));
-            } while (vehicleIdx == Integer.parseInt(line[21]));
+            }
             createSignalAndUpdate(trajectory, times, signals);
+            vehicleIdx = Integer.parseInt(line[21]);
+            trajectory.add(new TrajectoryRecord(boolNames, doubleNames, boolVars, doubleVars));
+            times.add(Double.parseDouble(line[22]));
         }
         return signals;
     }
 
-    private static void createSignalAndUpdate(List<TrajectoryRecord> trajectory, List<Double> times, List<Signal<TrajectoryRecord>> signals) {
+    private static void createSignalAndUpdate(List<TrajectoryRecord> trajectory, List<Double> times,
+                                              List<Signal<TrajectoryRecord>> signals) {
         Signal<TrajectoryRecord> currSignal = new Signal<>();
         double start = times.get(0);
         int length = times.size();
