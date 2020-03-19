@@ -26,8 +26,10 @@ public class SignalBuilder {
         List<Signal<TrajectoryRecord>> signals = new ArrayList<>();
         int vehicleIdx = 1;
         boolean isFinished = false;
-        String[] line = new String[boolNames.length + doubleNames.length + 1];
-        eu.quanticol.moonlight.signal.Signal<TrajectoryRecord> currSignal = new Signal<>();
+        String[] line;
+        Signal<TrajectoryRecord> currSignal = new Signal<>();
+        List<TrajectoryRecord> trajectory = new ArrayList<>();
+        List<Double> times = new ArrayList<>();
         while (!isFinished) {
             do {
                 try {
@@ -40,11 +42,20 @@ public class SignalBuilder {
                 double[] doubleVars = new double[doubleNames.length];
                 for (Integer idx : boolIndexes) boolVars[idx] = Boolean.parseBoolean(line[boolIndexes.get(idx)]);
                 for (Integer idx : doubleIndexes) doubleVars[idx] = Double.parseDouble(line[doubleIndexes.get(idx)]);
-                currSignal.add(Double.parseDouble(line[22]), new TrajectoryRecord(boolNames, doubleNames, boolVars, doubleVars));
+                //currSignal.add(Double.parseDouble(line[22]), new TrajectoryRecord(boolNames, doubleNames, boolVars, doubleVars));
+                trajectory.add(new TrajectoryRecord(boolNames, doubleNames, boolVars, doubleVars));
+                times.add(Double.parseDouble(line[22]));
             } while (vehicleIdx == Integer.parseInt(line[21]));
-            currSignal.endAt(Double.parseDouble(line[22]));
+            double start = times.get(0);
+            int length = times.size();
+            for (int i=0; i < length; ++i) {
+                currSignal.add((times.get(i) - start) / length, trajectory.get(i));
+            }
+            currSignal.endAt(times.get(length - 1));
             signals.add(currSignal);
             currSignal = new Signal<>();
+            trajectory.clear();
+            times.clear();
         }
         return signals;
     }
