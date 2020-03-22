@@ -1,5 +1,6 @@
 package BuildingBlocks;
 
+import Expressions.ExpressionsFactory;
 import it.units.malelab.jgea.core.function.NonDeterministicFunction;
 import it.units.malelab.jgea.core.listener.Listener;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
@@ -19,10 +20,8 @@ public class FitnessFunction implements NonDeterministicFunction<TemporalMonitor
     public FitnessFunction(String fileName) throws IOException {
         BufferedReader reader = SignalBuilder.createReaderFromFile(fileName);
         reader.readLine();
-        // TODO: read names directly from file
-        String[] boolNames = new String[]{"isChangingLane_bool_", "isApproachingOnramp_bool_", "isByGuardrail_bool_"};
-        String[] doubleNames = new String[]{"V_vel", "Lane_ID", "NE_dist", "N_dist", "NW_dist", "W_dist", "SW_dist",
-                "S_dist", "SE_dist", "NE_vel", "N_vel", "NW_vel", "W_vel", "SW_vel", "S_vel", "SE_vel"};
+        String[] boolNames = ExpressionsFactory.retrieveBooleanNames();
+        String[] doubleNames = ExpressionsFactory.retrieveNumericalNames();
         List<Integer> boolIndexes = new ArrayList<>() {{ add(3); add(20); add(21); }};
         List<Integer> doubleIndexes = new ArrayList<>() {{ add(1); add(2); add(4); add(5); add(6); add(7); add(8); add(9);
             add(10); add(11); add(12); add(13); add(14); add(15); add(16); add(17); add(18); add(19); }};
