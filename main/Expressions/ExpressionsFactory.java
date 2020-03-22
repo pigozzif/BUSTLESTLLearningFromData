@@ -27,14 +27,22 @@ public class ExpressionsFactory {
 
     public static List<MonitorExpression> createMonitorExpressions() {
         List<MonitorExpression> res = new ArrayList<>(Arrays.asList(Operator.values()));
-        for (String varName : new String[]{"isChangingLane_bool_", "isApproachingOnramp_bool_", "isByGuardrail_bool_"}) {
+        for (String varName : retrieveBooleanNames()) {
             res.add(new BooleanVariable(varName));
         }
-        for (String varName: new String[]{"V_vel", "Lane_ID", "NE_dist", "N_dist", "NW_dist", "W_dist", "SW_dist",
-                "S_dist", "SE_dist", "NE_vel", "N_vel", "NW_vel", "W_vel", "SW_vel", "S_vel", "SE_vel"}) {
+        for (String varName: retrieveNumericalNames()) {
             res.add(new NumericalVariable(varName));
         }
         return res;
+    }
+
+    public static String[] retrieveBooleanNames() {
+        return new String[]{"isChangingLane_bool_", "isApproachingOnramp_bool_", "isByGuardrail_bool_"};
+    }
+
+    public static String[] retrieveNumericalNames() {
+        return new String[]{"V_vel", "Lane_ID", "NE_dist", "N_dist", "NW_dist", "W_dist", "SW_dist",
+                "S_dist", "SE_dist", "NE_vel", "N_vel", "NW_vel", "W_vel", "SW_vel", "S_vel", "SE_vel"};
     }
 
 }
