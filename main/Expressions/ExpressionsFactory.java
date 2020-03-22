@@ -37,7 +37,7 @@ public class ExpressionsFactory {
     }
 
     public static String[] retrieveBooleanNames() {
-        return new String[]{"isChangingLane_bool_", "isApproachingOnramp_bool_", "isByGuardrail_bool_"};
+        return new String[]{"isChangingLane", "isApproachingOnramp", "isByGuardrail"};
     }
 
     public static String[] retrieveNumericalNames() {
