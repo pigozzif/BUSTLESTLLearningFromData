@@ -2,12 +2,6 @@ plugins {
     id 'java'
 }
 
-repositories {
-    flatDir {
-        dirs 'libs'
-    }
-}
-
 dependencies {
-    implementation files("./libs/moonlight.jar")
+    implementation "core.src.main.java.eu.quanticol.moonlight:1.0.jar"
 }

@@ -4,9 +4,9 @@ import BuildingBlocks.STLFormulaMapper;
 import BuildingBlocks.TrajectoryRecord;
 import Expressions.ValueExpressions.Perc;
 import it.units.malelab.jgea.core.Node;
-import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
-import core.src.main.java.eu.quanticol.moonlight.formula.DoubleDomain;
-import eu.quanticol.moonlight.formula.Interval;
+import core.src.main.java.eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
+import core.src.main.java.core.src.main.java.eu.quanticol.moonlight.formula.DoubleDomain;
+import core.src.main.java.eu.quanticol.moonlight.formula.Interval;
 
 import java.util.List;
 

@@ -6,7 +6,7 @@ import Expressions.ValueExpressions.ValueExpression;
 import it.units.malelab.jgea.core.Node;
 import it.units.malelab.jgea.core.function.Function;
 import it.units.malelab.jgea.core.listener.Listener;
-import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
+import core.src.main.java.eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 
 import java.util.List;
 

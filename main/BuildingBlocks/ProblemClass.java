@@ -5,7 +5,7 @@ import it.units.malelab.jgea.core.function.NonDeterministicFunction;
 import it.units.malelab.jgea.grammarbased.Grammar;
 import it.units.malelab.jgea.grammarbased.GrammarBasedProblem;
 import it.units.malelab.jgea.core.function.Function;
-import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
+import core.src.main.java.eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 
 import java.io.File;
 import java.io.IOException;

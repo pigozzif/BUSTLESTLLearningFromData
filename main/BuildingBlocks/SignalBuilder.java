@@ -1,6 +1,6 @@
 package BuildingBlocks;
 
-import eu.quanticol.moonlight.signal.Signal;
+import core.src.main.java.eu.quanticol.moonlight.signal.Signal;
 
 import java.io.BufferedReader;
 import java.io.IOException;
