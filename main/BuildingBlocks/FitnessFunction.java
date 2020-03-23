@@ -3,8 +3,8 @@ package BuildingBlocks;
 import Expressions.ExpressionsFactory;
 import it.units.malelab.jgea.core.function.NonDeterministicFunction;
 import it.units.malelab.jgea.core.listener.Listener;
-import core.src.main.java.eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
-import core.src.main.java.eu.quanticol.moonlight.signal.Signal;
+import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
+import eu.quanticol.moonlight.signal.Signal;
 
 import java.io.BufferedReader;
 import java.io.IOException;

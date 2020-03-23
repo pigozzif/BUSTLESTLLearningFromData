@@ -14,10 +14,11 @@ public class Main extends Worker {
         public Main(String[] args) throws FileNotFoundException {
             super(args);
             try {
-                FitnessFunction func = new FitnessFunction("/Users/federicopigozzi/IdeaProjects/STLRealTrafficRulesEvolutionaryInference/data/Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data6.csv");
+                FitnessFunction func = new FitnessFunction("./data/Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data6.csv");
             }
             catch (IOException e) {
                 System.out.println("An IOException has occured");
+                System.out.println(e.getMessage());
             }
         }
 
