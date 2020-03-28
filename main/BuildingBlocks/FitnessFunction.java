@@ -20,12 +20,10 @@ public class FitnessFunction implements NonDeterministicFunction<TemporalMonitor
     public FitnessFunction(String fileName) throws IOException {
         BufferedReader reader = SignalBuilder.createReaderFromFile(fileName);
         reader.readLine();
-        String[] boolNames = ExpressionsFactory.retrieveBooleanNames();
-        String[] doubleNames = ExpressionsFactory.retrieveNumericalNames();
         List<Integer> boolIndexes = new ArrayList<>() {{ add(3); add(20); add(21); }};
         List<Integer> doubleIndexes = new ArrayList<>() {{ add(1); add(2); add(4); add(5); add(6); add(7); add(8); add(9);
             add(10); add(11);/* add(12); add(13); add(14); add(15); add(16); add(17); add(18); add(19);*/ add(22); add(23); }};
-        signals = SignalBuilder.parseSignals(reader, boolNames, doubleNames, boolIndexes, doubleIndexes);
+        signals = SignalBuilder.parseSignals(reader, boolIndexes, doubleIndexes);
         System.out.println("Number of tajectories: " + signals.size());
         System.out.println("First trajectory: " + signals.get(0));
         System.out.println("Last trajectory: " + signals.get(signals.size() - 1));
