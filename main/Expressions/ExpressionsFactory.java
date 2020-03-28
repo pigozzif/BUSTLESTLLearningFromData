@@ -42,7 +42,8 @@ public class ExpressionsFactory {
 
     public static String[] retrieveNumericalNames() {
         return new String[]{"V_vel", "Lane_ID", "NE_dist", "N_dist", "NW_dist", "W_dist", "SW_dist",
-                "S_dist", "SE_dist", "NE_vel", "N_vel", "NW_vel", "W_vel", "SW_vel", "S_vel", "SE_vel"};
+                "S_dist", "SE_dist", "E_dist"/*, "NE_vel", "N_vel", "NW_vel", "W_vel", "SW_vel", "S_vel", "SE_vel", "E_vel"*/,
+                "Vehicle_ID", "Global_Time"};
     }
 
 }

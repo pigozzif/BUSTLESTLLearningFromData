@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 
 public class SignalBuilder {
@@ -27,11 +28,12 @@ public class SignalBuilder {
         List<Signal<TrajectoryRecord>> signals = new ArrayList<>();
         int vehicleIdx = 1;
         boolean isFinished = false;
-        String[] line = new String[boolNames.length + doubleNames.length + 1];
+        String[] line = new String[boolNames.length + doubleNames.length + 1 + 8]; // TODO: you have an ad-hoc 8
         List<TrajectoryRecord> trajectory = new ArrayList<>();
         List<Double> times = new ArrayList<>();
         boolean[] boolVars = new boolean[boolNames.length];
         double[] doubleVars = new double[doubleNames.length];
+        String text;
         while (!isFinished) {
             while (true) {
                 try {
@@ -40,18 +42,31 @@ public class SignalBuilder {
                     isFinished = true;
                     break;
                 }
-                for (int idx=0; idx < boolIndexes.size(); ++idx) boolVars[idx] = Boolean.parseBoolean(line[boolIndexes.get(idx)]);
-                for (int idx=0; idx < doubleIndexes.size(); ++idx) doubleVars[idx] = Double.parseDouble(line[doubleIndexes.get(idx)]);
-                if (vehicleIdx != Integer.parseInt(line[21])) {
+                for (int idx=0; idx < boolIndexes.size(); ++idx) {
+                    boolVars[idx] = Boolean.parseBoolean(line[boolIndexes.get(idx)]);
+                }
+                for (int idx=0; idx < doubleIndexes.size(); ++idx) {
+                    text = line[doubleIndexes.get(idx)];
+                    if (text.equals("inf")) {
+                        doubleVars[idx] = 5000.0;
+                    }
+                    else {
+                        doubleVars[idx] = Math.min(5000.0, Double.parseDouble(text));
+                    }
+                }
+                if (vehicleIdx != Integer.parseInt(line[22])) {
                     break;
                 }
                 trajectory.add(new TrajectoryRecord(boolNames, doubleNames, boolVars, doubleVars));
-                times.add(Double.parseDouble(line[22]));
+                times.add(Double.parseDouble(line[23]));
+            }
+            if (line[22].equals("1500")) {
+                break;
             }
             createSignalAndUpdate(trajectory, times, signals);
-            vehicleIdx = Integer.parseInt(line[21]);
+            vehicleIdx = Integer.parseInt(line[22]);
             trajectory.add(new TrajectoryRecord(boolNames, doubleNames, boolVars, doubleVars));
-            times.add(Double.parseDouble(line[22]));
+            times.add(Double.parseDouble(line[23]));
         }
         return signals;
     }
@@ -64,7 +79,7 @@ public class SignalBuilder {
         for (int i=0; i < length; ++i) {
             currSignal.add((times.get(i) - start) / length, trajectory.get(i));
         }
-        currSignal.endAt(times.get(length - 1));
+        currSignal.endAt((times.get(length - 1) - start) / length);
         signals.add(currSignal);
         trajectory.clear();
         times.clear();
