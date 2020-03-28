@@ -1,3 +1,5 @@
+package TrafficGenerator;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import java.io.IOException;
