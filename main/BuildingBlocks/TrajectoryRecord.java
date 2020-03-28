@@ -5,26 +5,24 @@ import java.util.HashMap;
 
 public class TrajectoryRecord {
 
-    private final HashMap<String, Boolean> boolVariables;
-    private final HashMap<String, Double> doubleVariables;
+    private static final HashMap<String, Integer> varNamesToIndex = new HashMap<>() {{ put("isChangingLane", 0); put("isApproachingOnramp", 1);
+        put("isByGuardrail", 2); put("V_vel", 1); put("Lane_ID", 2); put("NE_dist", 4); put("N_dist", 5); put("NW_dist", 6);
+        put("W_dist", 7); put("SW_dist", 8); put("S_dist", 9); put("SE_dist", 10); put("E_dist", 11); put("Vehicle_ID", 22);
+        put("Global_Time", 23); }};
+    private final boolean[] boolVariables;
+    private final double[] doubleVariables;
 
-    public TrajectoryRecord(String[] boolNames, String[] doubleNames, boolean[] boolValues, double[] doubleValues) {
-        this.boolVariables = new HashMap<>();
-        this.doubleVariables = new HashMap<>();
-        for (int i=0; i < boolNames.length; ++i) {
-            this.boolVariables.put(boolNames[i], boolValues[i]);
-        }
-        for (int i=0; i < doubleNames.length; ++i) {
-            this.doubleVariables.put(doubleNames[i], doubleValues[i]);
-        }
+    public TrajectoryRecord(boolean[] boolValues, double[] doubleValues) {
+        boolVariables = boolValues;
+        doubleVariables = doubleValues;
     }
 
     public Boolean getBool(String var) {
-        return this.boolVariables.get(var);
+        return this.boolVariables[varNamesToIndex.get(var)];
     }
 
     public Double getDouble(String var) {
-        return this.doubleVariables.get(var);
+        return this.doubleVariables[varNamesToIndex.get(var)];
     }
 
 }

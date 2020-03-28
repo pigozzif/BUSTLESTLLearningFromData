@@ -11,7 +11,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 
 public class SignalBuilder {
@@ -22,17 +21,16 @@ public class SignalBuilder {
         return new BufferedReader(new InputStreamReader(in));
     }
     // TODO: maybe fix Long Method
-    public static List<Signal<TrajectoryRecord>> parseSignals(BufferedReader reader, String[] boolNames,
-                                                              String[] doubleNames, List<Integer> boolIndexes,
+    public static List<Signal<TrajectoryRecord>> parseSignals(BufferedReader reader, List<Integer> boolIndexes,
                                                               List<Integer> doubleIndexes) {
         List<Signal<TrajectoryRecord>> signals = new ArrayList<>();
         int vehicleIdx = 1;
         boolean isFinished = false;
-        String[] line = new String[boolNames.length + doubleNames.length + 1 + 8]; // TODO: you have an ad-hoc 8
+        String[] line = new String[boolIndexes.size() + doubleIndexes.size() + 1 + 8]; // TODO: you have an ad-hoc 8
         List<TrajectoryRecord> trajectory = new ArrayList<>();
         List<Double> times = new ArrayList<>();
-        boolean[] boolVars = new boolean[boolNames.length];
-        double[] doubleVars = new double[doubleNames.length];
+        boolean[] boolVars = new boolean[boolIndexes.size()];
+        double[] doubleVars = new double[doubleIndexes.size()];
         String text;
         while (!isFinished) {
             while (true) {
@@ -57,7 +55,7 @@ public class SignalBuilder {
                 if (vehicleIdx != Integer.parseInt(line[22])) {
                     break;
                 }
-                trajectory.add(new TrajectoryRecord(boolNames, doubleNames, boolVars, doubleVars));
+                trajectory.add(new TrajectoryRecord(boolVars, doubleVars));
                 times.add(Double.parseDouble(line[23]));
             }
             if (line[22].equals("1500")) {
@@ -65,7 +63,7 @@ public class SignalBuilder {
             }
             createSignalAndUpdate(trajectory, times, signals);
             vehicleIdx = Integer.parseInt(line[22]);
-            trajectory.add(new TrajectoryRecord(boolNames, doubleNames, boolVars, doubleVars));
+            trajectory.add(new TrajectoryRecord(boolVars, doubleVars));
             times.add(Double.parseDouble(line[23]));
         }
         return signals;
