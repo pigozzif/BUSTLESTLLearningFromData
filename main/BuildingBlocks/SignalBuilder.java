@@ -53,19 +53,19 @@ public class SignalBuilder {
                     doubleVars[idx] = Double.parseDouble(line[doubleIndexes.get(idx)]);
                     //}
                 }
-                if (vehicleIdx != Integer.parseInt(line[22])) {
+                if (vehicleIdx != Integer.parseInt(line[14])) {
                     break;
                 }
                 trajectory.add(new TrajectoryRecord(boolVars, doubleVars));
-                times.add(Double.parseDouble(line[23]));
+                times.add(Double.parseDouble(line[15]));
             }
             if (line[22].equals("1500")) {
                 break;
             }
             createSignalAndUpdate(trajectory, times, signals);
-            vehicleIdx = Integer.parseInt(line[22]);
+            vehicleIdx = Integer.parseInt(line[14]);
             trajectory.add(new TrajectoryRecord(boolVars, doubleVars));
-            times.add(Double.parseDouble(line[23]));
+            times.add(Double.parseDouble(line[15]));
         }
         return signals;
     }
