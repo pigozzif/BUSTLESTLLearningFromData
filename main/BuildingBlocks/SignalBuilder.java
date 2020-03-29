@@ -26,12 +26,12 @@ public class SignalBuilder {
         List<Signal<TrajectoryRecord>> signals = new ArrayList<>();
         int vehicleIdx = 1;
         boolean isFinished = false;
-        String[] line = new String[boolIndexes.size() + doubleIndexes.size() + 1 + 8]; // TODO: you have an ad-hoc 8
+        String[] line = new String[boolIndexes.size() + doubleIndexes.size() + 1];
         List<TrajectoryRecord> trajectory = new ArrayList<>();
         List<Double> times = new ArrayList<>();
         boolean[] boolVars = new boolean[boolIndexes.size()];
         double[] doubleVars = new double[doubleIndexes.size()];
-        String text;
+        //String text;
         while (!isFinished) {
             while (true) {
                 try {
@@ -44,13 +44,14 @@ public class SignalBuilder {
                     boolVars[idx] = Boolean.parseBoolean(line[boolIndexes.get(idx)]);
                 }
                 for (int idx=0; idx < doubleIndexes.size(); ++idx) {
-                    text = line[doubleIndexes.get(idx)];
-                    if (text.equals("inf")) {
-                        doubleVars[idx] = 5000.0;
-                    }
-                    else {
-                        doubleVars[idx] = Math.min(5000.0, Double.parseDouble(text));
-                    }
+                    //text = line[doubleIndexes.get(idx)];
+                    //if (text.equals("inf")) {
+                    //    doubleVars[idx] = 5000.0;
+                    //}
+                    //else {
+                    //doubleVars[idx] = Math.min(5000.0, Double.parseDouble(text));
+                    doubleVars[idx] = Double.parseDouble(line[doubleIndexes.get(idx)]);
+                    //}
                 }
                 if (vehicleIdx != Integer.parseInt(line[22])) {
                     break;
