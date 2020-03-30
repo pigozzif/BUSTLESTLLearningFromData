@@ -5,10 +5,12 @@ import BuildingBlocks.TrajectoryRecord;
 import Expressions.ValueExpressions.CompareSign;
 import Expressions.ValueExpressions.Digit;
 import Expressions.ValueExpressions.Sign;
+import Expressions.ValueExpressions.ValueExpression;
 import it.units.malelab.jgea.core.Node;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public class NumericalVariable implements MonitorExpression {
@@ -26,18 +28,20 @@ public class NumericalVariable implements MonitorExpression {
 
     @Override
     public TemporalMonitor<TrajectoryRecord, Double> createMonitor(List<Node<String>> siblings) {
-        CompareSign firstSibling = (CompareSign) STLFormulaMapper.fromStringToValueExpression(siblings.get(0).getContent());
+        Optional<ValueExpression<?>> candidateFirstSibling = STLFormulaMapper.fromStringToValueExpression(siblings.get(0));
+        CompareSign firstSibling = candidateFirstSibling.map(valueExpression -> (CompareSign) valueExpression).orElseGet(() ->
+                (CompareSign) STLFormulaMapper.fromStringToValueExpression(siblings.get(0).getChildren().get(0)).get());
         return TemporalMonitor.atomicMonitor(x -> firstSibling.getValue().apply(x.getDouble(this.string),
                 parseNumber(siblings.get(1).getChildren())));
     }
 
     private double parseNumber(List<Node<String>> leaves) {
-        Digit secondSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(0).getContent());
-        Digit thirdSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(1).getContent());
-        Sign fourthSibling = (Sign) STLFormulaMapper.fromStringToValueExpression(leaves.get(2).getContent());
-        Digit fifthSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(3).getContent());
+        Digit secondSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(0)).get();
+        Digit thirdSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(1)).get();
+        Sign fourthSibling = (Sign) STLFormulaMapper.fromStringToValueExpression(leaves.get(2)).get();
+        Digit fifthSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(3)).get();
         return secondSibling.getValue() * thirdSibling.getValue() * (Math.pow(10, fourthSibling.getValue().apply(
-                                                                            Double.valueOf(fifthSibling.getValue()))));
+                Double.valueOf(fifthSibling.getValue()))));
     }
 
 }
