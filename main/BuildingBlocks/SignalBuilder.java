@@ -59,7 +59,7 @@ public class SignalBuilder {
                 trajectory.add(new TrajectoryRecord(boolVars, doubleVars));
                 times.add(Double.parseDouble(line[15]));
             }
-            if (line[22].equals("1500")) {
+            if (line[14].equals("1500")) {
                 break;
             }
             createSignalAndUpdate(trajectory, times, signals);

@@ -18,9 +18,9 @@ public class ProblemClass implements GrammarBasedProblem<String, TemporalMonitor
     private final FitnessFunction fitnessFunction;
 
     public ProblemClass() throws IOException {
-        this.grammar = Grammar.fromFile(new File("../grammar.bnf"));
+        this.grammar = Grammar.fromFile(new File("./grammar.bnf"));
         this.solutionMapper = new STLFormulaMapper();
-        this.fitnessFunction = new FitnessFunction("/Users/federicopigozzi/IdeaProjects/STLRealTrafficRulesEvolutionaryInference/data/Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data7.csv");
+        this.fitnessFunction = new FitnessFunction("./data/Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data7.csv");
     }
 
     @Override
