@@ -29,7 +29,13 @@ public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<
     }
 
     public static MonitorExpression fromStringToMonitorExpression(String string) {
-        return monitorExpressions.stream().filter(x -> x.toString().equals(string)).findAny().get();
+        try {
+            return monitorExpressions.stream().filter(x -> x.toString().equals(string)).findAny().get();
+        }
+        catch (Exception e) {
+            System.out.println(string);
+            throw e;
+        }
     }
 
     public static ValueExpression<?> fromStringToValueExpression(String string) {
