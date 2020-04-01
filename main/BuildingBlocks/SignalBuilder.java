@@ -31,7 +31,6 @@ public class SignalBuilder {
         List<Double> times = new ArrayList<>();
         boolean[] boolVars = new boolean[boolIndexes.size()];
         double[] doubleVars = new double[doubleIndexes.size()];
-        //String text;
         while (!isFinished) {
             while (true) {
                 try {

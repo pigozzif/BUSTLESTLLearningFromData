@@ -5,7 +5,8 @@ import BuildingBlocks.STLFormulaMapper;
 
 import java.util.List;
 
-
+// TODO: Perc should not be allowed to start at 1.0. There is also the
+//  the problem that a single 0 knocks out the whole number
 public class Perc implements ValueExpression<Double> {
 
     private final Double value;

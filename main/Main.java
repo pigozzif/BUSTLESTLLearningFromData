@@ -23,6 +23,7 @@ import it.units.malelab.jgea.grammarbased.cfggp.StandardTreeMutation;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
@@ -32,7 +33,7 @@ import java.util.concurrent.ExecutionException;
 public class Main extends Worker {
 
     public static void main(String[] args) throws FileNotFoundException {
-            new Main(args);
+        new Main(args);
     }
 
     public Main(String[] args) throws FileNotFoundException {
@@ -71,7 +72,7 @@ public class Main extends Worker {
                     500,
                     true,
                     Lists.newArrayList(new FitnessEvaluations(1000), new PerfectFitness<>(p.getFitnessFunction())),
-                    10000,
+                    0,
                     false
         );
         Random r = new Random(1);

@@ -34,7 +34,8 @@ public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<
             return parseSubTree(testChild);
         }
         catch (Exception e) {
-            System.out.println(currentNode.getContent() + " and children: " + currentNode.getChildren());
+            System.out.println(currentNode.getContent() + " and children: ");
+            currentNode.getChildren().forEach(x -> System.out.println(x.getContent()));
             throw e;
         }
     }
