@@ -19,6 +19,8 @@ public class ProblemClass implements GrammarBasedProblem<String, TemporalMonitor
 
     public ProblemClass() throws IOException {
         this.grammar = Grammar.fromFile(new File("./grammar.bnf"));
+        //System.out.println(this.grammar.getRules());
+        //System.out.println("###");
         this.solutionMapper = new STLFormulaMapper();
         this.fitnessFunction = new FitnessFunction("./data/Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data7.csv");
     }

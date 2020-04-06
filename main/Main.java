@@ -63,7 +63,7 @@ public class Main extends Worker {
         operators.put(new StandardTreeCrossover<>(12), 0.8d);
         StandardEvolver<Node<String>, TemporalMonitor<TrajectoryRecord, Double>, Double> evolver = new StandardEvolver(
                     100,
-                    new RampedHalfAndHalf<>(3, 12, p.getGrammar()),
+                    new RampedHalfAndHalf<>(0, 12, p.getGrammar()),
                     new ComparableRanker<>(new FitnessComparator<>(Function.identity())),
                     p.getSolutionMapper(),
                     operators,
@@ -72,7 +72,7 @@ public class Main extends Worker {
                     500,
                     true,
                     Lists.newArrayList(new FitnessEvaluations(1000), new PerfectFitness<>(p.getFitnessFunction())),
-                    0,
+                    1000,
                     false
         );
         Random r = new Random(1);

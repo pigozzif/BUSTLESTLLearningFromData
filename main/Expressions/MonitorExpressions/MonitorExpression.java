@@ -10,8 +10,6 @@ import java.util.List;
 
 public interface MonitorExpression extends Expression {
 
-    //String toString();
-
     TemporalMonitor<TrajectoryRecord, Double> createMonitor(List<Node<String>> siblings);
 
 }
