@@ -5,8 +5,7 @@ import BuildingBlocks.STLFormulaMapper;
 
 import java.util.List;
 
-// TODO: Perc should not be allowed to start at 1.0. There is also the
-//  the problem that a single 0 knocks out the whole number
+
 public class Perc implements ValueExpression<Double> {
 
     private final Double value;
@@ -16,8 +15,9 @@ public class Perc implements ValueExpression<Double> {
         Digit secondLeaf = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(1)).get();
         Digit thirdLeaf = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(2)).get();
         Digit fourthLeaf = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(3)).get();
-        this.value = firstLeaf.getValue() * secondLeaf.getValue() * thirdLeaf.getValue() * fourthLeaf.getValue() *
-                Math.pow(10, -4);
+        this.value = ((firstLeaf.getValue() * Math.pow(10, 3)) + (secondLeaf.getValue() * Math.pow(10, 2))
+                + (thirdLeaf.getValue() * 10) + fourthLeaf.getValue()) * Math.pow(10, -4);
+        //System.out.println(firstLeaf.getValue() + " " + secondLeaf.getValue() + " " + thirdLeaf.getValue() + " " + fourthLeaf.getValue() + " " + this.value);
     }
 
     @Override
