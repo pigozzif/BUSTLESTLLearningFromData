@@ -23,11 +23,11 @@ import it.units.malelab.jgea.grammarbased.cfggp.StandardTreeMutation;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.RejectedExecutionException;
 
 
 public class Main extends Worker {
@@ -39,13 +39,6 @@ public class Main extends Worker {
     public Main(String[] args) throws FileNotFoundException {
         super(args);
         run();
-            /*try {
-                FitnessFunction func = new FitnessFunction("./data/Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data6.csv");
-            }
-            catch (IOException e) {
-                System.out.println("An IOException has occured");
-                System.out.println(e.getMessage());
-            }*/
     }
 
     public void run() {
@@ -54,9 +47,12 @@ public class Main extends Worker {
         } catch (IOException | ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
+        catch (RejectedExecutionException e) {
+            System.out.println("Evolution Terminated With Usual RejectedExecutionException");
+        }
     }
 
-    public void evolution() throws IOException, ExecutionException, InterruptedException {
+    private void evolution() throws IOException, ExecutionException, InterruptedException {
         final GrammarBasedProblem<String, TemporalMonitor<TrajectoryRecord, Double>, Double> p = new ProblemClass();
         Map<GeneticOperator<Node<String>>, Double> operators = new LinkedHashMap<>();
         operators.put(new StandardTreeMutation<>(12, p.getGrammar()), 0.2d);

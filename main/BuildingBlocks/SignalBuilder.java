@@ -35,7 +35,8 @@ public class SignalBuilder {
             while (true) {
                 try {
                     line = reader.readLine().split(",");
-                } catch (IOException e) {
+                }
+                catch (NullPointerException | IOException e) {
                     isFinished = true;
                     break;
                 }
@@ -43,14 +44,7 @@ public class SignalBuilder {
                     boolVars[idx] = Boolean.parseBoolean(line[boolIndexes.get(idx)]);
                 }
                 for (int idx=0; idx < doubleIndexes.size(); ++idx) {
-                    //text = line[doubleIndexes.get(idx)];
-                    //if (text.equals("inf")) {
-                    //    doubleVars[idx] = 5000.0;
-                    //}
-                    //else {
-                    //doubleVars[idx] = Math.min(5000.0, Double.parseDouble(text));
                     doubleVars[idx] = Double.parseDouble(line[doubleIndexes.get(idx)]);
-                    //}
                 }
                 if (vehicleIdx != Integer.parseInt(line[14])) {
                     break;
@@ -58,9 +52,9 @@ public class SignalBuilder {
                 trajectory.add(new TrajectoryRecord(boolVars, doubleVars));
                 times.add(Double.parseDouble(line[15]));
             }
-            if (line[14].equals("3")) {
-                break;
-            }
+            //if (line[14].equals("3")) {
+            //    break;
+            //}
             createSignalAndUpdate(trajectory, times, signals);
             vehicleIdx = Integer.parseInt(line[14]);
             trajectory.add(new TrajectoryRecord(boolVars, doubleVars));
@@ -71,6 +65,9 @@ public class SignalBuilder {
 
     private static void createSignalAndUpdate(List<TrajectoryRecord> trajectory, List<Double> times,
                                               List<Signal<TrajectoryRecord>> signals) {
+        if (times.size() == 0) { // TODO: maybe more complete check
+            return;
+        }
         Signal<TrajectoryRecord> currSignal = new Signal<>();
         double start = times.get(0);
         int length = times.size();
