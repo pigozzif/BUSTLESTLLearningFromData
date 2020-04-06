@@ -32,7 +32,7 @@ public class FitnessFunction implements NonDeterministicFunction<TemporalMonitor
 
     @Override
     public Double apply(TemporalMonitor<TrajectoryRecord, Double> monitor, Random random, Listener listener) {
-        //System.out.println(num);
+        System.out.println(num);
         double count = 0.0;
         for (Signal<TrajectoryRecord> s : this.signals) {
             count += monitor.monitor(s).valueAt(0.0);
