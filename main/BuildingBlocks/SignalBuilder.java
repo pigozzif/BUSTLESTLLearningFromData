@@ -28,7 +28,7 @@ public class SignalBuilder {
         boolean isFinished = false;
         String[] line = new String[boolIndexes.size() + doubleIndexes.size() + 1];
         List<TrajectoryRecord> trajectory = new ArrayList<>();
-        List<Double> times = new ArrayList<>();
+        List<Long> times = new ArrayList<>();
         boolean[] boolVars = new boolean[boolIndexes.size()];
         double[] doubleVars = new double[doubleIndexes.size()];
         while (!isFinished) {
@@ -50,7 +50,7 @@ public class SignalBuilder {
                     break;
                 }
                 trajectory.add(new TrajectoryRecord(boolVars, doubleVars));
-                times.add(Double.parseDouble(line[15]));
+                times.add(Long.parseLong(line[15]));
             }
             //if (line[14].equals("3")) {
             //    break;
@@ -58,23 +58,30 @@ public class SignalBuilder {
             createSignalAndUpdate(trajectory, times, signals);
             vehicleIdx = Integer.parseInt(line[14]);
             trajectory.add(new TrajectoryRecord(boolVars, doubleVars));
-            times.add(Double.parseDouble(line[15]));
+            times.add(Long.parseLong(line[15]));
         }
+
         return signals;
     }
 
-    private static void createSignalAndUpdate(List<TrajectoryRecord> trajectory, List<Double> times,
+    private static void createSignalAndUpdate(List<TrajectoryRecord> trajectory, List<Long> times,
                                               List<Signal<TrajectoryRecord>> signals) {
         if (times.size() == 0) { // TODO: maybe more complete check
             return;
         }
         Signal<TrajectoryRecord> currSignal = new Signal<>();
-        double start = times.get(0);
+        //double start = times.get(0);
         int length = times.size();
+        //double end = times.get(times.size() - 1);
+        long start = 1113433135300L;
+        //long end = 1113438734000L;
         for (int i=0; i < length; ++i) {
-            currSignal.add((times.get(i) - start) / length, trajectory.get(i));
+            //System.out.println((double)(times.get(i) - start));
+            //currSignal.add((times.get(i) - start) / (double)(end - start), trajectory.get(i));
+            currSignal.add((double)(times.get(i) - start), trajectory.get(i));
         }
-        currSignal.endAt((times.get(length - 1) - start) / length);
+        //currSignal.endAt((times.get(length - 1) - start) / (double)(end - start));
+        currSignal.endAt((double)(times.get(length - 1) - start));
         signals.add(currSignal);
         trajectory.clear();
         times.clear();

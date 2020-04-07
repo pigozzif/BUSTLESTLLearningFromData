@@ -40,10 +40,11 @@ public enum Operator implements MonitorExpression {
                 Perc startPerc = new Perc(siblings.get(2).getChildren());
                 Perc length = new Perc(siblings.get(3).getChildren());  // TODO: think about density of values over [0.0, 100.0]
                 Double start = startPerc.getValue();
-                //System.out.println(start * 100.0 + " " + Math.min(100.0, (start + (length.getValue() * (1.0 - start))) * 100.0));
+                System.out.println(start + " " + (start + (length.getValue() * (1.0 - start))));
                 return TemporalMonitor.untilMonitor(STLFormulaMapper.parseSubTree(siblings.get(0)),
-                        //null, STLFormulaMapper.parseSubTree(siblings.get(1)),
-                        new Interval(start * 100.0, Math.min(100.0, (start + (length.getValue() * (1.0 - start))) * 100.0)), STLFormulaMapper.parseSubTree(siblings.get(1)),
+                        null, STLFormulaMapper.parseSubTree(siblings.get(1)),
+                        //new Interval(start, start + (length.getValue() * (1.0 - start))), STLFormulaMapper.parseSubTree(siblings.get(1)),
+                        //new Interval(0.0, 1.0), STLFormulaMapper.parseSubTree(siblings.get(1)),
                         new DoubleDomain());
         }
     }
