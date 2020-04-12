@@ -29,7 +29,7 @@ public class FitnessFunction implements NonDeterministicFunction<TemporalMonitor
 
     @Override
     public Double apply(TemporalMonitor<TrajectoryRecord, Double> monitor, Random random, Listener listener) {
-        System.out.println(num);
+        System.out.println("INDIVIDUAL: " + num);
         double count = 0.0;
         int localCount = 0;
         for (Signal<TrajectoryRecord> s : this.signals) {
@@ -38,10 +38,13 @@ public class FitnessFunction implements NonDeterministicFunction<TemporalMonitor
                 count += monitor.monitor(s).valueAt(s.start());
             }
             catch (Exception e) {
+                System.out.println("FAILING TRAJECTORY: " + s.start() + " " + s.end());
+                //System.out.println(s.start() + " " + s.end());
                 localCount += 1;
+                throw e;
             }
         }
-        System.out.println(localCount + " over a total of: " + this.signals.size());
+        System.out.println("FAILED " + localCount + " over a total of: " + this.signals.size() + "\n");
         ++num;
         return count / this.signals.size();
         //return this.signals.stream().mapToDouble(x -> monitor.monitor(x).valueAt(0.0)).average().orElse(Double.MIN_VALUE);

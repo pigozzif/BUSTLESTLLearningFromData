@@ -1,8 +1,8 @@
-<expr> ::= <bool> | <var> <comp> <num> | .not <expr> | .or <expr> <expr> | .until <expr> <expr> <perc> <perc>
+<expr> ::= <bool> | <var> <comp> <num> | .not <expr> | .or <expr> <expr> | .until <expr> <expr> <perc> <perc> | .globally <expr> <perc> <perc> | .eventually <expr> <perc> <perc>
 <num> ::= <digit> <digit> <sign> <digit>
 <comp> ::= < | > | <= | >= | ==
 <digit> ::= 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0
 <bool> ::= isChangingLane | isApproachingOnramp | isByGuardrail
 <var> ::= V_vel | Lane_ID | NE_dist | N_dist | NW_dist | W_dist | SW_dist | S_dist | SE_dist | E_dist
-<perc> ::= <digit> <digit> <digit> <digit>
+<perc> ::= <digit> <digit> <digit> <digit> <digit>
 <sign> ::= + | -

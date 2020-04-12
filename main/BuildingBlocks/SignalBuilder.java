@@ -14,6 +14,7 @@ import java.util.List;
 
 
 public class SignalBuilder {
+    //private static double min = Double.MAX_VALUE;
 
     public static BufferedReader createReaderFromFile(String fileName) throws IOException {
         Path path = Paths.get(".", fileName);
@@ -60,7 +61,7 @@ public class SignalBuilder {
             trajectory.add(new TrajectoryRecord(boolVars, doubleVars));
             times.add(Long.parseLong(line[15]));
         }
-
+        //System.out.println(min);
         return signals;
     }
 
@@ -78,13 +79,17 @@ public class SignalBuilder {
         for (int i=0; i < length; ++i) {
             //System.out.println((double)(times.get(i) - start));
             //currSignal.add((times.get(i) - start) / (double)(end - start), trajectory.get(i));
-            currSignal.add((double)(times.get(i) - start), trajectory.get(i));
+            currSignal.add((times.get(i) - start) / 100.0, trajectory.get(i));
         }
         //currSignal.endAt((times.get(length - 1) - start) / (double)(end - start));
-        currSignal.endAt((double)(times.get(length - 1) - start));
+        currSignal.endAt((times.get(length - 1) - start) / 100.0);
+        //if (currSignal.end() < min) {
+        //    min = currSignal.end();
+        //}
         signals.add(currSignal);
         trajectory.clear();
         times.clear();
+        //System.out.println(currSignal.start() / 100.0 + " " + currSignal.end() / 100.0);
     }
 
 }
