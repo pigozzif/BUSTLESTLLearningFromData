@@ -13,18 +13,18 @@ import java.util.List;
 import java.util.Optional;
 
 
-public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<TrajectoryRecord, Double>> {
+public class STLFormulaMapper implements Function<Node<String>, TreeNode> {
 
     private static final List<ValueExpression<?>> valueExpressions = ExpressionsFactory.createValueExpressions();
     private static final List<MonitorExpression> monitorExpressions = ExpressionsFactory.createMonitorExpressions();
 
     @Override
-    public TemporalMonitor<TrajectoryRecord, Double> apply(Node<String> root, Listener listener) {
+    public TreeNode apply(Node<String> root, Listener listener) {
         root.propagateParentship();
         return parseSubTree(root);
     }
 
-    public static TemporalMonitor<TrajectoryRecord, Double> parseSubTree(Node<String> currentNode) {
+    public static TreeNode parseSubTree(Node<String> currentNode) {
         List<Node<String>> children = currentNode.getChildren();
         Node<String> testChild = children.get(0);
         Optional<MonitorExpression> expression = fromStringToMonitorExpression(testChild);

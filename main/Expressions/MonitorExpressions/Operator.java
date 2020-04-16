@@ -1,7 +1,7 @@
 package Expressions.MonitorExpressions;
 
 import BuildingBlocks.STLFormulaMapper;
-import BuildingBlocks.TrajectoryRecord;
+import BuildingBlocks.TreeNode;
 import Expressions.ValueExpressions.Perc;
 import it.units.malelab.jgea.core.Node;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
@@ -31,14 +31,20 @@ public enum Operator implements MonitorExpression {
     }
 
     @Override
-    public TemporalMonitor<TrajectoryRecord, Double> createMonitor(List<Node<String>> siblings) {
+    public TreeNode createMonitor(List<Node<String>> siblings) {
+        TreeNode newNode = new TreeNode();
         switch(this) {
             case NOT:
-                return TemporalMonitor.notMonitor(STLFormulaMapper.parseSubTree(siblings.get(0)), new DoubleDomain());
+                TreeNode firstPhi = STLFormulaMapper.parseSubTree(siblings.get(0));
+                newNode.setOperator(x -> TemporalMonitor.notMonitor(firstPhi.getOperator().apply(x), new DoubleDomain()));
+                return newNode;
             case OR:
-                return TemporalMonitor.orMonitor(STLFormulaMapper.parseSubTree(siblings.get(0)), new DoubleDomain(),
-                        STLFormulaMapper.parseSubTree(siblings.get(1)));
-            case UNTIL:
+                TreeNode leftPhi = STLFormulaMapper.parseSubTree(siblings.get(0));
+                TreeNode rightPhi = STLFormulaMapper.parseSubTree(siblings.get(1));
+                newNode.setOperator(x -> TemporalMonitor.orMonitor(leftPhi.getOperator().apply(x), new DoubleDomain(),
+                        rightPhi.getOperator().apply(x)));
+                return newNode;
+            /*case UNTIL:
                 Perc startPerc = new Perc(siblings.get(2).getChildren());
                 Perc length = new Perc(siblings.get(3).getChildren());  // TODO: think about density of values over [0.0, 100.0]
                 Double start = startPerc.getValue();
@@ -47,27 +53,29 @@ public enum Operator implements MonitorExpression {
                         null, STLFormulaMapper.parseSubTree(siblings.get(1)),
                         //new Interval(start, start + length.getValue()), STLFormulaMapper.parseSubTree(siblings.get(1)),
                         //new Interval(0.0, 100.0), STLFormulaMapper.parseSubTree(siblings.get(1)),
-                        new DoubleDomain());
+                        new DoubleDomain());*/
             case GLOBALLY:
                 Perc startInterval = new Perc(siblings.get(1).getChildren());
                 Perc lengthInterval = new Perc(siblings.get(2).getChildren());
                 Double s = startInterval.getValue();
                 System.out.println("GLOBALLY INTERVAL: " + s + " " + (s + lengthInterval.getValue()));
-                return TemporalMonitor.globallyMonitor(STLFormulaMapper.parseSubTree(siblings.get(0)),
+                newNode.setInterval(s, s + lengthInterval.getValue());
+                newNode.setOperator(x -> TemporalMonitor.globallyMonitor(STLFormulaMapper.parseSubTree(siblings.get(0)).getOperator().apply(x),
                         new DoubleDomain(),
-                        new Interval(0.0, 100.0));
-                        //new Interval(s, s + lengthInterval.getValue()));
-                        //null);
+                        //new Interval(0.0, 100.0));
+                        newNode.clip(x)));
+                return newNode;
             default:
                 Perc startInter = new Perc(siblings.get(1).getChildren());
                 Perc lengthInter = new Perc(siblings.get(2).getChildren());
                 Double beginning = startInter.getValue();
                 System.out.println("EVENTUALLY INTERVAL: " + beginning + " " + (beginning + lengthInter.getValue()));
-                return TemporalMonitor.eventuallyMonitor(STLFormulaMapper.parseSubTree(siblings.get(0)),
+                newNode.setInterval(beginning, beginning + lengthInter.getValue());
+                newNode.setOperator(x -> TemporalMonitor.eventuallyMonitor(STLFormulaMapper.parseSubTree(siblings.get(0)).getOperator().apply(x),
                         new DoubleDomain(),
-                        new Interval(0.0, 100.0));
-                        //new Interval(beginning, beginning + lengthInter.getValue()));
-                        //null);
+                        //new Interval(0.0, 100.0));
+                        newNode.clip(x)));
+                return newNode;
         }
     }
 
