@@ -2,6 +2,7 @@ package Expressions.MonitorExpressions;
 
 import BuildingBlocks.STLFormulaMapper;
 import BuildingBlocks.TrajectoryRecord;
+import BuildingBlocks.TreeNode;
 import Expressions.ValueExpressions.CompareSign;
 import Expressions.ValueExpressions.Digit;
 import Expressions.ValueExpressions.Sign;
@@ -25,10 +26,12 @@ public class NumericalVariable implements MonitorExpression {
     }
 
     @Override
-    public TemporalMonitor<TrajectoryRecord, Double> createMonitor(List<Node<String>> siblings) {
+    public TreeNode createMonitor(List<Node<String>> siblings) {
         CompareSign firstSibling = (CompareSign) STLFormulaMapper.fromStringToValueExpression(siblings.get(0).getChildren().get(0)).get();
-        return TemporalMonitor.atomicMonitor(x -> firstSibling.getValue().apply(x.getDouble(this.string),
-                parseNumber(siblings.get(1).getChildren())));
+        TreeNode newNode = new TreeNode(null);
+        newNode.setOperator(x -> TemporalMonitor.atomicMonitor(y -> firstSibling.getValue().apply(y.getDouble(this.string),
+                parseNumber(siblings.get(1).getChildren()))));
+        return newNode;
     }
     // TODO: correct error
     private double parseNumber(List<Node<String>> leaves) {

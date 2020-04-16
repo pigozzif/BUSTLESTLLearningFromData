@@ -35,7 +35,7 @@ public class FitnessFunction implements NonDeterministicFunction<TreeNode, Doubl
         for (Signal<TrajectoryRecord> s : this.signals) {
             //System.out.println(s.start() + " " + s.end());
             try {
-                count += monitor.monitor(s).valueAt(s.start());
+                count += monitor.getOperator().apply(s).monitor(s).valueAt(s.start());
             }
             catch (Exception e) {
                 System.out.println("FAILING TRAJECTORY: " + s.start() + " " + s.end());

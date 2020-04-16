@@ -32,7 +32,7 @@ public enum Operator implements MonitorExpression {
 
     @Override
     public TreeNode createMonitor(List<Node<String>> siblings) {
-        TreeNode newNode = new TreeNode();
+        TreeNode newNode = new TreeNode(null);
         switch(this) {
             case NOT:
                 TreeNode firstPhi = STLFormulaMapper.parseSubTree(siblings.get(0));
