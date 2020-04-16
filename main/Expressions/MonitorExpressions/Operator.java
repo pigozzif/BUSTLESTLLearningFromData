@@ -31,17 +31,20 @@ public enum Operator implements MonitorExpression {
     }
 
     @Override
-    public TreeNode createMonitor(List<Node<String>> siblings) {
-        TreeNode newNode = new TreeNode(null);
+    public TreeNode createMonitor(List<Node<String>> siblings, TreeNode parent) {
+        TreeNode newNode = new TreeNode(parent);
         switch(this) {
             case NOT:
-                TreeNode firstPhi = STLFormulaMapper.parseSubTree(siblings.get(0));
+                TreeNode firstPhi = STLFormulaMapper.parseSubTree(siblings.get(0), newNode);
+                newNode.setFirstChild(firstPhi);
                 newNode.setTemporalHorizon(firstPhi.getTemporalHorizon());
                 newNode.setOperator(x -> TemporalMonitor.notMonitor(firstPhi.getOperator().apply(x), new DoubleDomain()));
                 return newNode;
             case OR:
-                TreeNode leftPhi = STLFormulaMapper.parseSubTree(siblings.get(0));
-                TreeNode rightPhi = STLFormulaMapper.parseSubTree(siblings.get(1));
+                TreeNode leftPhi = STLFormulaMapper.parseSubTree(siblings.get(0), newNode);
+                TreeNode rightPhi = STLFormulaMapper.parseSubTree(siblings.get(1), newNode);
+                newNode.setFirstChild(leftPhi);
+                newNode.setSecondChild(rightPhi);
                 newNode.setTemporalHorizon(Math.max(leftPhi.getTemporalHorizon(), rightPhi.getTemporalHorizon()));
                 newNode.setOperator(x -> TemporalMonitor.orMonitor(leftPhi.getOperator().apply(x), new DoubleDomain(),
                         rightPhi.getOperator().apply(x)));
@@ -60,26 +63,26 @@ public enum Operator implements MonitorExpression {
                 Perc startInterval = new Perc(siblings.get(1).getChildren());
                 Perc lengthInterval = new Perc(siblings.get(2).getChildren());
                 Double s = startInterval.getValue();
-                TreeNode globallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0));
+                TreeNode globallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0), newNode);
                 System.out.println("GLOBALLY INTERVAL: " + s + " " + (s + lengthInterval.getValue()));
+                newNode.setFirstChild(globallyPhi);
                 newNode.setInterval(s, s + lengthInterval.getValue());
                 newNode.setTemporalHorizon(globallyPhi.getTemporalHorizon() + s + lengthInterval.getValue());
                 newNode.setOperator(x -> TemporalMonitor.globallyMonitor(globallyPhi.getOperator().apply(x),
                         new DoubleDomain(),
-                        //new Interval(0.0, 100.0));
                         newNode.clip(x)));
                 return newNode;
             default:
                 Perc startInter = new Perc(siblings.get(1).getChildren());
                 Perc lengthInter = new Perc(siblings.get(2).getChildren());
                 Double beginning = startInter.getValue();
-                TreeNode eventuallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0));
+                TreeNode eventuallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0), newNode);
                 System.out.println("EVENTUALLY INTERVAL: " + beginning + " " + (beginning + lengthInter.getValue()));
+                newNode.setFirstChild(eventuallyPhi);
                 newNode.setInterval(beginning, beginning + lengthInter.getValue());
                 newNode.setTemporalHorizon(eventuallyPhi.getTemporalHorizon() + beginning + lengthInter.getValue());
                 newNode.setOperator(x -> TemporalMonitor.eventuallyMonitor(eventuallyPhi.getOperator().apply(x),
                         new DoubleDomain(),
-                        //new Interval(0.0, 100.0));
                         newNode.clip(x)));
                 return newNode;
         }

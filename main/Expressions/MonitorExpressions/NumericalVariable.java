@@ -26,9 +26,9 @@ public class NumericalVariable implements MonitorExpression {
     }
 
     @Override
-    public TreeNode createMonitor(List<Node<String>> siblings) {
+    public TreeNode createMonitor(List<Node<String>> siblings, TreeNode parent) {
         CompareSign firstSibling = (CompareSign) STLFormulaMapper.fromStringToValueExpression(siblings.get(0).getChildren().get(0)).get();
-        TreeNode newNode = new TreeNode(null);
+        TreeNode newNode = new TreeNode(parent);
         newNode.setOperator(x -> TemporalMonitor.atomicMonitor(y -> firstSibling.getValue().apply(y.getDouble(this.string),
                 parseNumber(siblings.get(1).getChildren()))));
         return newNode;

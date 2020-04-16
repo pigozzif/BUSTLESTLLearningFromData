@@ -6,6 +6,7 @@ import eu.quanticol.moonlight.signal.Signal;
 
 import java.util.function.Function;
 
+
 public class TreeNode {
 
     private Double start;
@@ -54,7 +55,10 @@ public class TreeNode {
     }
 
     public Interval clip(Signal<TrajectoryRecord> signal) {
-        return new Interval(start, end);
+        double newEnd = Math.min(this.end, signal.size() - 1);
+        this.temporalHorizon = newEnd;
+        System.out.println("clipped interval: " + this.start + " " + newEnd);
+        return new Interval(this.start, newEnd);
     }
 
     public void setInterval(double s, double e) {

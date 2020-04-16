@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface MonitorExpression extends Expression {
 
-    TreeNode createMonitor(List<Node<String>> siblings);
+    TreeNode createMonitor(List<Node<String>> siblings, TreeNode parent);
 
 }

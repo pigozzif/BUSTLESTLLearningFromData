@@ -21,17 +21,17 @@ public class STLFormulaMapper implements Function<Node<String>, TreeNode> {
     @Override
     public TreeNode apply(Node<String> root, Listener listener) {
         root.propagateParentship();
-        return parseSubTree(root);
+        return parseSubTree(root, null);
     }
 
-    public static TreeNode parseSubTree(Node<String> currentNode) {
+    public static TreeNode parseSubTree(Node<String> currentNode, TreeNode parent) {
         List<Node<String>> children = currentNode.getChildren();
         Node<String> testChild = children.get(0);
         Optional<MonitorExpression> expression = fromStringToMonitorExpression(testChild);
         if (expression.isPresent()) {
-            return expression.get().createMonitor(getSiblings(testChild));
+            return expression.get().createMonitor(getSiblings(testChild), parent);
         }
-        return parseSubTree(testChild);
+        return parseSubTree(testChild, parent);
     }
 
     public static Optional<MonitorExpression> fromStringToMonitorExpression(Node<String> string) {
