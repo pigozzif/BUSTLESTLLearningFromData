@@ -22,6 +22,7 @@ public class TreeNode {
         this.secondChild = null;
         this.start = null;
         this.end = null;
+        this.temporalHorizon = 0.0;
     }
 
     public Function<Signal<TrajectoryRecord>, TemporalMonitor<TrajectoryRecord, Double>> getOperator() {
@@ -59,6 +60,14 @@ public class TreeNode {
     public void setInterval(double s, double e) {
         this.start = s;
         this.end = e;
+    }
+
+    public void setTemporalHorizon(double horizon) {
+        this.temporalHorizon = horizon;
+    }
+
+    public double getTemporalHorizon() {
+        return this.temporalHorizon;
     }
 
 }
