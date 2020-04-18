@@ -32,27 +32,34 @@ public class FitnessFunction implements NonDeterministicFunction<TreeNode, Doubl
         System.out.println("INDIVIDUAL: " + num);
         double count = 0.0;
         int localCount = 0;
-        //int localCount2 = 0;
+        int localCount2 = 0;
         for (Signal<TrajectoryRecord> s : this.signals) {
             //System.out.println(s.start() + " " + s.end());
             try {
-                /*if (monitor.getTemporalHorizon() >= s.size()) {
+                /*if (monitor.getNecessaryLength() >= s.size()) {
                     count += Double.NEGATIVE_INFINITY;
                     localCount2 += 1;
+                    System.out.println("DISCARDED TRAJECTORY: " + s);
                 }
                 else {*/
-                count += monitor.getOperator().apply(s).monitor(s).valueAt(s.start());
-                //}
+                try {
+                    monitor.clip(s);
+                    count += monitor.getOperator().apply(s).monitor(s).valueAt(s.start());
+                }
+                catch (ExceptionInInitializerError e) {
+                    localCount2 += 1;
+                    //System.out.println("DISCARDED TRAJECTORY: " + s);
+                }
             }
             catch (Exception e) {
-                System.out.println("FAILING TRAJECTORY: " + s.start() + " " + s.end());
+                System.out.println("FAILING TRAJECTORY: " + s);
                 //System.out.println(s.start() + " " + s.end());
                 localCount += 1;
                 throw e;
             }
         }
         System.out.println("FAILED " + localCount + " over a total of: " + this.signals.size() + "\n");
-        //System.out.println("DISCARDED " + localCount2 + " over a total of: " + this.signals.size() + "\n");
+        System.out.println("DISCARDED " + localCount2 + " over a total of: " + this.signals.size() + "\n");
         ++num;
         return count / this.signals.size();
         //return this.signals.stream().mapToDouble(x -> monitor.monitor(x).valueAt(0.0)).average().orElse(Double.MIN_VALUE);
