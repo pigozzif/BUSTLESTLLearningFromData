@@ -34,10 +34,10 @@ public enum Operator implements MonitorExpression {
         TreeNode newNode = new TreeNode(parent);
         switch(this) {
             case NOT:
-                TreeNode firstPhi = STLFormulaMapper.parseSubTree(siblings.get(0), newNode);
-                newNode.setFirstChild(firstPhi);
-                newNode.setNecessaryLength(firstPhi.getNecessaryLength());
-                newNode.setOperator(x -> TemporalMonitor.notMonitor(firstPhi.getOperator().apply(x), new DoubleDomain()));
+                TreeNode phi = STLFormulaMapper.parseSubTree(siblings.get(0), newNode);
+                newNode.setFirstChild(phi);
+                newNode.setNecessaryLength(phi.getNecessaryLength());
+                newNode.setOperator(x -> TemporalMonitor.notMonitor(phi.getOperator().apply(x), new DoubleDomain()));
                 return newNode;
             case OR:
                 TreeNode leftPhi = STLFormulaMapper.parseSubTree(siblings.get(0), newNode);
@@ -48,16 +48,22 @@ public enum Operator implements MonitorExpression {
                 newNode.setOperator(x -> TemporalMonitor.orMonitor(leftPhi.getOperator().apply(x), new DoubleDomain(),
                         rightPhi.getOperator().apply(x)));
                 return newNode;
-            /*case UNTIL:
+            case UNTIL:
                 Perc startPerc = new Perc(siblings.get(2).getChildren());
                 Perc length = new Perc(siblings.get(3).getChildren());  // TODO: think about density of values over [0.0, 100.0]
                 Double start = startPerc.getValue();
-                System.out.println("UNTIL INTERVAL: " + start + " " + (start + length.getValue()));
-                return TemporalMonitor.untilMonitor(STLFormulaMapper.parseSubTree(siblings.get(0)),
-                        null, STLFormulaMapper.parseSubTree(siblings.get(1)),
-                        //new Interval(start, start + length.getValue()), STLFormulaMapper.parseSubTree(siblings.get(1)),
-                        //new Interval(0.0, 100.0), STLFormulaMapper.parseSubTree(siblings.get(1)),
-                        new DoubleDomain());*/
+                Double width = Math.max(1.0, length.getValue());
+                TreeNode firstPhi = STLFormulaMapper.parseSubTree(siblings.get(0), newNode);
+                TreeNode secondPhi = STLFormulaMapper.parseSubTree(siblings.get(1), newNode);
+                System.out.println("UNTIL INTERVAL: " + start + " " + (start + width));
+                newNode.setFirstChild(firstPhi);
+                newNode.setSecondChild(secondPhi);
+                newNode.setInterval(start, start + width);
+                newNode.setNecessaryLength(Math.max(firstPhi.getNecessaryLength(), secondPhi.getNecessaryLength()) + start + width);
+                newNode.setOperator(x -> TemporalMonitor.untilMonitor(firstPhi.getOperator().apply(x),
+                        newNode.createInterval(), secondPhi.getOperator().apply(x),
+                        new DoubleDomain()));
+                return newNode;
             case GLOBALLY:
                 Perc startInterval = new Perc(siblings.get(1).getChildren());
                 Perc lengthInterval = new Perc(siblings.get(2).getChildren());

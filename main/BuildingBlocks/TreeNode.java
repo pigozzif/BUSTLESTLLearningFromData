@@ -14,7 +14,7 @@ public class TreeNode {
     private double tempStart;
     private double tempEnd;
     private Function<Signal<TrajectoryRecord>, TemporalMonitor<TrajectoryRecord, Double>> func;
-    private double necessaryLength;
+    private double necessaryLength;  // TODO: probably not necessary, only for debugging
     private TreeNode parent;
     private TreeNode firstChild;
     private TreeNode secondChild;
@@ -58,40 +58,33 @@ public class TreeNode {
         return this.parent;
     }
 
-    public double clip(Signal<TrajectoryRecord> signal) throws ExceptionInInitializerError {
-        if (this.firstChild == null) {
+    public static double clip(TreeNode node, Signal<TrajectoryRecord> signal) throws ExceptionInInitializerError {
+        if (node == null) {
             return 0.0;
         }
-        else if (this.start == null) {
-            double max = this.firstChild.clip(signal);
-            if (this.secondChild != null) {
-                double temp = this.secondChild.clip(signal);
-                if (temp > max) {
-                    max = temp;
-                }
-            }
-            return max;
+        else if (node.getStart() == null) {
+            return Math.max(TreeNode.clip(node.getFirstChild(), signal), TreeNode.clip(node.getSecondChild(), signal));
         }
-        this.tempStart = this.start;
-        double tempNecessaryLength = this.firstChild.clip(signal); // does not work with until
-        this.tempEnd = Math.min(this.end, signal.size() - 1 - tempNecessaryLength);
-        if (this.tempEnd <= this.tempStart) {
-            this.tempStart = Math.max(0.0, this.tempStart - this.end + this.tempEnd);
+        double tempStart = node.getStart();
+        double end = node.getEnd();
+        double tempNecessaryLength = Math.max(TreeNode.clip(node.getFirstChild(), signal), TreeNode.clip(node.getSecondChild(), signal)); // TODO: does not work with until
+        double tempEnd = Math.min(end, signal.size() - 1 - tempNecessaryLength);
+        if (tempEnd <= tempStart) {
+            tempStart = Math.max(0.0, tempStart - end + tempEnd);
         }
-        if (this.tempEnd <= 0 && this.tempStart <= 0) {
+        if (tempEnd <= 0 && tempStart <= 0) {
             throw new ExceptionInInitializerError();
         }
-        return this.tempEnd + tempNecessaryLength;
-        /*double newStart = this.start;
-        double newEnd = Math.min(this.end, signal.size() - 1 - this.necessaryLength + this.end);
-        if (newEnd <= start) {
-            newStart = Math.max(0.0, newStart - this.end + newEnd);
-        }
-        if (signal.size() <= this.necessaryLength - Math.abs(this.end - newEnd)) {
-            throw new ExceptionInInitializerError();
-        }
-        System.out.println("clipped interval: " + newStart + " " + newEnd + " with temporal horizon: " + this.necessaryLength + " and " + signal + " of size: " + signal.size());
-        return new Interval(newStart, newEnd);*/
+        node.setTempInterval(tempStart, tempEnd);
+        return tempEnd + tempNecessaryLength;
+    }
+
+    public Double getStart() {
+        return this.start;
+    }
+
+    public Double getEnd() {
+        return this.end;
     }
 
     public Interval createInterval() {
@@ -101,6 +94,11 @@ public class TreeNode {
     public void setInterval(double s, double e) {
         this.start = s;
         this.end = e;
+    }
+
+    public void setTempInterval(double s, double e) {
+        this.tempStart = s;
+        this.tempEnd = e;
     }
 
     public void setNecessaryLength(double horizon) {
