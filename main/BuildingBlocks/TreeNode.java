@@ -4,6 +4,7 @@ import eu.quanticol.moonlight.formula.Interval;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import eu.quanticol.moonlight.signal.Signal;
 
+import java.io.PrintStream;
 import java.util.function.Function;
 
 
@@ -18,6 +19,7 @@ public class TreeNode {
     private TreeNode parent;
     private TreeNode firstChild;
     private TreeNode secondChild;
+    private char[] symbol;
 
     public TreeNode(TreeNode parent) {
         this.parent = parent;
@@ -28,6 +30,7 @@ public class TreeNode {
         this.tempStart = 0.0;
         this.tempEnd = 0.0;
         this.necessaryLength = 0.0;
+        this.symbol = new char[]{'n', 'o', 'd', 'e'};
     }
 
     public Function<Signal<TrajectoryRecord>, TemporalMonitor<TrajectoryRecord, Double>> getOperator() {
@@ -107,6 +110,55 @@ public class TreeNode {
 
     public double getNecessaryLength() {
         return this.necessaryLength;
+    }
+
+    public void setSymbol(char[] a) {
+        this.symbol = a;
+    }
+
+    public char[] getSymbol() {
+        return this.symbol;
+    }
+
+    public void print(PrintStream ps) {
+        ps.print(traversePreOrder(this));
+    }
+
+    public static String traversePreOrder(TreeNode node) {
+        if (node == null) {
+            return "\n";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.valueOf(node.getSymbol()));
+        String pointerRight = "└──";
+        boolean hasRightChild = node.getFirstChild() != null;
+        String pointerLeft = (hasRightChild) ? "├──" : "└──";
+        traverseNodes(sb, "", pointerLeft, node.getSecondChild(), hasRightChild);
+        traverseNodes(sb, "", pointerRight, node.getFirstChild(), false);
+        sb.append("\n");
+        return sb.toString();
+    }
+
+    public static void traverseNodes(StringBuilder sb, String padding, String pointer, TreeNode node, boolean hasRightSibling) {
+        if (node != null) {
+            sb.append("\n");
+            sb.append(padding);
+            sb.append(pointer);
+            sb.append(String.valueOf(node.getSymbol()));
+            StringBuilder paddingBuilder = new StringBuilder(padding);
+            if (hasRightSibling) {
+                paddingBuilder.append("│  ");
+            }
+            else {
+                paddingBuilder.append("   ");
+            }
+            String paddingForBoth = paddingBuilder.toString();
+            String pointerRight = "└──";
+            boolean hasRightChild = node.getFirstChild() != null;
+            String pointerLeft = (hasRightChild) ? "├──" : "└──";
+            traverseNodes(sb, paddingForBoth, pointerLeft, node.getSecondChild(), hasRightChild);
+            traverseNodes(sb, paddingForBoth, pointerRight, node.getFirstChild(), false);
+        }
     }
 
 }

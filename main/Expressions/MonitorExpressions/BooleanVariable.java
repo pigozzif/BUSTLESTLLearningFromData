@@ -24,6 +24,7 @@ public class BooleanVariable implements MonitorExpression {
     @Override
     public TreeNode createMonitor(List<Node<String>> siblings, TreeNode parent) {
         TreeNode newNode = new TreeNode(parent);
+        newNode.setSymbol(this.string.toCharArray());
         newNode.setOperator(x -> TemporalMonitor.atomicMonitor(y -> {if (y.getBool(this.string)) {
                                                 return Double.POSITIVE_INFINITY;} else { return Double.NEGATIVE_INFINITY;}
                                                 }));
