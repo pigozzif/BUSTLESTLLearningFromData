@@ -30,12 +30,12 @@ public class NumericalVariable implements MonitorExpression {
         CompareSign firstSibling = (CompareSign) STLFormulaMapper.fromStringToValueExpression(siblings.get(0).getChildren().get(0)).get();
         double number = parseNumber(siblings.get(1).getChildren());
         TreeNode newNode = new TreeNode(parent);
-        newNode.setSymbol((this.string + " " + firstSibling.toString() + " " + number).toCharArray());
+        newNode.setSymbol(this.string + " " + firstSibling.toString() + " " + number);
         newNode.setOperator(x -> TemporalMonitor.atomicMonitor(y -> firstSibling.getValue().apply(y.getDouble(this.string),
                 number)));
         return newNode;
     }
-    // TODO: correct error
+
     private double parseNumber(List<Node<String>> leaves) {
         Digit secondSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(0)).get();
         Digit thirdSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(1)).get();

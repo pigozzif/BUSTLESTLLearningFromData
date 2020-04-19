@@ -37,7 +37,7 @@ public enum Operator implements MonitorExpression {
                 TreeNode phi = STLFormulaMapper.parseSubTree(siblings.get(0), newNode);
                 newNode.setFirstChild(phi);
                 newNode.setNecessaryLength(phi.getNecessaryLength());
-                newNode.setSymbol(new char[]{'\\', 'u', '0', '0', 'A', 'C'});
+                newNode.setSymbol("\u00AC");
                 newNode.setOperator(x -> TemporalMonitor.notMonitor(phi.getOperator().apply(x), new DoubleDomain()));
                 return newNode;
             case OR:
@@ -46,7 +46,7 @@ public enum Operator implements MonitorExpression {
                 newNode.setFirstChild(leftPhi);
                 newNode.setSecondChild(rightPhi);
                 newNode.setNecessaryLength(Math.max(leftPhi.getNecessaryLength(), rightPhi.getNecessaryLength()));
-                newNode.setSymbol(new char[]{'\\', 'u', '2', '2', '2', '8'});
+                newNode.setSymbol("\u2228");
                 newNode.setOperator(x -> TemporalMonitor.orMonitor(leftPhi.getOperator().apply(x), new DoubleDomain(),
                         rightPhi.getOperator().apply(x)));
                 return newNode;
@@ -62,7 +62,7 @@ public enum Operator implements MonitorExpression {
                 newNode.setSecondChild(secondPhi);
                 newNode.setInterval(start, start + width);
                 newNode.setNecessaryLength(Math.max(firstPhi.getNecessaryLength(), secondPhi.getNecessaryLength()) + start + width);
-                newNode.setSymbol(new char[]{'\\', 'u', '0', '0', '5', '5'});
+                newNode.setSymbol("\u0055");
                 newNode.setOperator(x -> TemporalMonitor.untilMonitor(firstPhi.getOperator().apply(x),
                         newNode.createInterval(), secondPhi.getOperator().apply(x),
                         new DoubleDomain()));
@@ -77,7 +77,7 @@ public enum Operator implements MonitorExpression {
                 newNode.setFirstChild(globallyPhi);
                 newNode.setInterval(s, s + l);
                 newNode.setNecessaryLength(globallyPhi.getNecessaryLength() + s + l);
-                newNode.setSymbol(new char[]{'\\', 'u', '2', '7', 'C', 'F'});
+                newNode.setSymbol("\u27CF");
                 newNode.setOperator(x -> TemporalMonitor.globallyMonitor(globallyPhi.getOperator().apply(x),
                         new DoubleDomain(),
                         newNode.createInterval()));
@@ -92,7 +92,7 @@ public enum Operator implements MonitorExpression {
                 newNode.setFirstChild(eventuallyPhi);
                 newNode.setInterval(beginning, beginning + len);
                 newNode.setNecessaryLength(eventuallyPhi.getNecessaryLength() + beginning + len);
-                newNode.setSymbol(new char[]{'\\', 'u', '2', '0', 'D', 'F'});
+                newNode.setSymbol("\u20DF");
                 newNode.setOperator(x -> TemporalMonitor.eventuallyMonitor(eventuallyPhi.getOperator().apply(x),
                         new DoubleDomain(),
                         newNode.createInterval()));

@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 
 public class TreeNode {
-
+    // TODO: in reality, the doubles for the intervals could become integers
     private Double start;
     private Double end;
     private double tempStart;
@@ -19,7 +19,7 @@ public class TreeNode {
     private TreeNode parent;
     private TreeNode firstChild;
     private TreeNode secondChild;
-    private char[] symbol;
+    private String symbol;
 
     public TreeNode(TreeNode parent) {
         this.parent = parent;
@@ -30,7 +30,7 @@ public class TreeNode {
         this.tempStart = 0.0;
         this.tempEnd = 0.0;
         this.necessaryLength = 0.0;
-        this.symbol = new char[]{'n', 'o', 'd', 'e'};
+        this.symbol = null;
     }
 
     public Function<Signal<TrajectoryRecord>, TemporalMonitor<TrajectoryRecord, Double>> getOperator() {
@@ -70,7 +70,7 @@ public class TreeNode {
         }
         double tempStart = node.getStart();
         double end = node.getEnd();
-        double tempNecessaryLength = Math.max(TreeNode.clip(node.getFirstChild(), signal), TreeNode.clip(node.getSecondChild(), signal)); // TODO: does not work with until
+        double tempNecessaryLength = Math.max(TreeNode.clip(node.getFirstChild(), signal), TreeNode.clip(node.getSecondChild(), signal));
         double tempEnd = Math.min(end, signal.size() - 1 - tempNecessaryLength);
         if (tempEnd <= tempStart) {
             tempStart = Math.max(0.0, tempStart - end + tempEnd);
@@ -112,11 +112,14 @@ public class TreeNode {
         return this.necessaryLength;
     }
 
-    public void setSymbol(char[] a) {
-        this.symbol = a;
+    public void setSymbol(String s) {
+        this.symbol = s;//String.valueOf(a);
+        if (this.start != null) {
+            this.symbol += ", I=[" + this.start + ", " + this.end + "]";
+        }
     }
 
-    public char[] getSymbol() {
+    public String getSymbol() {
         return this.symbol;
     }
 
@@ -129,7 +132,7 @@ public class TreeNode {
             return "\n";
         }
         StringBuilder sb = new StringBuilder();
-        sb.append(String.valueOf(node.getSymbol()));
+        sb.append(node.getSymbol());
         String pointerRight = "└──";
         boolean hasRightChild = node.getFirstChild() != null;
         String pointerLeft = (hasRightChild) ? "├──" : "└──";
@@ -144,7 +147,7 @@ public class TreeNode {
             sb.append("\n");
             sb.append(padding);
             sb.append(pointer);
-            sb.append(String.valueOf(node.getSymbol()));
+            sb.append(node.getSymbol());
             StringBuilder paddingBuilder = new StringBuilder(padding);
             if (hasRightSibling) {
                 paddingBuilder.append("│  ");
