@@ -57,7 +57,7 @@ public enum Operator implements MonitorExpression {
                 Double width = Math.max(1.0, length.getValue());
                 TreeNode firstPhi = STLFormulaMapper.parseSubTree(siblings.get(0), newNode);
                 TreeNode secondPhi = STLFormulaMapper.parseSubTree(siblings.get(1), newNode);
-                System.out.println("UNTIL INTERVAL: " + start + " " + (start + width));
+                //System.out.println("UNTIL INTERVAL: " + start + " " + (start + width));
                 newNode.setFirstChild(firstPhi);
                 newNode.setSecondChild(secondPhi);
                 newNode.setInterval(start, start + width);
@@ -73,7 +73,7 @@ public enum Operator implements MonitorExpression {
                 Double s = startInterval.getValue();
                 Double l = Math.max(1.0, lengthInterval.getValue());
                 TreeNode globallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0), newNode);
-                System.out.println("GLOBALLY INTERVAL: " + s + " " + (s + l));
+                //System.out.println("GLOBALLY INTERVAL: " + s + " " + (s + l));
                 newNode.setFirstChild(globallyPhi);
                 newNode.setInterval(s, s + l);
                 newNode.setNecessaryLength(globallyPhi.getNecessaryLength() + s + l);
@@ -88,7 +88,7 @@ public enum Operator implements MonitorExpression {
                 Double beginning = startInter.getValue();
                 Double len = Math.max(1.0, lengthInter.getValue());
                 TreeNode eventuallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0), newNode);
-                System.out.println("EVENTUALLY INTERVAL: " + beginning + " " + (beginning + len));
+                //System.out.println("EVENTUALLY INTERVAL: " + beginning + " " + (beginning + len));
                 newNode.setFirstChild(eventuallyPhi);
                 newNode.setInterval(beginning, beginning + len);
                 newNode.setNecessaryLength(eventuallyPhi.getNecessaryLength() + beginning + len);

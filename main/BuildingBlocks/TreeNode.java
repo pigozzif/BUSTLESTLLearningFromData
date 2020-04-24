@@ -61,7 +61,7 @@ public class TreeNode {
         return this.parent;
     }
 
-    public static double clip(TreeNode node, Signal<TrajectoryRecord> signal) throws ExceptionInInitializerError {
+    public static double clip(TreeNode node, Signal<TrajectoryRecord> signal) throws Exception {
         if (node == null) {
             return 0.0;
         }
@@ -72,13 +72,19 @@ public class TreeNode {
         double end = node.getEnd();
         double tempNecessaryLength = Math.max(TreeNode.clip(node.getFirstChild(), signal), TreeNode.clip(node.getSecondChild(), signal));
         double tempEnd = Math.min(end, signal.size() - 1 - tempNecessaryLength);
+        //boolean p = false;
         if (tempEnd <= tempStart) {
+            //p = true;
             tempStart = Math.max(0.0, tempStart - end + tempEnd);
         }
-        if (tempEnd <= 0 && tempStart <= 0) {
-            throw new ExceptionInInitializerError();
-        }
         node.setTempInterval(tempStart, tempEnd);
+        if (tempEnd <= 0 && tempStart <= 0) {
+            throw new Exception();
+        }
+        //else if (p) {
+        //    node.print(System.out);
+        //    System.out.println(signal);
+        //}
         return tempEnd + tempNecessaryLength;
     }
 
@@ -113,13 +119,17 @@ public class TreeNode {
     }
 
     public void setSymbol(String s) {
-        this.symbol = s;//String.valueOf(a);
+        this.symbol = s;
         if (this.start != null) {
             this.symbol += ", I=[" + this.start + ", " + this.end + "]";
         }
     }
 
-    public String getSymbol() {
+    @Override
+    public String toString() {
+        if (this.start != null) {
+            return this.symbol + " (clipped: [" + this.tempStart + ", " + this.tempEnd + "])";
+        }
         return this.symbol;
     }
 
@@ -132,7 +142,7 @@ public class TreeNode {
             return "\n";
         }
         StringBuilder sb = new StringBuilder();
-        sb.append(node.getSymbol());
+        sb.append(node.toString());
         String pointerRight = "└──";
         boolean hasRightChild = node.getFirstChild() != null;
         String pointerLeft = (hasRightChild) ? "├──" : "└──";
@@ -147,7 +157,7 @@ public class TreeNode {
             sb.append("\n");
             sb.append(padding);
             sb.append(pointer);
-            sb.append(node.getSymbol());
+            sb.append(node.toString());
             StringBuilder paddingBuilder = new StringBuilder(padding);
             if (hasRightSibling) {
                 paddingBuilder.append("│  ");
