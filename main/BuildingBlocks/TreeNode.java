@@ -61,7 +61,7 @@ public class TreeNode {
         return this.parent;
     }
 
-    public static double clip(TreeNode node, Signal<TrajectoryRecord> signal) throws Exception {
+    public static double clip(TreeNode node, Signal<TrajectoryRecord> signal) throws ExceptionInInitializerError {
         if (node == null) {
             return 0.0;
         }
@@ -79,7 +79,7 @@ public class TreeNode {
         }
         node.setTempInterval(tempStart, tempEnd);
         if (tempEnd <= 0 && tempStart <= 0) {
-            throw new Exception();
+            throw new ExceptionInInitializerError();
         }
         //else if (p) {
         //    node.print(System.out);
