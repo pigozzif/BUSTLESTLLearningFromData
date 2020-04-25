@@ -38,16 +38,16 @@ public class FitnessFunction implements NonDeterministicFunction<TreeNode, Doubl
         for (Signal<TrajectoryRecord> s : this.signals) {
             //System.out.println(s.start() + " " + s.end());
             try {
-                try {
-                    TreeNode.clip(monitor, s);  // TODO: might be that illegal trajectories have the adjusted necessary length >= signal size
-                    count += monitor.getOperator().apply(s).monitor(s).valueAt(s.start());
-                }
-                catch (ExceptionInInitializerError e) {
-                    localCount2 += 1;
-                    monitor.print(System.out);
-                    System.out.println(s);
-                    throw e;
-                }
+                //try {
+                    //TreeNode.clip(monitor, s);  // TODO: might be that illegal trajectories have the adjusted necessary length >= signal size
+                    count += monitor.getOperator().apply(s).monitor(s).valueAt(s.end());
+                //}
+                //catch (ExceptionInInitializerError e) {
+                //    localCount2 += 1;
+                //    monitor.print(System.out);
+                //    System.out.println(s);
+                //    throw e;
+                //}
             }
             catch (Exception e) {
                 //System.out.println("FAILING TRAJECTORY: " + s);

@@ -97,7 +97,7 @@ public class TreeNode {
     }
 
     public Interval createInterval() {
-        return new Interval(this.tempStart, this.tempEnd);
+        return new Interval(this.start, this.end);
     }
 
     public void setInterval(double s, double e) {

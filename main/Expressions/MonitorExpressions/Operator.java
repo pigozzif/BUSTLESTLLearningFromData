@@ -63,7 +63,7 @@ public enum Operator implements MonitorExpression {
                 newNode.setInterval(start, start + width);
                 newNode.setNecessaryLength(Math.max(firstPhi.getNecessaryLength(), secondPhi.getNecessaryLength()) + start + width);
                 newNode.setSymbol("\u0055");
-                newNode.setOperator(x -> TemporalMonitor.untilMonitor(firstPhi.getOperator().apply(x),
+                newNode.setOperator(x -> TemporalMonitor.sinceMonitor(firstPhi.getOperator().apply(x),
                         newNode.createInterval(), secondPhi.getOperator().apply(x),
                         new DoubleDomain()));
                 return newNode;
@@ -78,7 +78,7 @@ public enum Operator implements MonitorExpression {
                 newNode.setInterval(s, s + l);
                 newNode.setNecessaryLength(globallyPhi.getNecessaryLength() + s + l);
                 newNode.setSymbol("\u27CF");
-                newNode.setOperator(x -> TemporalMonitor.globallyMonitor(globallyPhi.getOperator().apply(x),
+                newNode.setOperator(x -> TemporalMonitor.historicallyMonitor(globallyPhi.getOperator().apply(x),
                         new DoubleDomain(),
                         newNode.createInterval()));
                 return newNode;
@@ -93,7 +93,7 @@ public enum Operator implements MonitorExpression {
                 newNode.setInterval(beginning, beginning + len);
                 newNode.setNecessaryLength(eventuallyPhi.getNecessaryLength() + beginning + len);
                 newNode.setSymbol("\u20DF");
-                newNode.setOperator(x -> TemporalMonitor.eventuallyMonitor(eventuallyPhi.getOperator().apply(x),
+                newNode.setOperator(x -> TemporalMonitor.onceMonitor(eventuallyPhi.getOperator().apply(x),
                         new DoubleDomain(),
                         newNode.createInterval()));
                 return newNode;

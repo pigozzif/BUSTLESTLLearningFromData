@@ -17,23 +17,23 @@ public class Test {
 
     private static void fromJava() {
         // Get signal
-        Signal<Pair<Double,Double>> signal = TestUtils.createSignal(334.0, 748.0, 1.0, x -> new Pair<>( x, 3 * x));
+        Signal<Pair<Double,Double>> signal = TestUtils.createSignal(8.0, 891.0, 1.0, x -> new Pair<>( x, 3 * x));
 
         // Build the property (Boolean Semantics)
         TemporalMonitor<Pair<Double,Double>,Boolean> mB = TemporalMonitor.globallyMonitor(
-                TemporalMonitor.atomicMonitor(x -> x.getFirst() > x.getSecond()), new BooleanDomain(), new Interval(0, 50));
+                TemporalMonitor.atomicMonitor(x -> x.getFirst() > x.getSecond()), new BooleanDomain(), new Interval(10, 19));
 
         // Monitoring
         Signal<Boolean> soutB = mB.monitor(signal);
-        //double[][] monitorValuesB = soutB.arrayOf((Boolean x) -> x ? 1.0 : -1.0);
+        double[][] monitorValuesB = soutB.arrayOf((Boolean x) -> x ? 1.0 : -1.0);
         // Print results
         System.out.print("fromJava Boolean\n");
         System.out.println(signal);
-        //printResults(monitorValuesB);
+        printResults(monitorValuesB);
 
         // Build the property (Quantitative Semantics)
-        TemporalMonitor<Pair<Double,Double>,Double> mQ = TemporalMonitor.eventuallyMonitor(
-                TemporalMonitor.atomicMonitor(x -> x.getFirst() - x.getSecond()), new DoubleDomain(), new Interval(112, 113));
+        TemporalMonitor<Pair<Double,Double>,Double> mQ = TemporalMonitor.onceMonitor(
+                TemporalMonitor.atomicMonitor(x -> + x.getFirst() + x.getSecond()), new DoubleDomain(), new Interval(10, 19));
         //TemporalMonitor<Pair<Double,Double>,Double> mQ = TemporalMonitor.eventuallyMonitor(TemporalMonitor.eventuallyMonitor(
         //                TemporalMonitor.atomicMonitor(x -> x.getFirst() - x.getSecond()), new DoubleDomain(), new Interval(112, 149)),
         //                new DoubleDomain(), new Interval(75, 265));
@@ -42,7 +42,7 @@ public class Test {
         double[][] monitorValuesQ = soutQ.arrayOf((Double x) -> (double) x);
         // Print results
         System.out.print("fromJava Quantitative \n");
-        printResults(monitorValuesQ);
+        //printResults(monitorValuesQ);
     }
 
     private static void printResults(double[][] monitorValues) {
