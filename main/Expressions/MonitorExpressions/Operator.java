@@ -61,7 +61,8 @@ public enum Operator implements MonitorExpression {
                 newNode.setFirstChild(firstPhi);
                 newNode.setSecondChild(secondPhi);
                 newNode.setInterval(start, start + width);
-                newNode.setNecessaryLength(Math.max(firstPhi.getNecessaryLength(), secondPhi.getNecessaryLength()) + start + width);
+                newNode.setNecessaryLength(Math.max(firstPhi.getNecessaryLength(), secondPhi.getNecessaryLength()) +
+                        start + width + start);
                 newNode.setSymbol("\u0055");
                 newNode.setOperator(x -> TemporalMonitor.sinceMonitor(firstPhi.getOperator().apply(x),
                         newNode.createInterval(), secondPhi.getOperator().apply(x),
