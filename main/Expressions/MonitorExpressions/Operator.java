@@ -77,7 +77,7 @@ public enum Operator implements MonitorExpression {
                 //System.out.println("GLOBALLY INTERVAL: " + s + " " + (s + l));
                 newNode.setFirstChild(globallyPhi);
                 newNode.setInterval(s, s + l);
-                newNode.setNecessaryLength(globallyPhi.getNecessaryLength() + s + l);
+                newNode.setNecessaryLength(globallyPhi.getNecessaryLength() + s + l + s);
                 newNode.setSymbol("\u27CF");
                 newNode.setOperator(x -> TemporalMonitor.historicallyMonitor(globallyPhi.getOperator().apply(x),
                         new DoubleDomain(),
@@ -92,7 +92,7 @@ public enum Operator implements MonitorExpression {
                 //System.out.println("EVENTUALLY INTERVAL: " + beginning + " " + (beginning + len));
                 newNode.setFirstChild(eventuallyPhi);
                 newNode.setInterval(beginning, beginning + len);
-                newNode.setNecessaryLength(eventuallyPhi.getNecessaryLength() + beginning + len);
+                newNode.setNecessaryLength(eventuallyPhi.getNecessaryLength() + beginning + len + beginning);
                 newNode.setSymbol("\u20DF");
                 newNode.setOperator(x -> TemporalMonitor.onceMonitor(eventuallyPhi.getOperator().apply(x),
                         new DoubleDomain(),

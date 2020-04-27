@@ -1,11 +1,12 @@
 <expr> ::= <prop> | <logic> | <future1>
 <prop> ::= <bool> | <var> <comp> <num>
 <logic> ::= .not <expr> | .or <expr> <expr>
-<special> ::= <prop> | <logic2>
 <future1> ::= .globally <expr2> <perc> <perc> | .eventually <expr2> <perc> <perc> | .until <expr2> <expr2> <perc> <perc>
 <expr2> ::= <prop> | <logic2> | <future2>
-<logic2> ::= .not <special> | .or <special> <special>
-<future2> ::= .globally <prop> <perc> <perc> | .globally <logic2> <perc> <perc> | .eventually <prop> <perc> <perc> | .eventually <logic2> <perc> <perc> | .until <prop> <prop> <perc> <perc> | .until <prop> <logic2> <perc> <perc> | .until <logic2> <prop> <perc> <perc> | .until <logic2> <logic2> <perc> <perc>
+<logic2> ::= .not <expr2> | .or <expr2> <expr2>
+<future2> ::= .globally <special> <perc> <perc> | .eventually <special> <perc> <perc> | .until <special> <special> <perc> <perc>
+<special> ::= <prop> | <logic3>
+<logic3> ::= .not <special> | .or <special> <special>
 <num> ::= <digit> <digit> <sign> <digit>
 <comp> ::= < | > | <= | >= | ==
 <digit> ::= 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0

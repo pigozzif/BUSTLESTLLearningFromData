@@ -74,7 +74,7 @@ public class SignalBuilder {
         //double start = times.get(0);
         int length = times.size();
         //double end = times.get(times.size() - 1);
-        long start = 1113433135300L;
+        long start = times.get(0);//1113433135300L;
         //long end = 1113438734000L;
         for (int i=0; i < length; ++i) {
             //System.out.println((double)(times.get(i) - start));
