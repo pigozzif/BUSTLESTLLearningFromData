@@ -33,25 +33,20 @@ public class FitnessFunction implements NonDeterministicFunction<TreeNode, Doubl
         double count = 0.0;
         int localCount = 0;
         int localCount2 = 0;
+        //monitor.print(System.out);
         for (Signal<TrajectoryRecord> s : this.signals) {
             //System.out.println(s.start() + " " + s.end());
             try {
                 //try {
                     //TreeNode.clip(monitor, s);  // TODO: might be that illegal trajectories have the adjusted necessary length >= signal size
-                    if (monitor.getNecessaryLength() >= s.size()) {
+                    if (s.size() <= monitor.getNecessaryLength()) {
                         localCount2 += 1;
                         count += Double.NEGATIVE_INFINITY;
                     }
                     else {
-                        Signal<Double> output = monitor.getOperator().apply(s).monitor(s);
-                        if (output.size() == 0) {
-                            localCount2 += 1;
-                            count += Double.NEGATIVE_INFINITY;
-                        }
-                        else {
-                            count += output.valueAt(output.end()); // TODO: clarify when to evaluate
-                        }
+                        count += monitor.getOperator().apply(s).monitor(s).valueAt(s.start());
                     }
+                //}
                 //catch (ExceptionInInitializerError e) {
                 //    localCount2 += 1;
                 //    monitor.print(System.out);
@@ -69,7 +64,7 @@ public class FitnessFunction implements NonDeterministicFunction<TreeNode, Doubl
                 throw e;
             }
         }
-        System.out.println("FAILED " + localCount + " over a total of: " + this.signals.size());
+        System.out.println("FAILED " + localCount + " over a total of: " + this.signals.size() + "\n");
         System.out.println("DISCARDED " + localCount2 + " over a total of: " + this.signals.size() + "\n");
         ++num;
         return count / this.signals.size();
