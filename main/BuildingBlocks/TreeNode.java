@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 
 public class TreeNode {
-    // TODO: in reality, the doubles for the intervals could become integers
+    // TODO: in reality, the doubles for the intervals could become integers or shorts
     private Double start;
     private Double end;
     //private double tempStart;
