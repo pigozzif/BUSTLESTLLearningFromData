@@ -8,37 +8,28 @@ import it.units.malelab.jgea.core.function.Function;
 import it.units.malelab.jgea.core.listener.Listener;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
-public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<TrajectoryRecord, Double>> {
+public class STLFormulaMapper implements Function<Node<String>, TreeNode> {
 
     private static final List<ValueExpression<?>> valueExpressions = ExpressionsFactory.createValueExpressions();
     private static final List<MonitorExpression> monitorExpressions = ExpressionsFactory.createMonitorExpressions();
 
     @Override
-    public TemporalMonitor<TrajectoryRecord, Double> apply(Node<String> root, Listener listener) {
+    public TreeNode apply(Node<String> root, Listener listener) {
         root.propagateParentship();
-        return parseSubTree(root);
+        return parseSubTree(root, null);
     }
 
-    public static TemporalMonitor<TrajectoryRecord, Double> parseSubTree(Node<String> currentNode) {
+    public static TreeNode parseSubTree(Node<String> currentNode, TreeNode parent) {
         List<Node<String>> children = currentNode.getChildren();
         Node<String> testChild = children.get(0);
-        Optional<MonitorExpression> expression = fromStringToMonitorExpression(testChild);
+        Optional<MonitorExpression> expression = monitorExpressions.stream().filter(x -> x.toString().equals(testChild.getContent())).findAny();
         if (expression.isPresent()) {
-            return expression.get().createMonitor(getSiblings(testChild));
+            return expression.get().createMonitor(getSiblings(testChild), parent);
         }
-        return parseSubTree(testChild);
-    }
-
-    public static Optional<MonitorExpression> fromStringToMonitorExpression(Node<String> string) {
-        if (Expression.singletonExpressions.contains(string.getContent())) {
-            return fromStringToMonitorExpression(string.getChildren().get(0));
-        }
-        return monitorExpressions.stream().filter(x -> x.toString().equals(string.getContent())).findAny();
+        return parseSubTree(testChild, parent);
     }
 
     public static Optional<ValueExpression<?>> fromStringToValueExpression(Node<String> string) {
@@ -49,8 +40,14 @@ public class STLFormulaMapper implements Function<Node<String>, TemporalMonitor<
     }
 
     private static List<Node<String>> getSiblings(Node<String> node) {
+        if (node.getParent() == null) {
+            return Collections.emptyList();
+        }
         List<Node<String>> res = new ArrayList<>(node.getParent().getChildren());
         res.remove(node);
+        if (res.isEmpty()) {
+            return getSiblings(node.getParent());
+        }
         return res;
     }
 

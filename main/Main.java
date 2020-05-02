@@ -1,6 +1,7 @@
 import BuildingBlocks.FitnessFunction;
 import BuildingBlocks.ProblemClass;
 import BuildingBlocks.TrajectoryRecord;
+import BuildingBlocks.TreeNode;
 import com.google.common.collect.Lists;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import it.units.malelab.jgea.Worker;
@@ -53,11 +54,11 @@ public class Main extends Worker {
     }
 
     private void evolution() throws IOException, ExecutionException, InterruptedException {
-        final GrammarBasedProblem<String, TemporalMonitor<TrajectoryRecord, Double>, Double> p = new ProblemClass();
+        final GrammarBasedProblem<String, TreeNode, Double> p = new ProblemClass();
         Map<GeneticOperator<Node<String>>, Double> operators = new LinkedHashMap<>();
         operators.put(new StandardTreeMutation<>(12, p.getGrammar()), 0.2d);
         operators.put(new StandardTreeCrossover<>(12), 0.8d);
-        StandardEvolver<Node<String>, TemporalMonitor<TrajectoryRecord, Double>, Double> evolver = new StandardEvolver(
+        StandardEvolver<Node<String>, TreeNode, Double> evolver = new StandardEvolver(
                     100,
                     new RampedHalfAndHalf<>(0, 12, p.getGrammar()),
                     new ComparableRanker<>(new FitnessComparator<>(Function.identity())),

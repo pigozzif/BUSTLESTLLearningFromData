@@ -11,16 +11,14 @@ import java.io.File;
 import java.io.IOException;
 
 
-public class ProblemClass implements GrammarBasedProblem<String, TemporalMonitor<TrajectoryRecord, Double>, Double> {
+public class ProblemClass implements GrammarBasedProblem<String, TreeNode, Double> {
 
     private final Grammar<String> grammar;
-    private final Function<Node<String>, TemporalMonitor<TrajectoryRecord, Double>> solutionMapper;
+    private final Function<Node<String>, TreeNode> solutionMapper;
     private final FitnessFunction fitnessFunction;
 
     public ProblemClass() throws IOException {
         this.grammar = Grammar.fromFile(new File("./grammar.bnf"));
-        //System.out.println(this.grammar.getRules());
-        //System.out.println("###");
         this.solutionMapper = new STLFormulaMapper();
         this.fitnessFunction = new FitnessFunction("./data/Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data7.csv");
     }
@@ -31,12 +29,12 @@ public class ProblemClass implements GrammarBasedProblem<String, TemporalMonitor
     }
 
     @Override
-    public Function<Node<String>, TemporalMonitor<TrajectoryRecord, Double>> getSolutionMapper() {
+    public Function<Node<String>, TreeNode> getSolutionMapper() {
         return this.solutionMapper;
     }
 
     @Override
-    public NonDeterministicFunction<TemporalMonitor<TrajectoryRecord, Double>, Double> getFitnessFunction() {
+    public NonDeterministicFunction<TreeNode, Double> getFitnessFunction() {
         return this.fitnessFunction;
     }
 
