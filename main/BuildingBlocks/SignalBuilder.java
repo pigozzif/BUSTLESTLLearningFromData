@@ -15,7 +15,7 @@ import java.util.List;
 
 public class SignalBuilder {
 
-    private static int windowSize = 100;
+    private final static int windowSize = 200;
 
     public static BufferedReader createReaderFromFile(String fileName) throws IOException {
         Path path = Paths.get(".", fileName);
@@ -23,9 +23,9 @@ public class SignalBuilder {
         return new BufferedReader(new InputStreamReader(in));
     }
     // TODO: maybe fix Long Method
-    public static List<List<Signal<TrajectoryRecord>>> parseSignals(BufferedReader reader, List<Integer> boolIndexes,
+    public static List<Signal<TrajectoryRecord>[]> parseSignals(BufferedReader reader, List<Integer> boolIndexes,
                                                               List<Integer> doubleIndexes) {
-        List<List<Signal<TrajectoryRecord>>> signals = new ArrayList<>();
+        List<Signal<TrajectoryRecord>[]> signals = new ArrayList<>();
         int vehicleIdx = 1;
         boolean isFinished = false;
         String[] line = new String[boolIndexes.size() + doubleIndexes.size() + 1];
@@ -66,27 +66,30 @@ public class SignalBuilder {
     }
 
     private static void createSignalAndUpdate(List<TrajectoryRecord> trajectory, List<Long> times,
-                                              List<List<Signal<TrajectoryRecord>>> signals) {
+                                              List<Signal<TrajectoryRecord>[]> signals) {
         if (times.size() == 0) { // TODO: maybe more complete check
             return;
         }
-        //Signal<TrajectoryRecord> currSignal = new Signal<>();
-        List<Signal<TrajectoryRecord>> innerSignal = new ArrayList<>();
+        Signal<?>[] innerSignal = new Signal<?>[(trajectory.size() * 2) / windowSize];
         int length = times.size();
         long start = times.get(0);
         int j = 0;
         int i;
+        int t = 0;
         while (j < length) {
             Signal<TrajectoryRecord> currSignal = new Signal<>();
             for (i = 0; i < windowSize && j < length; ++i, ++j) {
-                //System.out.println((double)(times.get(i) - start));
-                //currSignal.add((times.get(i) - start) / (double)(end - start), trajectory.get(i));
                 currSignal.add((times.get(j) - start) / 100.0, trajectory.get(j));
             }
             currSignal.endAt((times.get(j - 1) - start) / 100.0);
-            innerSignal.add(currSignal);
+            innerSignal[t] = currSignal;
+            j -= windowSize / 2;
+            if (currSignal.size() != windowSize) {
+                break;
+            }
+            ++t;
         }
-        signals.add(innerSignal);
+        signals.add((Signal<TrajectoryRecord>[]) innerSignal);
         trajectory.clear();
         times.clear();
     }

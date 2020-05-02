@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class FitnessFunction implements NonDeterministicFunction<TreeNode, Double> {
 
-    private final List<List<Signal<TrajectoryRecord>>> signals;
+    private final List<Signal<TrajectoryRecord>[]> signals;
     private final int numFragments;
     private int num = 0;
 
@@ -25,7 +25,7 @@ public class FitnessFunction implements NonDeterministicFunction<TreeNode, Doubl
         List<Integer> doubleIndexes = new ArrayList<>() {{ add(4); add(5); add(6); add(7); add(8); add(9); add(10); add(11);
             add(12); add(13);/* add(12); add(13); add(14); add(15); add(16); add(17); add(18); add(19);*/ }};
         this.signals = SignalBuilder.parseSignals(reader, boolIndexes, doubleIndexes);
-        this.numFragments = this.signals.stream().mapToInt(List::size).sum();
+        this.numFragments = this.signals.stream().mapToInt(x -> x.length).sum();
         reader.close();
     }
 
@@ -36,7 +36,7 @@ public class FitnessFunction implements NonDeterministicFunction<TreeNode, Doubl
         int failedCount = 0;
         int discardedCount = 0;
         //monitor.print(System.out);
-        for (List<Signal<TrajectoryRecord>> l : this.signals) {
+        for (Signal<TrajectoryRecord>[] l : this.signals) {
             double localCount = 0;
             for (Signal<TrajectoryRecord> s : l) {
                 try {
