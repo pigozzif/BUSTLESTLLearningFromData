@@ -1,7 +1,6 @@
 package Expressions.MonitorExpressions;
 
 import BuildingBlocks.STLFormulaMapper;
-import BuildingBlocks.TrajectoryRecord;
 import BuildingBlocks.TreeNode;
 import Expressions.ValueExpressions.CompareSign;
 import Expressions.ValueExpressions.Digit;

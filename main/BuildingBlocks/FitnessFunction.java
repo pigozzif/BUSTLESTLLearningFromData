@@ -2,7 +2,6 @@ package BuildingBlocks;
 
 import it.units.malelab.jgea.core.function.NonDeterministicFunction;
 import it.units.malelab.jgea.core.listener.Listener;
-import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import eu.quanticol.moonlight.signal.Signal;
 
 import java.io.BufferedReader;
@@ -44,7 +43,7 @@ public class FitnessFunction implements NonDeterministicFunction<TreeNode, Doubl
                         discardedCount += 1;
                         localCount += Double.NEGATIVE_INFINITY;
                     } else {
-                        localCount += monitor.getOperator().apply(s).monitor(s).valueAt(s.start());
+                        localCount += monitor.getOperator().apply(s).monitor(s).valueAt(s.end());
                     }
                 } catch (Exception e) {
                     monitor.print(System.out);

@@ -1,7 +1,7 @@
 package Expressions.MonitorExpressions;
 
-import BuildingBlocks.TrajectoryRecord;
 import BuildingBlocks.TreeNode;
+import Expressions.ValueExpressions.BooleanConstant;
 import it.units.malelab.jgea.core.Node;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 
@@ -24,8 +24,9 @@ public class BooleanVariable implements MonitorExpression {
     @Override
     public TreeNode createMonitor(List<Node<String>> siblings, TreeNode parent) {
         TreeNode newNode = new TreeNode(parent);
+        BooleanConstant sibling = new BooleanConstant(siblings.get(0));
         newNode.setSymbol(this.string);
-        newNode.setOperator(x -> TemporalMonitor.atomicMonitor(y -> {if (y.getBool(this.string)) {
+        newNode.setOperator(x -> TemporalMonitor.atomicMonitor(y -> {if (y.getBool(this.string) == sibling.getValue()) {
                                                 return Double.POSITIVE_INFINITY;} else { return Double.NEGATIVE_INFINITY;}
                                                 }));
         return newNode;

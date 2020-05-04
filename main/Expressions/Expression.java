@@ -6,10 +6,11 @@ import java.util.Set;
 
 public interface Expression {
 
-    String EXPRESSION_STRING = "<expr>";
+    String EXPRESSION_STRING = "<expr_first_level>";
     Set<String> singletonExpressions = new HashSet<>() {{ add(EXPRESSION_STRING); add("<comp>"); add("<digit>");
-                add("<sign>"); add("<bool>"); add("<var>"); add("<prop>"); add("<logic>");add("<expr2>"); add("<future1>");
-                add("<future2>"); add("<special>"); add("<logic2>"); add("<logic3>"); }};
+                add("<sign>"); add("<bool_var>"); add("<num_var>"); add("<prop>"); add("<logic_first_level>");add("<expr_second_level>");
+                add("<future_first_level>"); add("<future_second_level>"); add("<expr_third_level_onwards>"); add("<logic_second_level>");
+                add("<logic_third_level_onwards>"); }};
 
     String toString();
 

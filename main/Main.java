@@ -1,9 +1,7 @@
-import BuildingBlocks.FitnessFunction;
+
 import BuildingBlocks.ProblemClass;
-import BuildingBlocks.TrajectoryRecord;
 import BuildingBlocks.TreeNode;
 import com.google.common.collect.Lists;
-import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import it.units.malelab.jgea.Worker;
 import it.units.malelab.jgea.core.Node;
 import it.units.malelab.jgea.core.evolver.StandardEvolver;
