@@ -1,6 +1,5 @@
 package Expressions.MonitorExpressions;
 
-import BuildingBlocks.TrajectoryRecord;
 import BuildingBlocks.TreeNode;
 import it.units.malelab.jgea.core.Node;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
