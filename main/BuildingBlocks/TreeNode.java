@@ -76,13 +76,13 @@ public class TreeNode {
         }
     }
 
-    @Override
-    public String toString() {
+    public String getSymbol() {
         return this.symbol;
     }
 
-    public void print(PrintStream ps) {
-        ps.print(traversePreOrder(this));
+    @Override
+    public String toString() {
+        return traversePreOrder(this);
     }
 
     private static String traversePreOrder(TreeNode node) {
@@ -90,7 +90,7 @@ public class TreeNode {
             return "\n";
         }
         StringBuilder sb = new StringBuilder();
-        sb.append(node.toString());
+        sb.append(node.getSymbol());
         String pointerRight = "└──";
         boolean hasRightChild = node.getFirstChild() != null;
         String pointerLeft = (hasRightChild) ? "├──" : "└──";
@@ -105,7 +105,7 @@ public class TreeNode {
             sb.append("\n");
             sb.append(padding);
             sb.append(pointer);
-            sb.append(node.toString());
+            sb.append(node.getSymbol());
             StringBuilder paddingBuilder = new StringBuilder(padding);
             if (hasRightSibling) {
                 paddingBuilder.append("│  ");

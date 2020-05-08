@@ -15,29 +15,39 @@ import it.units.malelab.jgea.core.ranker.ComparableRanker;
 import it.units.malelab.jgea.core.ranker.FitnessComparator;
 import it.units.malelab.jgea.core.ranker.selector.Tournament;
 import it.units.malelab.jgea.core.ranker.selector.Worst;
+import it.units.malelab.jgea.core.util.Args;
 import it.units.malelab.jgea.grammarbased.GrammarBasedProblem;
 import it.units.malelab.jgea.grammarbased.cfggp.RampedHalfAndHalf;
 import it.units.malelab.jgea.grammarbased.cfggp.StandardTreeCrossover;
 import it.units.malelab.jgea.grammarbased.cfggp.StandardTreeMutation;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Random;
+import java.io.PrintStream;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
 
 
 public class Main extends Worker {
 
+    private static int seed = 0;
+
     public static void main(String[] args) throws FileNotFoundException {
+        String errorMessage = "notFound";
+        String random = Args.a(args, "random", errorMessage);
+        if (random.equals(errorMessage)) {
+            throw new IllegalArgumentException();
+        }
+        seed = Integer.parseInt(random);
+        PrintStream out = new PrintStream(new FileOutputStream(args[2] + ".csv", true), true);
+        System.setOut(out);
         new Main(args);
     }
 
     public Main(String[] args) throws FileNotFoundException {
         super(args);
-        run();
     }
 
     public void run() {
@@ -57,22 +67,22 @@ public class Main extends Worker {
         operators.put(new StandardTreeMutation<>(12, p.getGrammar()), 0.2d);
         operators.put(new StandardTreeCrossover<>(12), 0.8d);
         StandardEvolver<Node<String>, TreeNode, Double> evolver = new StandardEvolver(
-                    100,
+                    20,
                     new RampedHalfAndHalf<>(0, 12, p.getGrammar()),
                     new ComparableRanker<>(new FitnessComparator<>(Function.identity())),
                     p.getSolutionMapper(),
                     operators,
-                    new Tournament<>(3),
+                    new Tournament<>(5),
                     new Worst<>(),
-                    500,
+                    10,
                     true,
-                    Lists.newArrayList(new FitnessEvaluations(1000), new PerfectFitness<>(p.getFitnessFunction())),
+                    Lists.newArrayList(new FitnessEvaluations(20), new PerfectFitness<>(p.getFitnessFunction())),
                     1000,
                     false
         );
-        Random r = new Random(1);
-        evolver.solve(p, r, executorService, Listener.onExecutor(listener(new Basic(), new Population(),
-                    new BestInfo<>("%6.4f"), new Diversity(), new BestPrinter<>("%s")), executorService));
+        Random r = new Random(seed);
+        Collection<TreeNode> solutions = evolver.solve(p, r, this.executorService, Listener.onExecutor(listener(new Basic(), new Population(),
+                    new BestInfo<>("%6.4f"), new Diversity(), new BestPrinter<>("%s")), this.executorService));
     }
 
 }

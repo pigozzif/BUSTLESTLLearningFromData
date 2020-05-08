@@ -6,16 +6,14 @@ import eu.quanticol.moonlight.signal.Signal;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 
 public class FitnessFunction implements NonDeterministicFunction<TreeNode, Double> {
 
     private final List<Signal<TrajectoryRecord>[]> signals;
     private final int numFragments;
-    private int num = 0;
+    //private int num = 0;
 
     public FitnessFunction(String fileName) throws IOException {
         BufferedReader reader = SignalBuilder.createReaderFromFile(fileName);
@@ -30,32 +28,31 @@ public class FitnessFunction implements NonDeterministicFunction<TreeNode, Doubl
 
     @Override
     public Double apply(TreeNode monitor, Random random, Listener listener) {
-        System.out.println("INDIVIDUAL: " + num);
+        //System.out.println("INDIVIDUAL: " + num);
         double count = 0.0;
-        int failedCount = 0;
-        int discardedCount = 0;
-        //monitor.print(System.out);
+        //int failedCount = 0;
+        //int discardedCount = 0;
+        //System.out.println(monitor);
         for (Signal<TrajectoryRecord>[] l : this.signals) {
             double localCount = 0;
             for (Signal<TrajectoryRecord> s : l) {
-                try {
+        //        try {
                     if (s.size() <= monitor.getNecessaryLength()) {
-                        discardedCount += 1;
+         //               discardedCount += 1;
                         localCount += Double.NEGATIVE_INFINITY;
                     } else {
                         localCount += monitor.getOperator().apply(s).monitor(s).valueAt(s.end());
                     }
-                } catch (Exception e) {
-                    monitor.print(System.out);
-                    System.out.println(s);
-                    throw e;
-                }
+        //        } catch (Exception e) {
+        //            System.out.println(monitor);
+        //            System.out.println(s);
+        //            throw e;
+        //        }
             }
             count += localCount;
         }
-        System.out.println("FAILED " + failedCount + " over a total of: " + this.numFragments);
-        System.out.println("DISCARDED " + discardedCount + " over a total of: " + this.numFragments + "\n");
-        ++num;
+        //System.out.println("FAILED " + failedCount + " over a total of: " + this.numFragments);
+        //System.out.println("DISCARDED " + discardedCount + " over a total of: " + this.numFragments + "\n");
         return count / this.signals.size();
         //return this.signals.stream().mapToDouble(x -> monitor.monitor(x).valueAt(0.0)).average().orElse(Double.MIN_VALUE);
     }
