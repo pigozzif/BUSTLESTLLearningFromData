@@ -41,7 +41,8 @@ public class Main extends Worker {
             throw new IllegalArgumentException();
         }
         seed = Integer.parseInt(random);
-        PrintStream out = new PrintStream(new FileOutputStream(args[2] + ".csv", true), true);
+        PrintStream out = new PrintStream(new FileOutputStream(Args.a(args, "output_name", "output")
+                + ".csv", true), true);
         System.setOut(out);
         new Main(args);
     }
