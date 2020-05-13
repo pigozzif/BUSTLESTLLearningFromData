@@ -4,7 +4,6 @@ import eu.quanticol.moonlight.formula.Interval;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import eu.quanticol.moonlight.signal.Signal;
 
-import java.io.PrintStream;
 import java.util.function.Function;
 
 
@@ -72,7 +71,7 @@ public class TreeNode {
     public void setSymbol(String s) {
         this.symbol = s;
         if (this.start != null) {
-            this.symbol += ", I=[" + this.start + ", " + this.end + "]";
+            this.symbol += " I=[" + this.start + ", " + this.end + "]";
         }
     }
 

@@ -24,8 +24,10 @@ public class TrajectoryRecord {
     private final double[] doubleVariables;
 
     public TrajectoryRecord(boolean[] boolValues, double[] doubleValues) {
-        boolVariables = boolValues;
-        doubleVariables = doubleValues;
+        this.boolVariables = new boolean[boolValues.length];
+        this.doubleVariables = new double[doubleValues.length];
+        System.arraycopy(boolValues, 0, this.boolVariables, 0, boolValues.length);
+        System.arraycopy(doubleValues, 0, this.doubleVariables, 0, doubleValues.length);
     }
 
     public Boolean getBool(String var) {

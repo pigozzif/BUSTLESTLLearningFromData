@@ -43,7 +43,7 @@ public class SignalBuilder {
                     break;
                 }
                 for (int idx=0; idx < boolIndexes.size(); ++idx) {
-                    boolVars[idx] = Boolean.parseBoolean(line[boolIndexes.get(idx)]);
+                    boolVars[idx] = line[boolIndexes.get(idx)].equals("1");
                 }
                 for (int idx=0; idx < doubleIndexes.size(); ++idx) {
                     doubleVars[idx] = Double.parseDouble(line[doubleIndexes.get(idx)]);

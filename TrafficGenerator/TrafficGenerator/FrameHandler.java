@@ -26,7 +26,9 @@ public class FrameHandler implements EventHandler<ActionEvent> {
         try {
             frameBatch = parser.fetchNextFrame();
         }
-        catch (IOException ex) { gui.stop(); }
+        catch (IOException ex) {
+            gui.stop();
+        }
         frameBatch.forEach(field -> { String id = field.getId();
                                    totalCars.add(id);
                                    carPool.checkAndSetCar(id, field);

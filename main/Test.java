@@ -16,7 +16,7 @@ public class Test {
 
     private static void fromJava() {
         // Get signal
-        Signal<Pair<Double,Double>> signal = TestUtils.createSignal(0.0, 199.0, 1.0, x -> new Pair<>( x, 3 * x));
+        Signal<Pair<Double,Double>> signal = TestUtils.createSignal(199.0, 200.0, 1.0, x -> new Pair<>( x, 3 * x));
 
         // Build the property (Boolean Semantics)
         TemporalMonitor<Pair<Double,Double>,Boolean> mB = TemporalMonitor.globallyMonitor(
@@ -26,18 +26,17 @@ public class Test {
         Signal<Boolean> soutB = mB.monitor(signal);
         double[][] monitorValuesB = soutB.arrayOf((Boolean x) -> x ? 1.0 : -1.0);
         // Print results
-        //System.out.print("fromJava Boolean\n");
-        System.out.println(signal);
+        System.out.print("fromJava Boolean\n");
+        //System.out.println(signal);
         //printResults(monitorValuesB);
-
         // Build the property (Quantitative Semantics)
         TemporalMonitor<Pair<Double,Double>,Double> mQ = TemporalMonitor.historicallyMonitor(
-                TemporalMonitor.atomicMonitor(x -> + x.getFirst() + x.getSecond()), new DoubleDomain(), new Interval(9.0, 92.0));
-        //TemporalMonitor<Pair<Double,Double>,Double> mQ = TemporalMonitor.onceMonitor(TemporalMonitor.onceMonitor(
-        //                TemporalMonitor.atomicMonitor(x -> x.getFirst() + x.getSecond()), new DoubleDomain(), new Interval(75, 155)),
-        //                new DoubleDomain(), new Interval(45, 113));
+                TemporalMonitor.atomicMonitor(x -> {if (x.getFirst() % 46 != 0) {return 1.0;} else {return -1.0;}}), new DoubleDomain(), new Interval(60.0, 132.0));
+        //TemporalMonitor<Pair<Double,Double>,Double> mQ = TemporalMonitor.historicallyMonitor(TemporalMonitor.onceMonitor(
+        //                TemporalMonitor.notMonitor(TemporalMonitor.atomicMonitor(x -> x.getFirst() - 2.8E9), new DoubleDomain()), new DoubleDomain(), new Interval(60, 116)),
+        //                new DoubleDomain(), new Interval(, 36));
         //TemporalMonitor<Pair<Double,Double>,Double> mQ = TemporalMonitor.sinceMonitor(
-        //        TemporalMonitor.atomicMonitor(x -> x.getFirst() + x.getSecond()), new Interval(22, 102), TemporalMonitor.atomicMonitor(x -> x.getFirst() + x.getSecond()), new DoubleDomain());
+        //        TemporalMonitor.atomicMonitor(x -> {if (x.getFirst() % 46 != 0) {return 1.0;} else {return -1.0;}}), new Interval(7, 53), TemporalMonitor.atomicMonitor(x -> {if (x.getFirst() % 46 != 0) {return 1.0;} else {return -1.0;}}), new DoubleDomain());
         Signal<Double> soutQ = mQ.monitor(signal);
         System.out.println(soutQ.valueAt(soutQ.end()));
         double[][] monitorValuesQ = soutQ.arrayOf((Double x) -> (double) x);

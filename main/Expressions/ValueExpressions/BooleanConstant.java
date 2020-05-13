@@ -9,6 +9,7 @@ public class BooleanConstant implements ValueExpression<Boolean> {
 
     public BooleanConstant(Node<String> string) {
         this.constant = string.getContent();
+        //System.out.println(this.constant + " " + Boolean.parseBoolean(this.constant));
     }
 
     @Override

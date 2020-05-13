@@ -9,6 +9,7 @@ import it.units.malelab.jgea.core.evolver.stopcondition.FitnessEvaluations;
 import it.units.malelab.jgea.core.evolver.stopcondition.PerfectFitness;
 import it.units.malelab.jgea.core.function.Function;
 import it.units.malelab.jgea.core.listener.Listener;
+import it.units.malelab.jgea.core.listener.PrintStreamListener;
 import it.units.malelab.jgea.core.listener.collector.*;
 import it.units.malelab.jgea.core.operator.GeneticOperator;
 import it.units.malelab.jgea.core.ranker.ComparableRanker;
@@ -32,18 +33,18 @@ import java.util.concurrent.RejectedExecutionException;
 
 public class Main extends Worker {
 
-    private static int seed = 0;
+    private static int seed;
+    private static PrintStream out;
 
     public static void main(String[] args) throws FileNotFoundException {
         String errorMessage = "notFound";
         String random = Args.a(args, "random", errorMessage);
         if (random.equals(errorMessage)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Random Seed not Valid");
         }
         seed = Integer.parseInt(random);
-        PrintStream out = new PrintStream(new FileOutputStream(Args.a(args, "output_name", "output")
+        out = new PrintStream(new FileOutputStream("output/" + Args.a(args, "output_name", "output")
                 + ".csv", true), true);
-        System.setOut(out);
         new Main(args);
     }
 
@@ -51,6 +52,7 @@ public class Main extends Worker {
         super(args);
     }
 
+    @Override
     public void run() {
         try {
             evolution();
@@ -63,26 +65,28 @@ public class Main extends Worker {
     }
 
     private void evolution() throws IOException, ExecutionException, InterruptedException {
+        System.out.println("SEED: " + seed);
         final GrammarBasedProblem<String, TreeNode, Double> p = new ProblemClass();
         Map<GeneticOperator<Node<String>>, Double> operators = new LinkedHashMap<>();
         operators.put(new StandardTreeMutation<>(12, p.getGrammar()), 0.2d);
         operators.put(new StandardTreeCrossover<>(12), 0.8d);
         StandardEvolver<Node<String>, TreeNode, Double> evolver = new StandardEvolver(
-                    20,
+                    500,
                     new RampedHalfAndHalf<>(0, 12, p.getGrammar()),
                     new ComparableRanker<>(new FitnessComparator<>(Function.identity())),
                     p.getSolutionMapper(),
                     operators,
                     new Tournament<>(5),
                     new Worst<>(),
-                    10,
+                    500,
                     true,
-                    Lists.newArrayList(new FitnessEvaluations(20), new PerfectFitness<>(p.getFitnessFunction())),
+                    Lists.newArrayList(new FitnessEvaluations(10000), new PerfectFitness<>(p.getFitnessFunction())),
                     1000,
                     false
         );
         Random r = new Random(seed);
-        Collection<TreeNode> solutions = evolver.solve(p, r, this.executorService, Listener.onExecutor(listener(new Basic(), new Population(),
+        Collection<TreeNode> solutions = evolver.solve(p, r, this.executorService, Listener.onExecutor(
+                    new PrintStreamListener(out, false, 0, ",", ",",  new Basic(), new Population(),
                     new BestInfo<>("%6.4f"), new Diversity(), new BestPrinter<>("%s")), this.executorService));
     }
 
