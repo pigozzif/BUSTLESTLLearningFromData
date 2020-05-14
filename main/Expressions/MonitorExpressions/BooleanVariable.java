@@ -11,7 +11,7 @@ import java.util.List;
 public class BooleanVariable implements MonitorExpression {
 
     private final String string;
-    public static final double VALUE = 448.0; // TODO: move to FitnessFunction
+    public static final double VALUE = 11541.15178363255;
 
     public BooleanVariable(String string) {
         this.string = string;
@@ -27,9 +27,8 @@ public class BooleanVariable implements MonitorExpression {
         TreeNode newNode = new TreeNode(parent);
         BooleanConstant sibling = new BooleanConstant(siblings.get(0).getChildren().get(0));
         newNode.setSymbol(this.string + " is " + sibling.toString());
-        newNode.setOperator(x -> TemporalMonitor.atomicMonitor(y -> {/*System.out.println(y.getBool(this.string) + " " + sibling.getValue() + " " + (y.getBool(this.string) == sibling.getValue()));*/ if (y.getBool(this.string) == sibling.getValue()) {
-                                                return VALUE;} else { return -VALUE;}
-                                                }));
+        newNode.setOperator(x -> TemporalMonitor.atomicMonitor(y -> {if (y.getBool(this.string) == sibling.getValue()) {
+                                                return VALUE;} else { return -VALUE;} }));
         return newNode;
     }
 

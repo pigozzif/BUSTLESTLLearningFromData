@@ -65,7 +65,7 @@ public class Main extends Worker {
     }
 
     private void evolution() throws IOException, ExecutionException, InterruptedException {
-        System.out.println("SEED: " + seed);
+        //System.out.println("SEED: " + seed);
         final GrammarBasedProblem<String, TreeNode, Double> p = new ProblemClass();
         Map<GeneticOperator<Node<String>>, Double> operators = new LinkedHashMap<>();
         operators.put(new StandardTreeMutation<>(12, p.getGrammar()), 0.2d);
