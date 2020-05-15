@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.RejectedExecutionException;
 
 
 public class Main extends Worker {
@@ -58,9 +57,6 @@ public class Main extends Worker {
             evolution();
         } catch (IOException | ExecutionException | InterruptedException e) {
             e.printStackTrace();
-        }
-        catch (RejectedExecutionException e) {
-            System.out.println("Evolution Terminated With Usual RejectedExecutionException");
         }
     }
 

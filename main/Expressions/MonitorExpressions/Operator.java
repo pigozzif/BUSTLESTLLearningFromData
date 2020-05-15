@@ -37,7 +37,8 @@ public enum Operator implements MonitorExpression {
                 TreeNode phi = STLFormulaMapper.parseSubTree(siblings.get(0), newNode);
                 newNode.setFirstChild(phi);
                 newNode.setNecessaryLength(phi.getNecessaryLength());
-                newNode.setSymbol("\u00AC");
+                //newNode.setSymbol("\u00AC");
+                newNode.setSymbol("NOT");
                 newNode.setOperator(x -> TemporalMonitor.notMonitor(phi.getOperator().apply(x), new DoubleDomain()));
                 return newNode;
             case OR:
@@ -46,7 +47,8 @@ public enum Operator implements MonitorExpression {
                 newNode.setFirstChild(leftPhi);
                 newNode.setSecondChild(rightPhi);
                 newNode.setNecessaryLength(Math.max(leftPhi.getNecessaryLength(), rightPhi.getNecessaryLength()));
-                newNode.setSymbol("\u2228");
+                //newNode.setSymbol("\u2228");
+                newNode.setSymbol("OR");
                 newNode.setOperator(x -> TemporalMonitor.orMonitor(leftPhi.getOperator().apply(x), new DoubleDomain(),
                         rightPhi.getOperator().apply(x)));
                 return newNode;
@@ -57,13 +59,13 @@ public enum Operator implements MonitorExpression {
                 Double width = Math.max(1.0, length.getValue());
                 TreeNode firstPhi = STLFormulaMapper.parseSubTree(siblings.get(0), newNode);
                 TreeNode secondPhi = STLFormulaMapper.parseSubTree(siblings.get(1), newNode);
-                //System.out.println("UNTIL INTERVAL: " + start + " " + (start + width));
                 newNode.setFirstChild(firstPhi);
                 newNode.setSecondChild(secondPhi);
                 newNode.setInterval(start, start + width);
                 newNode.setNecessaryLength(Math.max(firstPhi.getNecessaryLength(), secondPhi.getNecessaryLength()) +
                         start + width);
-                newNode.setSymbol("\u0053");
+                //newNode.setSymbol("\u0053");
+                newNode.setSymbol("UNTIL");
                 newNode.setOperator(x -> TemporalMonitor.sinceMonitor(firstPhi.getOperator().apply(x),
                         newNode.createInterval(), secondPhi.getOperator().apply(x),
                         new DoubleDomain()));
@@ -74,11 +76,11 @@ public enum Operator implements MonitorExpression {
                 Double s = startInterval.getValue();
                 Double l = Math.max(1.0, lengthInterval.getValue());
                 TreeNode globallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0), newNode);
-                //System.out.println("GLOBALLY INTERVAL: " + s + " " + (s + l));
                 newNode.setFirstChild(globallyPhi);
                 newNode.setInterval(s, s + l);
                 newNode.setNecessaryLength(globallyPhi.getNecessaryLength() + s + l);
-                newNode.setSymbol("\u27CF");
+                //newNode.setSymbol("\u27CF");
+                newNode.setSymbol("HISTORICALLY");
                 newNode.setOperator(x -> TemporalMonitor.historicallyMonitor(globallyPhi.getOperator().apply(x),
                         new DoubleDomain(),
                         newNode.createInterval()));
@@ -89,11 +91,11 @@ public enum Operator implements MonitorExpression {
                 Double beginning = startInter.getValue();
                 Double len = Math.max(1.0, lengthInter.getValue());
                 TreeNode eventuallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0), newNode);
-                //System.out.println("EVENTUALLY INTERVAL: " + beginning + " " + (beginning + len));
                 newNode.setFirstChild(eventuallyPhi);
                 newNode.setInterval(beginning, beginning + len);
                 newNode.setNecessaryLength(eventuallyPhi.getNecessaryLength() + beginning + len);
-                newNode.setSymbol("\u20DF");
+                //newNode.setSymbol("\u20DF");
+                newNode.setSymbol("ONCE");
                 newNode.setOperator(x -> TemporalMonitor.onceMonitor(eventuallyPhi.getOperator().apply(x),
                         new DoubleDomain(),
                         newNode.createInterval()));

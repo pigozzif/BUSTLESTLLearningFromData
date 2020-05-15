@@ -29,21 +29,21 @@ public class FitnessFunction implements NonDeterministicFunction<TreeNode, Doubl
 
     @Override
     public Double apply(TreeNode monitor, Random random, Listener listener) {
-//        System.out.println("INDIVIDUAL: " + this.num);
+        System.out.println("INDIVIDUAL: " + this.num);
         double count = 0.0;
 //        int failedCount = 0;
 //        int discardedCount = 0;
-//        System.out.println(monitor);
+        System.out.println(monitor);
         for (Signal<TrajectoryRecord>[] l : this.signals) {
-            double localCount = 0;
+//            double localCount = 0;
             for (Signal<TrajectoryRecord> s : l) {
 //                try {
                     if (s.size() <= monitor.getNecessaryLength()) {
 //                        discardedCount += 1;
-                        localCount -= PENALTY_VALUE;
+                        count -= PENALTY_VALUE;
                     }
                     else {
-                        localCount += Math.abs(monitor.getOperator().apply(s).monitor(s).valueAt(s.end()));
+                        count += Math.abs(monitor.getOperator().apply(s).monitor(s).valueAt(s.end()));  // TODO: if we leave the abs, then <bool> could disappear
                     }
 //                } catch (Exception e) {
 //                    System.out.println(monitor);
@@ -52,13 +52,13 @@ public class FitnessFunction implements NonDeterministicFunction<TreeNode, Doubl
 //                    throw e;
 //                }
             }
-            count += localCount;
+//            count += localCount;
         }
 //        System.out.println("FAILED " + failedCount + " over a total of: " + this.numFragments);
 //        System.out.println("DISCARDED " + discardedCount + " over a total of: " + this.numFragments + "\n");
 //        ++this.num;
-//        System.out.println("Fitness: " + - count + "\n");
-        return - count;
+        System.out.println("Fitness: " + - count / this.signals.size() + "\n");
+        return - count / this.signals.size();
     }
 
 }
