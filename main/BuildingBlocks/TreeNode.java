@@ -80,6 +80,21 @@ public class TreeNode {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (o.getClass() != this.getClass()) {
+            return false;
+        }
+        final TreeNode other = (TreeNode) o;
+        if (!other.getSymbol().equals(this.getSymbol())) {
+            return false;
+        }
+        return other.createInterval().equals(this.createInterval());
+    }
+
+    @Override
     public String toString() {
         return traversePreOrder(this);
     }

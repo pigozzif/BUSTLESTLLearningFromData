@@ -11,7 +11,7 @@ import java.util.List;
 public class BooleanVariable implements MonitorExpression {
 
     private final String string;
-    public static final double VALUE = 11541.15178363255;
+    public static final double VALUE = 1.0;
 
     public BooleanVariable(String string) {
         this.string = string;

@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import it.units.malelab.jgea.Worker;
 import it.units.malelab.jgea.core.Node;
 import it.units.malelab.jgea.core.evolver.StandardEvolver;
+import it.units.malelab.jgea.core.evolver.StandardWithEnforcedDiversity;
 import it.units.malelab.jgea.core.evolver.stopcondition.FitnessEvaluations;
 import it.units.malelab.jgea.core.evolver.stopcondition.PerfectFitness;
 import it.units.malelab.jgea.core.function.Function;
@@ -42,7 +43,7 @@ public class Main extends Worker {
             throw new IllegalArgumentException("Random Seed not Valid");
         }
         seed = Integer.parseInt(random);
-        out = new PrintStream(new FileOutputStream("output/" + Args.a(args, "output_name", "output")
+        out = new PrintStream(new FileOutputStream("output2/" + Args.a(args, "output_name", "output")
                 + ".csv", true), true);
         new Main(args);
     }
@@ -61,12 +62,13 @@ public class Main extends Worker {
     }
 
     private void evolution() throws IOException, ExecutionException, InterruptedException {
-        //System.out.println("SEED: " + seed);
         final GrammarBasedProblem<String, TreeNode, Double> p = new ProblemClass();
         Map<GeneticOperator<Node<String>>, Double> operators = new LinkedHashMap<>();
         operators.put(new StandardTreeMutation<>(12, p.getGrammar()), 0.2d);
         operators.put(new StandardTreeCrossover<>(12), 0.8d);
+        //StandardWithEnforcedDiversity<Node<String>, TreeNode, Double> evolver = new StandardWithEnforcedDiversity(
         StandardEvolver<Node<String>, TreeNode, Double> evolver = new StandardEvolver(
+//                100,
                     500,
                     new RampedHalfAndHalf<>(0, 12, p.getGrammar()),
                     new ComparableRanker<>(new FitnessComparator<>(Function.identity())),
@@ -76,9 +78,9 @@ public class Main extends Worker {
                     new Worst<>(),
                     500,
                     true,
-                    Lists.newArrayList(new FitnessEvaluations(10000), new PerfectFitness<>(p.getFitnessFunction())),
+                    Lists.newArrayList(new FitnessEvaluations(50000), new PerfectFitness<>(p.getFitnessFunction())),
                     1000,
-                    false
+                false
         );
         Random r = new Random(seed);
         Collection<TreeNode> solutions = evolver.solve(p, r, this.executorService, Listener.onExecutor(

@@ -48,8 +48,8 @@ public enum Operator implements MonitorExpression {
                 newNode.setSecondChild(rightPhi);
                 newNode.setNecessaryLength(Math.max(leftPhi.getNecessaryLength(), rightPhi.getNecessaryLength()));
                 //newNode.setSymbol("\u2228");
-                newNode.setSymbol("OR");
-                newNode.setOperator(x -> TemporalMonitor.orMonitor(leftPhi.getOperator().apply(x), new DoubleDomain(),
+                newNode.setSymbol("AND");
+                newNode.setOperator(x -> TemporalMonitor.andMonitor(leftPhi.getOperator().apply(x), new DoubleDomain(),
                         rightPhi.getOperator().apply(x)));
                 return newNode;
             case UNTIL:
@@ -65,7 +65,7 @@ public enum Operator implements MonitorExpression {
                 newNode.setNecessaryLength(Math.max(firstPhi.getNecessaryLength(), secondPhi.getNecessaryLength()) +
                         start + width);
                 //newNode.setSymbol("\u0053");
-                newNode.setSymbol("UNTIL");
+                newNode.setSymbol("SINCE");
                 newNode.setOperator(x -> TemporalMonitor.sinceMonitor(firstPhi.getOperator().apply(x),
                         newNode.createInterval(), secondPhi.getOperator().apply(x),
                         new DoubleDomain()));

@@ -14,13 +14,13 @@ public class FitnessFunction implements NonDeterministicFunction<TreeNode, Doubl
     private final List<Signal<TrajectoryRecord>[]> signals;
     private final int numFragments;
     private int num = 1;
-    private final static double PENALTY_VALUE = 2308230.3567265095;
+    private final static double PENALTY_VALUE = 1.0;
 
     public FitnessFunction(String fileName) throws IOException {
         BufferedReader reader = SignalBuilder.createReaderFromFile(fileName);
         reader.readLine();
-        List<Integer> boolIndexes = new ArrayList<Integer>() {{ add(1); add(2); add(3); }};
-        List<Integer> doubleIndexes = new ArrayList<Integer>() {{ add(4); add(5); add(6); add(7); add(8); add(9); add(10); add(11);
+        List<Integer> boolIndexes = new ArrayList<Integer>() {{ }};
+        List<Integer> doubleIndexes = new ArrayList<Integer>() {{ add(4); add(6); add(7); add(8); add(9); add(10); add(11);
             add(12); add(13);/* add(12); add(13); add(14); add(15); add(16); add(17); add(18); add(19);*/ }};
         this.signals = SignalBuilder.parseSignals(reader, boolIndexes, doubleIndexes);
         this.numFragments = this.signals.stream().mapToInt(x -> x.length).sum();
@@ -29,21 +29,21 @@ public class FitnessFunction implements NonDeterministicFunction<TreeNode, Doubl
 
     @Override
     public Double apply(TreeNode monitor, Random random, Listener listener) {
-        System.out.println("INDIVIDUAL: " + this.num);
+//        System.out.println("INDIVIDUAL: " + this.num);
         double count = 0.0;
 //        int failedCount = 0;
 //        int discardedCount = 0;
-        System.out.println(monitor);
+//        System.out.println(monitor);
         for (Signal<TrajectoryRecord>[] l : this.signals) {
 //            double localCount = 0;
             for (Signal<TrajectoryRecord> s : l) {
 //                try {
                     if (s.size() <= monitor.getNecessaryLength()) {
 //                        discardedCount += 1;
-                        count -= PENALTY_VALUE;
+                        count += PENALTY_VALUE;
                     }
                     else {
-                        count += Math.abs(monitor.getOperator().apply(s).monitor(s).valueAt(s.end()));  // TODO: if we leave the abs, then <bool> could disappear
+                        count +=  Math.abs(monitor.getOperator().apply(s).monitor(s).valueAt(s.end()));
                     }
 //                } catch (Exception e) {
 //                    System.out.println(monitor);
@@ -57,8 +57,8 @@ public class FitnessFunction implements NonDeterministicFunction<TreeNode, Doubl
 //        System.out.println("FAILED " + failedCount + " over a total of: " + this.numFragments);
 //        System.out.println("DISCARDED " + discardedCount + " over a total of: " + this.numFragments + "\n");
 //        ++this.num;
-        System.out.println("Fitness: " + - count / this.signals.size() + "\n");
-        return - count / this.signals.size();
+//        System.out.println("Fitness: " + count / this.signals.size() + "\n");
+        return count / this.numFragments;
     }
 
 }
