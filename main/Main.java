@@ -35,6 +35,9 @@ public class Main extends Worker {
 
     private static int seed;
     private static PrintStream out;
+    private final static String grammarPath = "./grammar.bnf";
+    private final static String dataPath = "./data/Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data9.csv"; /*"../../Desktop/Data_Science_and_Scientific_Computing/Thesis/TeLEX/tests/udacityData/steering2p.csv");*/
+    private final static String outputPath = "output/";
 
     public static void main(String[] args) throws FileNotFoundException {
         String errorMessage = "notFound";
@@ -43,7 +46,7 @@ public class Main extends Worker {
             throw new IllegalArgumentException("Random Seed not Valid");
         }
         seed = Integer.parseInt(random);
-        out = new PrintStream(new FileOutputStream("output2/" + Args.a(args, "output_name", "output")
+        out = new PrintStream(new FileOutputStream(outputPath + Args.a(args, "output_name", "output")
                 + ".csv", true), true);
         new Main(args);
     }
@@ -62,13 +65,13 @@ public class Main extends Worker {
     }
 
     private void evolution() throws IOException, ExecutionException, InterruptedException {
-        final GrammarBasedProblem<String, TreeNode, Double> p = new ProblemClass();
+        final GrammarBasedProblem<String, TreeNode, Double> p = new ProblemClass(grammarPath, dataPath);
         Map<GeneticOperator<Node<String>>, Double> operators = new LinkedHashMap<>();
         operators.put(new StandardTreeMutation<>(12, p.getGrammar()), 0.2d);
         operators.put(new StandardTreeCrossover<>(12), 0.8d);
-        //StandardWithEnforcedDiversity<Node<String>, TreeNode, Double> evolver = new StandardWithEnforcedDiversity(
-        StandardEvolver<Node<String>, TreeNode, Double> evolver = new StandardEvolver(
-//                100,
+        StandardWithEnforcedDiversity<Node<String>, TreeNode, Double> evolver = new StandardWithEnforcedDiversity(
+        //StandardEvolver<Node<String>, TreeNode, Double> evolver = new StandardEvolver(
+                100,
                     500,
                     new RampedHalfAndHalf<>(0, 12, p.getGrammar()),
                     new ComparableRanker<>(new FitnessComparator<>(Function.identity())),
@@ -79,13 +82,14 @@ public class Main extends Worker {
                     500,
                     true,
                     Lists.newArrayList(new FitnessEvaluations(50000), new PerfectFitness<>(p.getFitnessFunction())),
-                    1000,
-                false
+                    0//,
+                //false
         );
         Random r = new Random(seed);
         Collection<TreeNode> solutions = evolver.solve(p, r, this.executorService, Listener.onExecutor(
                     new PrintStreamListener(out, false, 0, ",", ",",  new Basic(), new Population(),
                     new BestInfo<>("%6.4f"), new Diversity(), new BestPrinter<>("%s")), this.executorService));
+        solutions.forEach(System.out::println);
     }
 
 }

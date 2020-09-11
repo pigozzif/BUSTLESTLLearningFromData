@@ -16,7 +16,7 @@ public class Perc implements ValueExpression<Double> {
         //Digit thirdLeaf = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(2)).get();
         //Digit fourthLeaf = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(3)).get();
         //Digit fifthLeaf = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(3)).get();
-        this.value = (firstLeaf.getValue() * Math.pow(10, 1)) + (secondLeaf.getValue() * Math.pow(10, 0));
+        this.value = (firstLeaf.getValue() * Math.pow(10, 1)) + (secondLeaf.getValue() * Math.pow(10, 0));// + thirdLeaf.getValue();
                 //+ (thirdLeaf.getValue() * Math.pow(10, 0)));// + (fourthLeaf.getValue() * 10) + fifthLeaf.getValue();// * Math.pow(10, -4);
         //System.out.println(firstLeaf.getValue() + " " + secondLeaf.getValue() + " " + thirdLeaf.getValue() + " " + fourthLeaf.getValue() + " " + this.value);
     }

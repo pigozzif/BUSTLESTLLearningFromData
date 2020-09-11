@@ -23,8 +23,8 @@ public class BooleanVariable implements MonitorExpression {
     }
 
     @Override
-    public TreeNode createMonitor(List<Node<String>> siblings, TreeNode parent) {
-        TreeNode newNode = new TreeNode(parent);
+    public TreeNode createMonitor(List<Node<String>> siblings, String content) {
+        TreeNode newNode = new TreeNode(content);
         BooleanConstant sibling = new BooleanConstant(siblings.get(0).getChildren().get(0));
         newNode.setSymbol(this.string + " is " + sibling.toString());
         newNode.setOperator(x -> TemporalMonitor.atomicMonitor(y -> {if (y.getBool(this.string) == sibling.getValue()) {

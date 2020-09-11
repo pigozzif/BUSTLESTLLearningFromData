@@ -4,25 +4,25 @@ import eu.quanticol.moonlight.formula.Interval;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import eu.quanticol.moonlight.signal.Signal;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 
 public class TreeNode {
     // TODO: in reality, the doubles for the intervals could become integers or shorts
-    private Double start;
-    private Double end;
+    private double start;
+    private double end;
     private Function<Signal<TrajectoryRecord>, TemporalMonitor<TrajectoryRecord, Double>> func;
     private double necessaryLength;
-    //private TreeNode parent;
     private TreeNode firstChild;
     private TreeNode secondChild;
     private String symbol;
 
-    public TreeNode(TreeNode parent) {
+    public TreeNode(String code) {
         this.firstChild = null;
         this.secondChild = null;
-        this.start = null;
-        this.end = null;
+        this.start = -1.0;
+        this.end = -1.0;
         this.necessaryLength = 0.0;
         this.symbol = null;
     }
@@ -70,8 +70,8 @@ public class TreeNode {
 
     public void setSymbol(String s) {
         this.symbol = s;
-        if (this.start != null) {
-            this.symbol += " I=[" + this.start + ", " + this.end + "]";
+        if (this.start != -1.0) {
+            this.symbol += " I=[" + this.start + " " + this.end + "]";
         }
     }
 
@@ -84,14 +84,31 @@ public class TreeNode {
         if (o == null) {
             return false;
         }
-        if (o.getClass() != this.getClass()) {
+        else if (o.getClass() != this.getClass()) {
             return false;
         }
         final TreeNode other = (TreeNode) o;
-        if (!other.getSymbol().equals(this.getSymbol())) {
+        if (!Objects.equals(this.symbol, other.getSymbol())) {
             return false;
         }
-        return other.createInterval().equals(this.createInterval());
+        else if (!Objects.equals(this.createInterval(), other.createInterval())) {
+            return false;
+        }
+        else if (!Objects.equals(this.firstChild, other.getFirstChild())) {
+            return false;
+        }
+        return Objects.equals(this.secondChild, other.getSecondChild());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 7;
+        result = 31 * result + (this.symbol == null ? 0 : this.symbol.hashCode());
+        result = 31 * result + (int) this.start;
+        result = 31 * result + (int) this.end;
+        result = 31 * result + (this.firstChild == null ? 0 : this.firstChild.hashCode());
+        result = 31 * result + (this.secondChild == null ? 0 : this.secondChild.hashCode());
+        return result;
     }
 
     @Override

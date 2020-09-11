@@ -1,11 +1,9 @@
 package BuildingBlocks;
 
 import it.units.malelab.jgea.core.Node;
-import it.units.malelab.jgea.core.function.NonDeterministicFunction;
+import it.units.malelab.jgea.core.function.Function;
 import it.units.malelab.jgea.grammarbased.Grammar;
 import it.units.malelab.jgea.grammarbased.GrammarBasedProblem;
-import it.units.malelab.jgea.core.function.Function;
-import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,10 +15,10 @@ public class ProblemClass implements GrammarBasedProblem<String, TreeNode, Doubl
     private final Function<Node<String>, TreeNode> solutionMapper;
     private final FitnessFunction fitnessFunction;
 
-    public ProblemClass() throws IOException {
-        this.grammar = Grammar.fromFile(new File("./grammar.bnf"));
+    public ProblemClass(String grammarPath, String dataPath) throws IOException {
+        this.grammar = Grammar.fromFile(new File(grammarPath));
         this.solutionMapper = new STLFormulaMapper();
-        this.fitnessFunction = new FitnessFunction("./data/Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data9.csv");
+        this.fitnessFunction = new FitnessFunction(dataPath);
     }
 
     @Override
@@ -34,7 +32,7 @@ public class ProblemClass implements GrammarBasedProblem<String, TreeNode, Doubl
     }
 
     @Override
-    public NonDeterministicFunction<TreeNode, Double> getFitnessFunction() {
+    public Function<TreeNode, Double> getFitnessFunction() {
         return this.fitnessFunction;
     }
 
