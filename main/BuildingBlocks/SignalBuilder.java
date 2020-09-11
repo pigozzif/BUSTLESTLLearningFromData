@@ -1,7 +1,5 @@
 package BuildingBlocks;
 
-import eu.quanticol.moonlight.signal.Signal;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +18,6 @@ public interface SignalBuilder<T> {
         return new BufferedReader(new InputStreamReader(in));
     }
 
-    List<T> parseSignals(BufferedReader reader, List<Integer> boolIndexes,
-                                                                List<Integer> doubleIndexes);
+    List<T> parseSignals(String fileName, List<Integer> boolIndexes, List<Integer> doubleIndexes);
+
 }

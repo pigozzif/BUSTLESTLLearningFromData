@@ -1,4 +1,5 @@
 
+import BuildingBlocks.MaritimeSignalBuilder;
 import BuildingBlocks.ProblemClass;
 import BuildingBlocks.TreeNode;
 import com.google.common.collect.Lists;
@@ -39,7 +40,7 @@ public class Main extends Worker {
     private final static String dataPath = "./data/Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data9.csv"; /*"../../Desktop/Data_Science_and_Scientific_Computing/Thesis/TeLEX/tests/udacityData/steering2p.csv");*/
     private final static String outputPath = "output/";
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
         String errorMessage = "notFound";
         String random = Args.a(args, "random", errorMessage);
         if (random.equals(errorMessage)) {
