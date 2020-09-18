@@ -1,4 +1,4 @@
-import BuildingBlocks.I80FitnessFunction;
+import BuildingBlocks.FitnessFunctions.I80FitnessFunction;
 import eu.quanticol.moonlight.formula.DoubleDomain;
 import eu.quanticol.moonlight.formula.Interval;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;

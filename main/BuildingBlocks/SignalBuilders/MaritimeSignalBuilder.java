@@ -1,12 +1,13 @@
-package BuildingBlocks;
+package BuildingBlocks.SignalBuilders;
 
+import BuildingBlocks.TrajectoryRecord;
 import eu.quanticol.moonlight.signal.Signal;
 
 import java.io.*;
 import java.util.*;
 
 
-public class MaritimeSignalBuilder implements SignalBuilder<Signal<TrajectoryRecord>>{
+public class MaritimeSignalBuilder implements SignalBuilder<Signal<TrajectoryRecord>> {
 
     public double[] readVectorFromFile(String filePath) throws IOException {
         BufferedReader reader = this.createReaderFromFile(filePath);

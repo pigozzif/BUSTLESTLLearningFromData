@@ -1,5 +1,6 @@
-package BuildingBlocks;
+package BuildingBlocks.SignalBuilders;
 
+import BuildingBlocks.TrajectoryRecord;
 import eu.quanticol.moonlight.signal.Signal;
 
 import java.io.BufferedReader;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class I80SignalBuilder implements SignalBuilder<Signal<TrajectoryRecord>[]>{
+public class I80SignalBuilder implements SignalBuilder<Signal<TrajectoryRecord>[]> {
 
     private final int windowSize = 200;
 

@@ -1,5 +1,8 @@
-package BuildingBlocks;
+package BuildingBlocks.FitnessFunctions;
 
+import BuildingBlocks.SignalBuilders.MaritimeSignalBuilder;
+import BuildingBlocks.TrajectoryRecord;
+import BuildingBlocks.TreeNode;
 import eu.quanticol.moonlight.signal.Signal;
 
 import java.io.IOException;

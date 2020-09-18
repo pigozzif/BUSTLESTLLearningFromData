@@ -1,5 +1,7 @@
 package BuildingBlocks;
 
+import BuildingBlocks.FitnessFunctions.AbstractFitnessFunction;
+import BuildingBlocks.FitnessFunctions.MaritimeFitnessFunction;
 import eu.quanticol.moonlight.signal.Signal;
 import it.units.malelab.jgea.representation.grammar.Grammar;
 import it.units.malelab.jgea.representation.grammar.GrammarBasedProblem;
@@ -58,8 +60,9 @@ public class ProblemClass implements GrammarBasedProblem<String, TreeNode, Doubl
     }
 
     public void postProcess(Collection<TreeNode> solutions) {
-        TreeNode bestFormula = null;
-        double best = - Double.MIN_VALUE;
+        TreeNode bestFormula = solutions.iterator().next(); // null;
+        double result;
+        /*double best = - Double.MIN_VALUE;
         double result;
         for (TreeNode solution : solutions) {
             result = 0.0;
@@ -73,7 +76,7 @@ public class ProblemClass implements GrammarBasedProblem<String, TreeNode, Doubl
                 best = result;
                 bestFormula = solution;
             }
-        }
+        }*/
         double count = 0.0;
         for (Signal<TrajectoryRecord> signal : this.fitnessFunction.getPositiveTest()) {
             result = this.fitnessFunction.monitorSignal(signal, bestFormula);

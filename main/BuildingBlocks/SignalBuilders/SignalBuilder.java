@@ -1,4 +1,4 @@
-package BuildingBlocks;
+package BuildingBlocks.SignalBuilders;
 
 import java.io.BufferedReader;
 import java.io.IOException;

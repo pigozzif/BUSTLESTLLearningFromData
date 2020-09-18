@@ -19,7 +19,6 @@ import it.units.malelab.jgea.representation.grammar.cfggp.GrammarRampedHalfAndHa
 import it.units.malelab.jgea.representation.tree.SameRootSubtreeCrossover;
 import it.units.malelab.jgea.representation.tree.Tree;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -46,7 +45,7 @@ public class Main extends Worker {
         new Main(args);
     }
 
-    public Main(String[] args) throws FileNotFoundException {
+    public Main(String[] args) {
         super(args);
     }
 
@@ -69,15 +68,15 @@ public class Main extends Worker {
                 p.getSolutionMapper(),
                     new GrammarRampedHalfAndHalf<>(0, 12, p.getGrammar()),
                     PartialComparator.from(Double.class).comparing(Individual::getFitness),
-                    500,
+                    50,
                     operators,
                     new Tournament(5),
                     new Worst(),
-                 500,
+                 50,
                     true,
                 100
         );
-        Collection<TreeNode> solutions = evolver.solve(Misc.cached(p.getFitnessFunction(), 10000), new Iterations(100),
+        Collection<TreeNode> solutions = evolver.solve(Misc.cached(p.getFitnessFunction(), 10000), new Iterations(10),
                 r, this.executorService, Listener.onExecutor(new PrintStreamListener<>(out, false, 10,
                         ",", ",",  new Basic(), new Population(), new Diversity(), new BestInfo("%5.3f")), this.executorService));
         p.postProcess(solutions);
