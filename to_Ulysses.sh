@@ -1,6 +1,6 @@
 #!/bin/bash
 
-javac -classpath ./libs/moonlight.jar:./libs/JGEA-1.0-SNAPSHOT.jar:main ./main/Main.java
+javac -classpath ./libs/moonlight.jar:./libs/JGEA.jar:main ./main/Main.java
 scp -r /Users/federicopigozzi/IdeaProjects/STLRealTrafficRulesEvolutionaryInference/main fpigozzi@frontend1.hpc.sissa.it:~/STLRealTrafficRulesEvolutionaryInference/main2
 rm ./main/*.class
 rm ./main/BuildingBlocks/*.class

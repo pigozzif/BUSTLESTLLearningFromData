@@ -1,4 +1,4 @@
-import BuildingBlocks.FitnessFunction;
+import BuildingBlocks.I80FitnessFunction;
 import eu.quanticol.moonlight.formula.DoubleDomain;
 import eu.quanticol.moonlight.formula.Interval;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
@@ -9,7 +9,7 @@ import java.io.IOException;
 public class PercSatisfaction {
 
     public static void main(String[] args) throws IOException {
-        FitnessFunction fitnessFunction = new FitnessFunction("../../Desktop/Data_Science_and_Scientific_Computing/Thesis/TeLEX/tests/udacityData/steering2p.csv");/*"./data/Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data9.csv");*/
+        I80FitnessFunction fitnessFunction = new I80FitnessFunction();//"../../Desktop/Data_Science_and_Scientific_Computing/Thesis/TeLEX/tests/udacityData/steering2p.csv");/*"./data/Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data9.csv");*/
         //System.out.println(fitnessFunction.percSatisfaction(TemporalMonitor.andMonitor(TemporalMonitor.notMonitor(TemporalMonitor.andMonitor(TemporalMonitor.atomicMonitor(x -> x.getDouble("V_vel") - 0.499), new DoubleDomain(), TemporalMonitor.atomicMonitor(x -> 0.832 - x.getDouble("S_dist"))), new DoubleDomain())
         //        , new DoubleDomain(), TemporalMonitor.atomicMonitor(x -> x.getDouble("V_vel") - 0.168))));  // 0.48287798347508787
         //System.out.println(fitnessFunction.percSatisfaction(TemporalMonitor.andMonitor(TemporalMonitor.notMonitor(TemporalMonitor.andMonitor(TemporalMonitor.atomicMonitor(x -> x.getDouble("E_dist") - 0.499), new DoubleDomain(), TemporalMonitor.atomicMonitor(x -> 0.832 - x.getDouble("E_dist"))), new DoubleDomain())

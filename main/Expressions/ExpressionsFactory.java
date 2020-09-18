@@ -1,5 +1,6 @@
 package Expressions;
 
+import BuildingBlocks.ProblemClass;
 import Expressions.MonitorExpressions.BooleanVariable;
 import Expressions.MonitorExpressions.MonitorExpression;
 import Expressions.MonitorExpressions.NumericalVariable;
@@ -27,23 +28,13 @@ public class ExpressionsFactory {
 
     public static List<MonitorExpression> createMonitorExpressions() {
         List<MonitorExpression> res = new ArrayList<>(Arrays.asList(Operator.values()));
-        for (String varName : retrieveBooleanNames()) {
+        for (String varName : ProblemClass.retrieveBooleanNames()) {
             res.add(new BooleanVariable(varName));
         }
-        for (String varName: retrieveNumericalNames()) {
+        for (String varName: ProblemClass.retrieveNumericalNames()) {
             res.add(new NumericalVariable(varName));
         }
         return res;
-    }
-
-    public static String[] retrieveBooleanNames() {
-        return new String[]{"isChangingLane", "isApproachingOnramp", "isByGuardrail"};
-    }
-
-    public static String[] retrieveNumericalNames() {
-        return new String[]{"V_vel", "NE_dist", "N_dist", "NW_dist", "W_dist", "SW_dist",
-                "S_dist", "SE_dist", "E_dist",/* "angle", "torque", "speed",*/
-                "Vehicle_ID", "Global_Time"};
     }
 
 }

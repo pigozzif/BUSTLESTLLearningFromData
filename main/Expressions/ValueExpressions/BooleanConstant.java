@@ -1,14 +1,14 @@
 package Expressions.ValueExpressions;
 
-import it.units.malelab.jgea.core.Node;
+import it.units.malelab.jgea.representation.tree.Tree;
 
 
 public class BooleanConstant implements ValueExpression<Boolean> {
 
     private final String constant;
 
-    public BooleanConstant(Node<String> string) {
-        this.constant = string.getContent();
+    public BooleanConstant(Tree<String> string) {
+        this.constant = string.content();
         //System.out.println(this.constant + " " + Boolean.parseBoolean(this.constant));
     }
 

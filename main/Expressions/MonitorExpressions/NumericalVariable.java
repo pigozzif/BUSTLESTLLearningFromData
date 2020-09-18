@@ -4,17 +4,16 @@ import BuildingBlocks.STLFormulaMapper;
 import BuildingBlocks.TreeNode;
 import Expressions.ValueExpressions.CompareSign;
 import Expressions.ValueExpressions.Digit;
-import it.units.malelab.jgea.core.Node;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
+import it.units.malelab.jgea.representation.tree.Tree;
 
-import java.text.DecimalFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class NumericalVariable implements MonitorExpression {
 
     private final String string;
-    private static final DecimalFormat df = new DecimalFormat("#.###");
 
     public NumericalVariable(String string) {
         this.string = string;
@@ -26,24 +25,23 @@ public class NumericalVariable implements MonitorExpression {
     }
 
     @Override
-    public TreeNode createMonitor(List<Node<String>> siblings, String content) {
-        CompareSign firstSibling = (CompareSign) STLFormulaMapper.fromStringToValueExpression(siblings.get(0).getChildren().get(0)).get();
-        double number = parseNumber(siblings.get(1).getChildren());
-        TreeNode newNode = new TreeNode(content);
+    public TreeNode createMonitor(List<Tree<String>> siblings, List<Tree<String>> ancestors, Tree<String> root) {
+        CompareSign firstSibling = (CompareSign) STLFormulaMapper.fromStringToValueExpression(siblings.get(0).childStream().collect(Collectors.toList()).get(0)).get();
+        double number = parseNumber(siblings.get(1).childStream().collect(Collectors.toList()));
+        TreeNode newNode = new TreeNode(root.toString());
         newNode.setSymbol(this.string + " " + firstSibling.toString() + " " + number);
         newNode.setOperator(x -> TemporalMonitor.atomicMonitor(y -> firstSibling.getValue().apply(y.getDouble(this.string),
                 number)));
         return newNode;
     }
 
-    private double parseNumber(List<Node<String>> leaves) {
-        //df.setRoundingMode(RoundingMode.FLOOR);
-        Digit secondSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(0)).get();
-        Digit thirdSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(1)).get();
-        //Sign fourthSibling = (Sign) STLFormulaMapper.fromStringToValueExpression(leaves.get(2)).get();
-        Digit fifthSibling = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(2)).get();
-        return (double) Math.round(((secondSibling.getValue() * Math.pow(10, -1)) + (thirdSibling.getValue() * Math.pow(10, -2)) + (fifthSibling.getValue() * Math.pow(10, -3))) * 1000d) / 1000d;/*thirdSibling.getValue()) * (Math.pow(10, fourthSibling.getValue().apply(
-                Double.valueOf(fifthSibling.getValue()))));*/
+    private double parseNumber(List<Tree<String>> leaves) {
+        double number = 0.0;
+        for (int i=0; i < leaves.size(); ++i) {
+            Digit temp = (Digit) STLFormulaMapper.fromStringToValueExpression(leaves.get(i)).get();
+            number += temp.getValue() * Math.pow(10, - (i + 1));
+        }
+        return number;
     }
 
 }

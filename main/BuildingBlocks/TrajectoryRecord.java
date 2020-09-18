@@ -1,7 +1,5 @@
 package BuildingBlocks;
 
-import Expressions.ExpressionsFactory;
-
 import java.util.HashMap;
 
 
@@ -10,12 +8,12 @@ public class TrajectoryRecord {
     private static final HashMap<String, Integer> varNamesToIndex = new HashMap<>();
     static {
         int i = 0;
-        for (String name : ExpressionsFactory.retrieveBooleanNames()) {
+        for (String name : ProblemClass.retrieveBooleanNames()) {
             varNamesToIndex.put(name, i);
             ++i;
         }
         i = 0;
-        for (String name : ExpressionsFactory.retrieveNumericalNames()) {
+        for (String name : ProblemClass.retrieveNumericalNames()) {
             varNamesToIndex.put(name, i);
             ++i;
         }

@@ -5,62 +5,53 @@ import eu.quanticol.moonlight.signal.Signal;
 import java.io.*;
 import java.util.*;
 
-// TODO: still missing to close all those readers
+
 public class MaritimeSignalBuilder implements SignalBuilder<Signal<TrajectoryRecord>>{
 
-    public double[] readVectorFromFile(String filePath) {
-        BufferedReader reader;
-        try {
-            reader = this.createReaderFromFile(filePath);
-        }
-        catch (IOException e) {
-            return new double[0];
-        }
+    public double[] readVectorFromFile(String filePath) throws IOException {
+        BufferedReader reader = this.createReaderFromFile(filePath);
         String[] line;
         try {
             line = reader.readLine().split(",");
         }
-        catch (NullPointerException | IOException e) {
+        catch (NullPointerException | IOException e) {  // TODO: might pretend that NullPointerException is not there
             return new double[0];
         }
         double[] out = new double[line.length];
         for (int i=0; i < line.length; ++i) out[i] = Double.parseDouble(line[i]);
+        reader.close();
         return out;
     }
 
-    public List<Signal<TrajectoryRecord>> parseSignals(String fileName, List<Integer> boolIndexes, List<Integer> doubleIndexes) {
+    public List<Signal<TrajectoryRecord>> parseSignals(String fileName, List<Integer> boolIndexes, List<Integer> doubleIndexes) throws IOException {
         List<Signal<TrajectoryRecord>> signals = new ArrayList<>();
-        double[] times;
-        times = this.readVectorFromFile("/Users/federicopigozzi/Desktop/Data_Science_and_Scientific_Computing/Thesis/learningformulae/learning/src/resources/data/navalTimes");
+        double[] times = this.readVectorFromFile("./data/navalTimes.csv");
+        for (int i=0; i < times.length; ++i) {
+            times[i] = i;
+        }
         int n = times.length;
-        int m = boolIndexes.size() + doubleIndexes.size();
-        BufferedReader reader;
-        try {
-            reader = this.createReaderFromFile(fileName);
-        }
-        catch (IOException e) {
-            return signals;
-        }
-        String[] line;
-        double[] varsData = new double[m];
+        BufferedReader reader = this.createReaderFromFile(fileName);
+        reader.readLine();
+        double[] varsData;
         boolean[] dummy = new boolean[0];
+        int i = 0;
+        Signal<TrajectoryRecord> currSignal = new Signal<>();
         while (true) {
             try {
-                line = reader.readLine().split(",");
+                varsData = Arrays.stream(reader.readLine().split(",")).mapToDouble(Double::parseDouble).toArray();
             }
             catch (NullPointerException | IOException e) {
                 break;
             }
-            Signal<TrajectoryRecord> currSignal = new Signal<>();
-            int k = 0;
-            for (int i=0; i < n; ++i) {
-                for (int j=0; j < m; ++j) {
-                    varsData[j] = Double.parseDouble(line[k]);
-                }
-                currSignal.add(times[k++], new TrajectoryRecord(dummy, varsData));
+            currSignal.add(times[i], new TrajectoryRecord(dummy, varsData));
+            ++i;
+            if (i == n) {
+                signals.add(currSignal);
+                currSignal = new Signal<>();
+                i = 0;
             }
-            signals.add(currSignal);
         }
+        reader.close();
         return signals;
     }
 

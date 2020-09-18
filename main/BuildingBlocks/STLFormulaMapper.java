@@ -3,49 +3,51 @@ package BuildingBlocks;
 import Expressions.*;
 import Expressions.MonitorExpressions.MonitorExpression;
 import Expressions.ValueExpressions.ValueExpression;
-import it.units.malelab.jgea.core.Node;
-import it.units.malelab.jgea.core.function.Function;
-import it.units.malelab.jgea.core.listener.Listener;
+import it.units.malelab.jgea.representation.tree.Tree;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
-public class STLFormulaMapper implements Function<Node<String>, TreeNode> {
+public class STLFormulaMapper implements Function<Tree<String>, TreeNode> {
 
     private static final List<ValueExpression<?>> valueExpressions = ExpressionsFactory.createValueExpressions();
     private static final List<MonitorExpression> monitorExpressions = ExpressionsFactory.createMonitorExpressions();
 
     @Override
-    public TreeNode apply(Node<String> root, Listener listener) {
-        root.propagateParentship();
-        return parseSubTree(root);
+    public TreeNode apply(Tree<String> root) {
+        return parseSubTree(root, new ArrayList<Tree<String>>() {{ add(null); }}, root);
     }
 
-    public static TreeNode parseSubTree(Node<String> currentNode) {
-        List<Node<String>> children = currentNode.getChildren();
-        Node<String> testChild = children.get(0);
-        Optional<MonitorExpression> expression = monitorExpressions.stream().filter(x -> x.toString().equals(testChild.getContent())).findAny();
+    public static TreeNode parseSubTree(Tree<String> currentNode, List<Tree<String>> ancestors, Tree<String> root) {
+        List<Tree<String>> children = currentNode.childStream().collect(Collectors.toList());
+        Tree<String> testChild = children.get(0);
+        Optional<MonitorExpression> expression = monitorExpressions.stream().filter(x -> x.toString().equals(testChild.content())).findAny();
         if (expression.isPresent()) {
-            return expression.get().createMonitor(getSiblings(testChild), currentNode.getRoot().toString());
+            ancestors.add(currentNode);
+            return expression.get().createMonitor(getSiblings(testChild, ancestors), ancestors, root);
         }
-        return parseSubTree(testChild);
+        ancestors.add(currentNode);
+        return parseSubTree(testChild, ancestors, root);
     }
 
-    public static Optional<ValueExpression<?>> fromStringToValueExpression(Node<String> string) {
-        if (Expression.singletonExpressions.contains(string.getContent())) {
-            return fromStringToValueExpression(string.getChildren().get(0));
+    public static Optional<ValueExpression<?>> fromStringToValueExpression(Tree<String> string) {
+        if (Expression.singletonExpressions.contains(string.content())) {
+            return fromStringToValueExpression(string.childStream().collect(Collectors.toList()).get(0));
         }
-        return valueExpressions.stream().filter(x -> x.toString().equals(string.getContent())).findAny();
+        return valueExpressions.stream().filter(x -> x.toString().equals(string.content())).findAny();
     }
 
-    private static List<Node<String>> getSiblings(Node<String> node) {
-        if (node.getParent() == null) {
+    private static List<Tree<String>> getSiblings(Tree<String> node, List<Tree<String>> ancestors) {
+        Tree<String> parent = ancestors.get(ancestors.size() - 1);
+        if (parent == null) {
             return Collections.emptyList();
         }
-        List<Node<String>> res = new ArrayList<>(node.getParent().getChildren());
+        List<Tree<String>> res = parent.childStream().collect(Collectors.toList());
         res.remove(node);
         if (res.isEmpty()) {
-            return getSiblings(node.getParent());
+            return getSiblings(parent, ancestors.stream().filter(x -> x != parent).collect(Collectors.toList()));
         }
         return res;
     }

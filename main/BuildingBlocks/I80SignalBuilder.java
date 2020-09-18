@@ -14,15 +14,10 @@ public class I80SignalBuilder implements SignalBuilder<Signal<TrajectoryRecord>[
 
     // TODO: maybe fix Long Method
     public List<Signal<TrajectoryRecord>[]> parseSignals(String fileName, List<Integer> boolIndexes,
-                                                              List<Integer> doubleIndexes) {
+                                                              List<Integer> doubleIndexes) throws IOException {
         List<Signal<TrajectoryRecord>[]> signals = new ArrayList<>();
-        BufferedReader reader;
-        try {
-            reader = this.createReaderFromFile(fileName);
-        }
-        catch (IOException e) {
-            return signals;
-        }
+        BufferedReader reader = this.createReaderFromFile(fileName);
+        reader.readLine();
         int vehicleIdx = 1;
         boolean isFinished = false;
         String[] line = new String[boolIndexes.size() + doubleIndexes.size() + 1];
@@ -59,6 +54,7 @@ public class I80SignalBuilder implements SignalBuilder<Signal<TrajectoryRecord>[
             trajectory.add(new TrajectoryRecord(boolVars, doubleVars));
             times.add(Long.parseLong(line[15]));
         }
+        reader.close();
         return signals;
     }
 

@@ -2,12 +2,13 @@ package Expressions.MonitorExpressions;
 
 import BuildingBlocks.STLFormulaMapper;
 import BuildingBlocks.TreeNode;
-import Expressions.ValueExpressions.Perc;
-import it.units.malelab.jgea.core.Node;
+import Expressions.ValueExpressions.IntervalSymbol;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import eu.quanticol.moonlight.formula.DoubleDomain;
+import it.units.malelab.jgea.representation.tree.Tree;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public enum Operator implements MonitorExpression {
@@ -30,19 +31,19 @@ public enum Operator implements MonitorExpression {
     }
 
     @Override
-    public TreeNode createMonitor(List<Node<String>> siblings, String content) {
-        TreeNode newNode = new TreeNode(content);
+    public TreeNode createMonitor(List<Tree<String>> siblings, List<Tree<String>> ancestors, Tree<String> root) {
+        TreeNode newNode = new TreeNode(root.toString());
         switch(this) {
             case NOT:
-                TreeNode phi = STLFormulaMapper.parseSubTree(siblings.get(0));
+                TreeNode phi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors, root);
                 newNode.setFirstChild(phi);
                 newNode.setNecessaryLength(phi.getNecessaryLength());
                 newNode.setSymbol("NOT");
                 newNode.setOperator(x -> TemporalMonitor.notMonitor(phi.getOperator().apply(x), new DoubleDomain()));
                 return newNode;
             case OR:
-                TreeNode leftPhi = STLFormulaMapper.parseSubTree(siblings.get(0));
-                TreeNode rightPhi = STLFormulaMapper.parseSubTree(siblings.get(1));
+                TreeNode leftPhi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors, root);
+                TreeNode rightPhi = STLFormulaMapper.parseSubTree(siblings.get(1), ancestors, root);
                 newNode.setFirstChild(leftPhi);
                 newNode.setSecondChild(rightPhi);
                 newNode.setNecessaryLength(Math.max(leftPhi.getNecessaryLength(), rightPhi.getNecessaryLength()));
@@ -51,12 +52,12 @@ public enum Operator implements MonitorExpression {
                         rightPhi.getOperator().apply(x)));
                 return newNode;
             case UNTIL:
-                Perc startPerc = new Perc(siblings.get(2).getChildren());
-                Perc length = new Perc(siblings.get(3).getChildren());
+                IntervalSymbol startPerc = new IntervalSymbol(siblings.get(2).childStream().collect(Collectors.toList()));
+                IntervalSymbol length = new IntervalSymbol(siblings.get(3).childStream().collect(Collectors.toList()));
                 Double start = startPerc.getValue();
                 Double width = Math.max(1.0, length.getValue());
-                TreeNode firstPhi = STLFormulaMapper.parseSubTree(siblings.get(0));
-                TreeNode secondPhi = STLFormulaMapper.parseSubTree(siblings.get(1));
+                TreeNode firstPhi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors, root);
+                TreeNode secondPhi = STLFormulaMapper.parseSubTree(siblings.get(1), ancestors, root);
                 newNode.setFirstChild(firstPhi);
                 newNode.setSecondChild(secondPhi);
                 newNode.setInterval(start, start + width);
@@ -68,11 +69,11 @@ public enum Operator implements MonitorExpression {
                         new DoubleDomain()));
                 return newNode;
             case GLOBALLY:
-                Perc startInterval = new Perc(siblings.get(1).getChildren());
-                Perc lengthInterval = new Perc(siblings.get(2).getChildren());
+                IntervalSymbol startInterval = new IntervalSymbol(siblings.get(1).childStream().collect(Collectors.toList()));
+                IntervalSymbol lengthInterval = new IntervalSymbol(siblings.get(2).childStream().collect(Collectors.toList()));
                 Double s = startInterval.getValue();
                 Double l = Math.max(1.0, lengthInterval.getValue());
-                TreeNode globallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0));
+                TreeNode globallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors, root);
                 newNode.setFirstChild(globallyPhi);
                 newNode.setInterval(s, s + l);
                 newNode.setNecessaryLength(globallyPhi.getNecessaryLength() + s + l);
@@ -82,11 +83,11 @@ public enum Operator implements MonitorExpression {
                         newNode.createInterval()));
                 return newNode;
             default:
-                Perc startInter = new Perc(siblings.get(1).getChildren());
-                Perc lengthInter = new Perc(siblings.get(2).getChildren());
+                IntervalSymbol startInter = new IntervalSymbol(siblings.get(1).childStream().collect(Collectors.toList()));
+                IntervalSymbol lengthInter = new IntervalSymbol(siblings.get(2).childStream().collect(Collectors.toList()));
                 Double beginning = startInter.getValue();
                 Double len = Math.max(1.0, lengthInter.getValue());
-                TreeNode eventuallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0));
+                TreeNode eventuallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors, root);
                 newNode.setFirstChild(eventuallyPhi);
                 newNode.setInterval(beginning, beginning + len);
                 newNode.setNecessaryLength(eventuallyPhi.getNecessaryLength() + beginning + len);
