@@ -33,7 +33,7 @@ public class MaritimeFitnessFunction extends AbstractFitnessFunction<Signal<Traj
         super();
         List<Integer> boolIndexes = new ArrayList<Integer>() {{ }};
         List<Integer> doubleIndexes = new ArrayList<Integer>() {{ add(0); add(1); }};
-        List<Signal<TrajectoryRecord>> signals = this.signalBuilder.parseSignals("./data/navalData2.csv", boolIndexes, doubleIndexes);
+        List<Signal<TrajectoryRecord>> signals = this.signalBuilder.parseSignals("./data/navalData.csv", boolIndexes, doubleIndexes);
         this.labels = this.signalBuilder.readVectorFromFile("./data/navalLabels.csv");
         this.splitSignals(signals, 0.8, random);
         this.numPositive = Arrays.stream(this.labels).filter(x -> x > 0).count();

@@ -1,7 +1,0 @@
-plugins {
-    id 'java'
-}
-
-dependencies {
-    implementation "core.src.main.java.eu.quanticol.moonlight:1.0.jar"
-}
