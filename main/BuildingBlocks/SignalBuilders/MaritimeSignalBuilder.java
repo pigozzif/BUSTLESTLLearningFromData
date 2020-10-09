@@ -9,6 +9,9 @@ import java.util.*;
 
 public class MaritimeSignalBuilder implements SignalBuilder<Signal<TrajectoryRecord>> {
 
+    private HashMap<String, double[]> varsBounds = new HashMap<>();
+    private double[] temporalBounds;
+
     public double[] readVectorFromFile(String filePath) throws IOException {
         BufferedReader reader = this.createReaderFromFile(filePath);
         String[] line;
@@ -30,9 +33,13 @@ public class MaritimeSignalBuilder implements SignalBuilder<Signal<TrajectoryRec
         for (int i=0; i < times.length; ++i) {
             times[i] = i;
         }
+        this.temporalBounds = new double[]{times[0], times[times.length - 1] / 2};
         int n = times.length;
         BufferedReader reader = this.createReaderFromFile(fileName);
-        reader.readLine();
+        String[] header = reader.readLine().split(",");
+        for (String var : header) {
+            this.varsBounds.put(var, new double[]{Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY});
+        }
         double[] varsData;
         boolean[] dummy = new boolean[0];
         int i = 0;
@@ -44,6 +51,12 @@ public class MaritimeSignalBuilder implements SignalBuilder<Signal<TrajectoryRec
             catch (NullPointerException | IOException e) {
                 break;
             }
+            //int j = 0;
+            for (int k=0; k < varsData.length; ++k) {
+                double[] temp = this.varsBounds.get(header[k]);
+                temp[0] = Math.min(varsData[k], temp[0]);
+                temp[1] = Math.max(varsData[k], temp[1]);
+            }
             currSignal.add(times[i], new TrajectoryRecord(dummy, varsData));
             ++i;
             if (i == n) {
@@ -54,6 +67,14 @@ public class MaritimeSignalBuilder implements SignalBuilder<Signal<TrajectoryRec
         }
         reader.close();
         return signals;
+    }
+
+    public HashMap<String, double[]> getVarsBounds() {
+        return this.varsBounds;
+    }
+
+    public double[] getTemporalBounds() {
+        return this.temporalBounds;
     }
 
 }

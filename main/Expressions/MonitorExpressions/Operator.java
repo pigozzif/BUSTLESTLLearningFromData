@@ -1,23 +1,25 @@
 package Expressions.MonitorExpressions;
 
+import BuildingBlocks.NodeType;
 import BuildingBlocks.STLFormulaMapper;
 import BuildingBlocks.TreeNode;
-import Expressions.ValueExpressions.IntervalSymbol;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import eu.quanticol.moonlight.formula.DoubleDomain;
 import it.units.malelab.jgea.representation.tree.Tree;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-
+// TODO: overall, this enum smells like a dirty cat
 public enum Operator implements MonitorExpression {
 
     NOT(".not"),
     OR(".or"),
-    UNTIL(".since"),
-    GLOBALLY(".historically"),
-    EVENTUALLY(".once");
+    SINCE(".since"),
+    HISTORICALLY(".historically"),
+    ONCE(".once"),
+    UNTIL(".until"),
+    GLOBALLY(".globally"),
+    EVENTUALLY(".eventually");
 
     private final String string;
 
@@ -31,19 +33,19 @@ public enum Operator implements MonitorExpression {
     }
 
     @Override
-    public TreeNode createMonitor(List<Tree<String>> siblings, List<Tree<String>> ancestors, Tree<String> root) {
-        TreeNode newNode = new TreeNode(root.toString());
-        switch(this) {
+    public TreeNode createMonitor(List<Tree<String>> siblings, List<Tree<String>> ancestors) {
+        TreeNode newNode = new TreeNode();
+        switch (this) {
             case NOT:
-                TreeNode phi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors, root);
+                TreeNode phi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors);
                 newNode.setFirstChild(phi);
                 newNode.setNecessaryLength(phi.getNecessaryLength());
                 newNode.setSymbol("NOT");
                 newNode.setOperator(x -> TemporalMonitor.notMonitor(phi.getOperator().apply(x), new DoubleDomain()));
                 return newNode;
             case OR:
-                TreeNode leftPhi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors, root);
-                TreeNode rightPhi = STLFormulaMapper.parseSubTree(siblings.get(1), ancestors, root);
+                TreeNode leftPhi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors);
+                TreeNode rightPhi = STLFormulaMapper.parseSubTree(siblings.get(1), ancestors);
                 newNode.setFirstChild(leftPhi);
                 newNode.setSecondChild(rightPhi);
                 newNode.setNecessaryLength(Math.max(leftPhi.getNecessaryLength(), rightPhi.getNecessaryLength()));
@@ -51,52 +53,74 @@ public enum Operator implements MonitorExpression {
                 newNode.setOperator(x -> TemporalMonitor.andMonitor(leftPhi.getOperator().apply(x), new DoubleDomain(),
                         rightPhi.getOperator().apply(x)));
                 return newNode;
-            case UNTIL:
-                IntervalSymbol startPerc = new IntervalSymbol(siblings.get(2).childStream().collect(Collectors.toList()));
-                IntervalSymbol length = new IntervalSymbol(siblings.get(3).childStream().collect(Collectors.toList()));
-                Double start = startPerc.getValue();
-                Double width = Math.max(1.0, length.getValue());
-                TreeNode firstPhi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors, root);
-                TreeNode secondPhi = STLFormulaMapper.parseSubTree(siblings.get(1), ancestors, root);
-                newNode.setFirstChild(firstPhi);
-                newNode.setSecondChild(secondPhi);
-                newNode.setInterval(start, start + width);
-                newNode.setNecessaryLength(Math.max(firstPhi.getNecessaryLength(), secondPhi.getNecessaryLength()) +
-                        start + width);
-                newNode.setSymbol("SINCE");
-                newNode.setOperator(x -> TemporalMonitor.sinceMonitor(firstPhi.getOperator().apply(x),
-                        newNode.createInterval(), secondPhi.getOperator().apply(x),
-                        new DoubleDomain()));
-                return newNode;
-            case GLOBALLY:
-                IntervalSymbol startInterval = new IntervalSymbol(siblings.get(1).childStream().collect(Collectors.toList()));
-                IntervalSymbol lengthInterval = new IntervalSymbol(siblings.get(2).childStream().collect(Collectors.toList()));
-                Double s = startInterval.getValue();
-                Double l = Math.max(1.0, lengthInterval.getValue());
-                TreeNode globallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors, root);
-                newNode.setFirstChild(globallyPhi);
-                newNode.setInterval(s, s + l);
-                newNode.setNecessaryLength(globallyPhi.getNecessaryLength() + s + l);
-                newNode.setSymbol("HISTORICALLY");
-                newNode.setOperator(x -> TemporalMonitor.historicallyMonitor(globallyPhi.getOperator().apply(x),
-                        new DoubleDomain(),
-                        newNode.createInterval()));
-                return newNode;
-            default:
-                IntervalSymbol startInter = new IntervalSymbol(siblings.get(1).childStream().collect(Collectors.toList()));
-                IntervalSymbol lengthInter = new IntervalSymbol(siblings.get(2).childStream().collect(Collectors.toList()));
-                Double beginning = startInter.getValue();
-                Double len = Math.max(1.0, lengthInter.getValue());
-                TreeNode eventuallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors, root);
-                newNode.setFirstChild(eventuallyPhi);
-                newNode.setInterval(beginning, beginning + len);
-                newNode.setNecessaryLength(eventuallyPhi.getNecessaryLength() + beginning + len);
-                newNode.setSymbol("ONCE");
-                newNode.setOperator(x -> TemporalMonitor.onceMonitor(eventuallyPhi.getOperator().apply(x),
-                        new DoubleDomain(),
-                        newNode.createInterval()));
-                return newNode;
+                default:
+                    int end = this.equipTemporalOperator(newNode, siblings, this.string.toUpperCase().replace(".", ""));
+                    newNode.setType(NodeType.TEMPORAL_OPTIMIZABLE);
+                    switch (this) {
+                        case SINCE:
+                            TreeNode firstPhi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors);
+                            TreeNode secondPhi = STLFormulaMapper.parseSubTree(siblings.get(3), ancestors);
+                            newNode.setFirstChild(firstPhi);
+                            newNode.setSecondChild(secondPhi);
+                            newNode.setNecessaryLength(Math.max(firstPhi.getNecessaryLength(), secondPhi.getNecessaryLength()) + end);
+                            newNode.setOperator(x -> TemporalMonitor.sinceMonitor(firstPhi.getOperator().apply(x),
+                                    newNode.createInterval(), secondPhi.getOperator().apply(x),
+                                    new DoubleDomain()));
+                            return newNode;
+                        case HISTORICALLY:
+                            TreeNode historicallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors);
+                            newNode.setFirstChild(historicallyPhi);
+                            newNode.setNecessaryLength(historicallyPhi.getNecessaryLength() + end);
+                            newNode.setOperator(x -> TemporalMonitor.historicallyMonitor(historicallyPhi.getOperator().apply(x),
+                                    new DoubleDomain(),
+                                    newNode.createInterval()));
+                            return newNode;
+                        case ONCE:
+                            TreeNode oncePhi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors);
+                            newNode.setFirstChild(oncePhi);
+                            newNode.setNecessaryLength(oncePhi.getNecessaryLength() + end);
+                            newNode.setOperator(x -> TemporalMonitor.onceMonitor(oncePhi.getOperator().apply(x),
+                                    new DoubleDomain(),
+                                    newNode.createInterval()));
+                            return newNode;
+                        case UNTIL:
+                            TreeNode firstP = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors);
+                            TreeNode secondP = STLFormulaMapper.parseSubTree(siblings.get(3), ancestors);
+                            newNode.setFirstChild(firstP);
+                            newNode.setSecondChild(secondP);
+                            newNode.setNecessaryLength(Math.max(firstP.getNecessaryLength(), secondP.getNecessaryLength()) + end);
+                            newNode.setOperator(x -> TemporalMonitor.untilMonitor(firstP.getOperator().apply(x),
+                                    newNode.createInterval(), secondP.getOperator().apply(x),
+                                    new DoubleDomain()));
+                            return newNode;
+                        case GLOBALLY:
+                            TreeNode globallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors);
+                            newNode.setFirstChild(globallyPhi);
+                            newNode.setNecessaryLength(globallyPhi.getNecessaryLength() + end);
+                            newNode.setOperator(x -> TemporalMonitor.globallyMonitor(globallyPhi.getOperator().apply(x),
+                                    new DoubleDomain(),
+                                    newNode.createInterval()));
+                            return newNode;
+                        default:
+                            TreeNode eventuallyPhi = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors);
+                            newNode.setFirstChild(eventuallyPhi);
+                            newNode.setNecessaryLength(eventuallyPhi.getNecessaryLength() + end);
+                            newNode.setOperator(x -> TemporalMonitor.eventuallyMonitor(eventuallyPhi.getOperator().apply(x),
+                                    new DoubleDomain(),
+                                    newNode.createInterval()));
+                            return newNode;
+                    }
         }
+    }
+
+    private int equipTemporalOperator(TreeNode node, List<Tree<String>> siblings, String message) {
+        //IntervalSymbol startInterval = new IntervalSymbol(siblings.get(1).childStream().collect(Collectors.toList()));
+        //IntervalSymbol endInterval = new IntervalSymbol(siblings.get(2).childStream().collect(Collectors.toList()));
+        Integer start = 0;  // startInterval.getValue();
+        int end = 0; //Math.max(1.0, endInterval.getValue()) + start;
+        node.setInterval(start, end);
+        node.setSymbol(message);
+        return end;
     }
 
 }

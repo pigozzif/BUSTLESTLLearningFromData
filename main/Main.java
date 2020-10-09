@@ -1,6 +1,9 @@
 
+import BuildingBlocks.FitnessFunctions.AbstractFitnessFunction;
 import BuildingBlocks.ProblemClass;
+import BuildingBlocks.TrajectoryRecord;
 import BuildingBlocks.TreeNode;
+import eu.quanticol.moonlight.signal.Signal;
 import it.units.malelab.jgea.Worker;
 import it.units.malelab.jgea.core.Individual;
 import it.units.malelab.jgea.core.evolver.StandardWithEnforcedDiversityEvolver;
@@ -22,6 +25,9 @@ import it.units.malelab.jgea.representation.tree.Tree;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -30,8 +36,8 @@ public class Main extends Worker {
 
     private static int seed;
     private static PrintStream out;
-    private final static String grammarPath = "./grammar_maritime.bnf";
-    private final static String outputPath = "output/";
+    private final static String grammarPath = "./grammars/grammar_maritime.bnf";
+    private static String outputPath = "output/";
 
     public static void main(String[] args) throws IOException {
         String errorMessage = "notFound";
@@ -40,8 +46,8 @@ public class Main extends Worker {
             throw new IllegalArgumentException("Random Seed not Valid");
         }
         seed = Integer.parseInt(random);
-        out = new PrintStream(new FileOutputStream(outputPath + Args.a(args, "output_name", "output")
-                + ".csv", true), true);
+        outputPath += Args.a(args, "output_name", "output") + ".csv";
+        out = new PrintStream(new FileOutputStream(outputPath, true), true);
         new Main(args);
     }
 
@@ -60,7 +66,7 @@ public class Main extends Worker {
 
     private void evolution() throws IOException, ExecutionException, InterruptedException {
         Random r = new Random(seed);
-        final ProblemClass p = new ProblemClass(grammarPath, new String[]{}, new String[]{"x1", "x2"}, r); /*"V_vel", "NE_dist", "N_dist", "NW_dist", "W_dist", "SW_dist", "S_dist", "SE_dist", "E_dist", "Vehicle_ID", "Global_Time"};*/ /* "angle", "torque", "speed",*/
+        final ProblemClass p = new ProblemClass(grammarPath, r);
         Map<GeneticOperator<Tree<String>>, Double> operators = new LinkedHashMap<>();
         operators.put(new GrammarBasedSubtreeMutation<>(12, p.getGrammar()), 0.2d);
         operators.put(new SameRootSubtreeCrossover<>(12), 0.8d);
@@ -68,18 +74,43 @@ public class Main extends Worker {
                 p.getSolutionMapper(),
                     new GrammarRampedHalfAndHalf<>(0, 12, p.getGrammar()),
                     PartialComparator.from(Double.class).comparing(Individual::getFitness),
-                    50,
+                    500,
                     operators,
                     new Tournament(5),
                     new Worst(),
-                 50,
+                 500,
                     true,
                 100
         );
-        Collection<TreeNode> solutions = evolver.solve(Misc.cached(p.getFitnessFunction(), 10000), new Iterations(10),
+        Collection<TreeNode> solutions = evolver.solve(Misc.cached(p.getFitnessFunction(), 10), new Iterations(50),
                 r, this.executorService, Listener.onExecutor(new PrintStreamListener<>(out, false, 10,
                         ",", ",",  new Basic(), new Population(), new Diversity(), new BestInfo("%5.3f")), this.executorService));
-        p.postProcess(solutions);
+        this.postProcess(solutions, p.getFitnessFunction());
+    }
+    // grammar only const terminal for optimizable variable, we evaluate the fitness of such a tree, we evaluate an expression template the best best fitness for that template,
+    // fitness evaluates the template and internally tries the previous fitness, something that takes a tree, data, and gives a number, internally invokes the other
+    // with the optimized values, Darwinian not Lamrckian because values are not inherited, for us stateless, might not be bad starting from previous knowledge, base case, everytime
+    // I get a template I can try to copy from similar templates and restart optimization, if looking for optima complicated because of context
+    public void postProcess(Collection<TreeNode> solutions, AbstractFitnessFunction<Signal<TrajectoryRecord>> f) throws IOException {
+        TreeNode bestFormula = solutions.iterator().next();
+        Files.write(Paths.get(outputPath), (bestFormula.toString() + "\n").getBytes(), StandardOpenOption.APPEND);
+        double result;
+        double count = 0.0;
+        for (Signal<TrajectoryRecord> signal : f.getPositiveTest()) {
+            result = f.monitorSignal(signal, bestFormula, false);
+            if (result > 0.0) {
+                ++count;
+            }
+        }
+        Files.write(Paths.get(outputPath), ("Positive Test Misclassification Rate: " + (1.0 - count / f.getPositiveTest().size()) + "\n").getBytes(), StandardOpenOption.APPEND);
+        count = 0.0;
+        for (Signal<TrajectoryRecord> signal : f.getNegativeTest()) {
+            result = f.monitorSignal(signal, bestFormula, true);
+            if (result > 0.0) {
+                ++count;
+            }
+        }
+        Files.write(Paths.get(outputPath), ("Negative Test Misclassification Rate: " + (1.0 - count / f.getNegativeTest().size()) + "\n").getBytes(), StandardOpenOption.APPEND);
     }
 
 }

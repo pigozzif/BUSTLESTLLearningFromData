@@ -28,11 +28,12 @@ public abstract class AbstractFitnessFunction<T> implements Function<TreeNode, D
         return null;
     }
 
-    public double monitorSignal(Signal<TrajectoryRecord> signal, TreeNode solution) {
+    public double monitorSignal(Signal<TrajectoryRecord> signal, TreeNode solution, boolean min) {
         if (signal.size() <= solution.getNecessaryLength()) {
-            return -PENALTY_VALUE;
+            return - PENALTY_VALUE;
         }
-        return solution.getOperator().apply(signal).monitor(signal).valueAt(signal.end());
+        double temp = solution.getOperator().apply(signal).monitor(signal).valueAt(signal.start());
+        return (min) ? temp : - temp;
     }
 
 }

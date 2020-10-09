@@ -28,13 +28,25 @@ public class ExpressionsFactory {
 
     public static List<MonitorExpression> createMonitorExpressions() {
         List<MonitorExpression> res = new ArrayList<>(Arrays.asList(Operator.values()));
-        for (String varName : ProblemClass.retrieveBooleanNames()) {
+        for (String varName : retrieveBooleanNames()) {
             res.add(new BooleanVariable(varName));
         }
-        for (String varName: ProblemClass.retrieveNumericalNames()) {
+        for (String varName: retrieveNumericalNames()) {
             res.add(new NumericalVariable(varName));
         }
         return res;
     }
+
+    public static String[] retrieveBooleanNames() {
+        return new String[]{};
+    }
+
+    public static String[] retrieveNumericalNames() {
+        return new String[]{"x1", "x2"};
+    }
+
+    public static String[] retrieveOperatorNames() { return new String[]{".not", ".or", ".since", ".historically",
+            ".once", ".until", ".globally", ".eventually"}; }  /*"V_vel", "NE_dist", "N_dist", "NW_dist", "W_dist", "SW_dist", "S_dist", "SE_dist", "E_dist", "Vehicle_ID", "Global_Time"};*/ /* "angle", "torque", "speed",*/
+
 
 }

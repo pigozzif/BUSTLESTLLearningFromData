@@ -17,19 +17,19 @@ public class STLFormulaMapper implements Function<Tree<String>, TreeNode> {
 
     @Override
     public TreeNode apply(Tree<String> root) {
-        return parseSubTree(root, new ArrayList<Tree<String>>() {{ add(null); }}, root);
+        return parseSubTree(root, new ArrayList<Tree<String>>() {{ add(null); }});
     }
 
-    public static TreeNode parseSubTree(Tree<String> currentNode, List<Tree<String>> ancestors, Tree<String> root) {
+    public static TreeNode parseSubTree(Tree<String> currentNode, List<Tree<String>> ancestors) {
         List<Tree<String>> children = currentNode.childStream().collect(Collectors.toList());
         Tree<String> testChild = children.get(0);
         Optional<MonitorExpression> expression = monitorExpressions.stream().filter(x -> x.toString().equals(testChild.content())).findAny();
         if (expression.isPresent()) {
             ancestors.add(currentNode);
-            return expression.get().createMonitor(getSiblings(testChild, ancestors), ancestors, root);
+            return expression.get().createMonitor(getSiblings(testChild, ancestors), ancestors);
         }
         ancestors.add(currentNode);
-        return parseSubTree(testChild, ancestors, root);
+        return parseSubTree(testChild, ancestors);
     }
 
     public static Optional<ValueExpression<?>> fromStringToValueExpression(Tree<String> string) {
