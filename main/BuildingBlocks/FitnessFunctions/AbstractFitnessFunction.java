@@ -1,16 +1,23 @@
 package BuildingBlocks.FitnessFunctions;
 
+import BuildingBlocks.SignalBuilders.SignalBuilder;
 import BuildingBlocks.TrajectoryRecord;
 import BuildingBlocks.TreeNode;
 import eu.quanticol.moonlight.signal.Signal;
 
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 
 public abstract class AbstractFitnessFunction<T> implements Function<TreeNode, Double> {
 
     public final static double PENALTY_VALUE = 1.0;
+    protected SignalBuilder<T> signalBuilder;
+
+    public SignalBuilder<T> getSignalBuilder() {return this.signalBuilder;}
+
+    public abstract BiFunction<TreeNode, double[], Double> getObjective();
 
     public List<T> getPositiveTraining() {
         return null;

@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -20,4 +21,9 @@ public interface SignalBuilder<T> {
 
     List<T> parseSignals(String fileName, List<Integer> boolIndexes, List<Integer> doubleIndexes) throws IOException;
 
+    HashMap<String, double[]> getVarsBounds();
+
+    double[] getTemporalBounds();
+
+    default double[] readVectorFromFile(String s) throws IOException {return null;}
 }

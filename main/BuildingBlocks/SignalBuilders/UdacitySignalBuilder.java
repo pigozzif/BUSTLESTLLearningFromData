@@ -6,6 +6,7 @@ import eu.quanticol.moonlight.signal.Signal;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -52,6 +53,16 @@ public class UdacitySignalBuilder implements SignalBuilder<Signal<TrajectoryReco
         }
         reader.close();
         return signals;
+    }
+
+    @Override
+    public HashMap<String, double[]> getVarsBounds() {
+        return null;
+    }
+
+    @Override
+    public double[] getTemporalBounds() {
+        return new double[0];
     }
 
     private void createSignalAndUpdateWithSlidingWindow(List<TrajectoryRecord> trajectory, List<Long> times,

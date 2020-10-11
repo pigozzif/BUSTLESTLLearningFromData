@@ -1,13 +1,16 @@
 package Expressions.MonitorExpressions;
 
 import BuildingBlocks.NodeType;
+import BuildingBlocks.ProblemClass;
 import BuildingBlocks.STLFormulaMapper;
 import BuildingBlocks.TreeNode;
+import Expressions.ValueExpressions.IntervalSymbol;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import eu.quanticol.moonlight.formula.DoubleDomain;
 import it.units.malelab.jgea.representation.tree.Tree;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 // TODO: overall, this enum smells like a dirty cat
 public enum Operator implements MonitorExpression {
@@ -114,10 +117,18 @@ public enum Operator implements MonitorExpression {
     }
 
     private int equipTemporalOperator(TreeNode node, List<Tree<String>> siblings, String message) {
-        //IntervalSymbol startInterval = new IntervalSymbol(siblings.get(1).childStream().collect(Collectors.toList()));
-        //IntervalSymbol endInterval = new IntervalSymbol(siblings.get(2).childStream().collect(Collectors.toList()));
-        Integer start = 0;  // startInterval.getValue();
-        int end = 0; //Math.max(1.0, endInterval.getValue()) + start;
+        int start;
+        int end;
+        if (!ProblemClass.isLocalSearch) {
+            IntervalSymbol startInterval = new IntervalSymbol(siblings.get(1).childStream().collect(Collectors.toList()));
+            IntervalSymbol endInterval = new IntervalSymbol(siblings.get(2).childStream().collect(Collectors.toList()));
+            start = (int) startInterval.getValue().doubleValue();
+            end = (int) Math.max(1.0, endInterval.getValue()) + start;
+        }
+        else {
+            start = 0;
+            end = 0;
+        }
         node.setInterval(start, end);
         node.setSymbol(message);
         return end;

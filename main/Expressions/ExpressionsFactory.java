@@ -28,16 +28,16 @@ public class ExpressionsFactory {
 
     public static List<MonitorExpression> createMonitorExpressions() {
         List<MonitorExpression> res = new ArrayList<>(Arrays.asList(Operator.values()));
-        for (String varName : retrieveBooleanNames()) {
+        for (String varName : ProblemClass.retrieveBooleanNames()) {
             res.add(new BooleanVariable(varName));
         }
-        for (String varName: retrieveNumericalNames()) {
+        for (String varName: ProblemClass.retrieveNumericalNames()) {
             res.add(new NumericalVariable(varName));
         }
         return res;
     }
 
-    public static String[] retrieveBooleanNames() {
+    /*public static String[] retrieveBooleanNames() {
         return new String[]{};
     }
 

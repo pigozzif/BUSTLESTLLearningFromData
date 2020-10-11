@@ -1,28 +1,49 @@
 package BuildingBlocks;
 
 import BuildingBlocks.FitnessFunctions.AbstractFitnessFunction;
-import BuildingBlocks.FitnessFunctions.MaritimeFitnessFunction;
-import eu.quanticol.moonlight.signal.Signal;
 import it.units.malelab.jgea.representation.grammar.Grammar;
 import it.units.malelab.jgea.representation.grammar.GrammarBasedProblem;
 import it.units.malelab.jgea.representation.tree.Tree;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
+import java.util.Collection;
 import java.util.function.Function;
 
-// TODO: generify this class
-public class ProblemClass implements GrammarBasedProblem<String, TreeNode, Double> {
+
+public class ProblemClass<T> implements GrammarBasedProblem<String, TreeNode, Double> {
 
     private final Grammar<String> grammar;
-    private final Function<Tree<String>, TreeNode> solutionMapper;
-    private final AbstractFitnessFunction<Signal<TrajectoryRecord>> fitnessFunction;
+    private Function<Tree<String>, TreeNode> solutionMapper;
+    private AbstractFitnessFunction<T> fitnessFunction;
+    private static String[] numericalNames;
+    private static String[] booleanNames;
+    public static boolean isLocalSearch;
 
-    public ProblemClass(String grammarPath, Random random) throws IOException {
+    public ProblemClass(String grammarPath, boolean toOptimize) throws IOException {
         this.grammar = Grammar.fromFile(new File(grammarPath));
+        try {
+            booleanNames = this.grammar.getRules().get("<bool_var>").stream().flatMap(Collection::stream).toArray(String[]::new);
+        }
+        catch (NullPointerException e) {
+            booleanNames = new String[0];
+        }
+        try {
+            numericalNames = this.grammar.getRules().get("<num_var>").stream().flatMap(Collection::stream).toArray(String[]::new);
+        }
+        catch (NullPointerException e) {
+            numericalNames = new String[0];
+        }
+        isLocalSearch = toOptimize;
+    }
+
+    public void setFitnessFunction(AbstractFitnessFunction<T> fitnessFunction) {
+        this.fitnessFunction = fitnessFunction;
+        this.setSolutionMapper();
+    }
+
+    public void setSolutionMapper() {
         this.solutionMapper = new STLFormulaMapper();
-        this.fitnessFunction = new MaritimeFitnessFunction(random);
     }
 
     @Override
@@ -36,8 +57,16 @@ public class ProblemClass implements GrammarBasedProblem<String, TreeNode, Doubl
     }
 
     @Override
-    public AbstractFitnessFunction<Signal<TrajectoryRecord>> getFitnessFunction() {
+    public AbstractFitnessFunction<T> getFitnessFunction() {
         return this.fitnessFunction;
+    }
+
+    public static String[] retrieveBooleanNames() {
+        return booleanNames;
+    }
+
+    public static String[] retrieveNumericalNames() {
+        return numericalNames;
     }
 
 }

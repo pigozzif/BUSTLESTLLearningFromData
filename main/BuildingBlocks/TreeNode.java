@@ -4,6 +4,7 @@ import Expressions.ValueExpressions.CompareSign;
 import eu.quanticol.moonlight.formula.Interval;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import eu.quanticol.moonlight.signal.Signal;
+import it.units.malelab.jgea.core.util.Sized;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 
-public class TreeNode {
+public class TreeNode implements Sized {
     // TODO: in reality, the doubles for the intervals could become integers or shorts
     private double start;
     private double end;
@@ -60,9 +61,9 @@ public class TreeNode {
         return new Interval(this.start, this.end);
     }
 
-    public void setInterval(int s, int e) {
-        this.start = s;
-        this.end = e;
+    public void setInterval(double s, double e) {
+        this.start = (int) s;
+        this.end = (int) e;
     }
 
     public void setNecessaryLength(int horizon) {
@@ -75,9 +76,6 @@ public class TreeNode {
 
     public void setSymbol(String s) {
         this.symbol = s;
-        /*if (this.start != -1.0) {
-            this.symbol += " I=[" + this.start + " " + this.end + "]";
-        }*/
     }
 
     public String getSymbol() {
@@ -144,6 +142,14 @@ public class TreeNode {
         if (this.firstChild != null) idxs = this.firstChild.propagateParametersAux(parameters, idxs);
         if (this.secondChild != null) idxs = this.secondChild.propagateParametersAux(parameters, idxs);
         return idxs;
+    }
+
+    @Override
+    public int size() {
+        int ans = 1;
+        ans += (this.firstChild != null) ? this.firstChild.size() : 0;
+        ans += (this.secondChild != null) ? this.secondChild.size() : 0;
+        return ans;
     }
 
     @Override

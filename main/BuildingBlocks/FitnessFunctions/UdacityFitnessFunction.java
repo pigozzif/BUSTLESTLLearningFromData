@@ -9,6 +9,7 @@ import eu.quanticol.moonlight.signal.Signal;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 
 
 public class UdacityFitnessFunction extends AbstractFitnessFunction<Signal<TrajectoryRecord>[]> {
@@ -77,4 +78,8 @@ public class UdacityFitnessFunction extends AbstractFitnessFunction<Signal<Traje
         return metric / this.signals.size();*/
     }
 
+    @Override
+    public BiFunction<TreeNode, double[], Double> getObjective() {
+        return null;
+    }
 }

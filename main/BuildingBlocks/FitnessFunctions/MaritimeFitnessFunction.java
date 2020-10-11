@@ -1,9 +1,11 @@
 package BuildingBlocks.FitnessFunctions;
 
+import BuildingBlocks.ProblemClass;
 import BuildingBlocks.SignalBuilders.MaritimeSignalBuilder;
 import BuildingBlocks.TrajectoryRecord;
 import BuildingBlocks.TreeNode;
 import eu.quanticol.moonlight.signal.Signal;
+import localSearch.LocalSearch;
 import localSearch.gpOptimisation.GPOptimisation;
 import localSearch.gpOptimisation.GpoOptions;
 import localSearch.numeric.optimization.ObjectiveFunction;
@@ -22,7 +24,7 @@ public class MaritimeFitnessFunction extends AbstractFitnessFunction<Signal<Traj
     private final List<Signal<TrajectoryRecord>> positiveTest = new ArrayList<>();
     private final List<Signal<TrajectoryRecord>> negativeTraining = new ArrayList<>();
     private final List<Signal<TrajectoryRecord>> negativeTest = new ArrayList<>();
-    private final MaritimeSignalBuilder signalBuilder = new MaritimeSignalBuilder();
+    //private final MaritimeSignalBuilder signalBuilder = new MaritimeSignalBuilder();
     private final BiFunction<double[], double[], Double> function = (x, y) -> (x[0] - y[0]) / (Math.abs(x[1] + y[1]));
     private final double[] labels;
     private final long numPositive;
@@ -31,6 +33,7 @@ public class MaritimeFitnessFunction extends AbstractFitnessFunction<Signal<Traj
 
     public MaritimeFitnessFunction(Random random) throws IOException {
         super();
+        this.signalBuilder = new MaritimeSignalBuilder();
         List<Integer> boolIndexes = new ArrayList<Integer>() {{ }};
         List<Integer> doubleIndexes = new ArrayList<Integer>() {{ add(0); add(1); }};
         List<Signal<TrajectoryRecord>> signals = this.signalBuilder.parseSignals("./data/navalData.csv", boolIndexes, doubleIndexes);
@@ -47,26 +50,22 @@ public class MaritimeFitnessFunction extends AbstractFitnessFunction<Signal<Traj
         //    this.num++;
         //    return 0.0;
         //}
-        double[] newParams = this.averageMultiTrajectory(monitor, 50);
-        double[] positiveResult = this.computeRobustness(monitor, this.positiveTraining, this.numPositive, newParams);
-        double[] negativeResult = this.computeRobustness(monitor, this.negativeTraining, this.numNegative, newParams);
+        if (ProblemClass.isLocalSearch) {
+            double[] newParams = LocalSearch.optimize(monitor, this, 50);
+            monitor.propagateParameters(newParams);
+        }
+        double[] positiveResult = this.computeRobustness(monitor, this.positiveTraining, this.numPositive);
+        double[] negativeResult = this.computeRobustness(monitor, this.negativeTraining, this.numNegative);
         ++this.num;
         // System.out.println("INDIVIDUAL: " + this.num);
         return - this.function.apply(positiveResult, negativeResult);
     }
 
-    private double[] computeRobustness(TreeNode monitor, List<Signal<TrajectoryRecord>> data, long num, double[] parameters) {
-        monitor.propagateParameters(parameters);
+    private double[] computeRobustness(TreeNode monitor, List<Signal<TrajectoryRecord>> data, long num) {
         double[] result = new double[2];
         double robustness;
         for (Signal<TrajectoryRecord> signal : data) {
-            //try {
             robustness = this.monitorSignal(signal, monitor, false);
-            //}
-            //catch (Exception e) {
-            //    System.out.println(monitor);
-            //    throw e;
-            //}
             result[0] += robustness;
             result[1] += robustness * robustness;
         }
@@ -80,7 +79,7 @@ public class MaritimeFitnessFunction extends AbstractFitnessFunction<Signal<Traj
         return Math.sqrt((partialSumSquared / (num - 1)) - (mean * mean));
     }
 
-    private double[] averageMultiTrajectory(TreeNode monitor, int maxIterations) {
+    /*private double[] averageMultiTrajectory(TreeNode monitor, int maxIterations) {
         double[] timeBounds = this.signalBuilder.getTemporalBounds();
         List<String[]> variables = monitor.getVariables();
         int numVariables = variables.size();
@@ -97,22 +96,11 @@ public class MaritimeFitnessFunction extends AbstractFitnessFunction<Signal<Traj
             ub[j + numBounds] = temp.get(variables.get(j)[0])[1];
         }
         ObjectiveFunction function = point -> {
-            //for (int i = 0; i < numBounds - 1; i += 2) {
-                // point[i + 1] = point[i] + point[i + 1] * (1 - point[i]);
-            //    System.out.println("####");
-            //    System.out.println(point[i]);
-            //    System.out.println(point[i + 1]);
-            //}
             final double[] p = point;
             point = IntStream.range(0, point.length).mapToDouble(i -> lb[i] + p[i] * (ub[i] - lb[i])).toArray();
-            //for (int i = 0; i < numBounds - 1; i += 2) {
-            //    point[i + 1] = point[i] + point[i + 1];// * (1 - point[i]);
-            //    System.out.println("####");
-            //    System.out.println((int) point[i]);
-            //    System.out.println((int) point[i] + (int) point[i + 1]);
-            //}
-            double[] value1 = this.computeRobustness(monitor, this.positiveTraining, this.numPositive, point);
-            double[] value2 = this.computeRobustness(monitor, this.negativeTraining, this.numNegative, point);
+            monitor.propagateParameters(point);
+            double[] value1 = this.computeRobustness(monitor, this.positiveTraining, this.numPositive);
+            double[] value2 = this.computeRobustness(monitor, this.negativeTraining, this.numNegative);
             double abs = this.function.apply(value1, value2);
             if (Double.isNaN(abs)) {
                 return 0;
@@ -126,10 +114,7 @@ public class MaritimeFitnessFunction extends AbstractFitnessFunction<Signal<Traj
                 for (int i = 0; i < n; i++) {
                     for (int j = 0; j < numBounds; j += 2) {
                         res[i][j] = lbounds[j] + (Math.random() * (ubounds[j] - lbounds[j]));
-                        res[i][j + 1] = /*res[i][j] + */(Math.random() * (ubounds[j + 1] - res[i][j]));
-                        //res[i][j + 1] = Math.max(1.0 / ubounds[j + 1], Math.random() * (ubounds[j + 1] - res[i][j]));
-                        // System.out.println(res[i][j]);
-                        // System.out.println(res[i][j + 1]);
+                        res[i][j + 1] = (Math.random() * (ubounds[j + 1] - res[i][j]));
                     }
                     for (int j = numBounds; j < res[i].length; j++) {
                         res[i][j] = lbounds[j] + Math.random() * (ubounds[j] - lbounds[j]);
@@ -156,9 +141,10 @@ public class MaritimeFitnessFunction extends AbstractFitnessFunction<Signal<Traj
         double[] ubU = IntStream.range(0, ub.length).mapToDouble(i -> 1).toArray();
         double[] v = gpo.optimise(function, lbU, ubU).getSolution();
         double[] vv = IntStream.range(0, v.length).mapToDouble(i -> lb[i] + v[i] * (ub[i] - lb[i])).toArray();
-        double[] p1u1 = this.computeRobustness(monitor, this.positiveTraining, this.numPositive, vv);
-        double[] p2u2 = this.computeRobustness(monitor, this.negativeTraining, this.numNegative, vv);
-        double value;
+        monitor.propagateParameters(vv);
+        //double[] p1u1 = this.computeRobustness(monitor, this.positiveTraining, this.numPositive, vv);
+        //double[] p2u2 = this.computeRobustness(monitor, this.negativeTraining, this.numNegative, vv);
+        //double value;
         if (p1u1[0] > p2u2[0]) {
             value = ((p1u1[0] - p1u1[1]) + (p2u2[0] + p2u2[1])) / 2;
         } else {
@@ -172,7 +158,7 @@ public class MaritimeFitnessFunction extends AbstractFitnessFunction<Signal<Traj
             }
         }
         return vv;
-    }
+    }*/
 
     private void splitSignals(List<Signal<TrajectoryRecord>> signals, double fold, Random random) {
         List<Integer> positiveIndexes = new ArrayList<>();
@@ -200,6 +186,14 @@ public class MaritimeFitnessFunction extends AbstractFitnessFunction<Signal<Traj
         for (int i=negFold; i < negativeIndexes.size(); ++i) {
             this.negativeTest.add(signals.get(negativeIndexes.get(i)));
         }
+    }
+
+    @Override
+    public BiFunction<TreeNode, double[], Double> getObjective() {
+        return (TreeNode node, double[] params) -> {node.propagateParameters(params);
+            double[] value1 = this.computeRobustness(node, this.positiveTraining, this.numPositive);
+            double[] value2 = this.computeRobustness(node, this.negativeTraining, this.numNegative);
+            return this.function.apply(value1, value2);};
     }
 
     @Override

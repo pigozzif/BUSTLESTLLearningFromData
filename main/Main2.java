@@ -1,6 +1,4 @@
-
 import BuildingBlocks.FitnessFunctions.AbstractFitnessFunction;
-import BuildingBlocks.FitnessFunctions.I80FitnessFunction;
 import BuildingBlocks.FitnessFunctions.MaritimeFitnessFunction;
 import BuildingBlocks.ProblemClass;
 import BuildingBlocks.TrajectoryRecord;
@@ -12,7 +10,10 @@ import it.units.malelab.jgea.core.evolver.StandardWithEnforcedDiversityEvolver;
 import it.units.malelab.jgea.core.evolver.stopcondition.Iterations;
 import it.units.malelab.jgea.core.listener.Listener;
 import it.units.malelab.jgea.core.listener.PrintStreamListener;
-import it.units.malelab.jgea.core.listener.collector.*;
+import it.units.malelab.jgea.core.listener.collector.Basic;
+import it.units.malelab.jgea.core.listener.collector.BestInfo;
+import it.units.malelab.jgea.core.listener.collector.Diversity;
+import it.units.malelab.jgea.core.listener.collector.Population;
 import it.units.malelab.jgea.core.operator.GeneticOperator;
 import it.units.malelab.jgea.core.order.PartialComparator;
 import it.units.malelab.jgea.core.selector.Tournament;
@@ -30,16 +31,19 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 
-public class Main extends Worker {
+public class Main2 extends Worker {
 
     private static int seed;
     private static PrintStream out;
-    private final static String grammarPath = "./grammars/grammar_maritime_local_search.bnf";
-    private static String outputPath = "output/";
+    private final static String grammarPath = "./grammars/grammar_maritime.bnf";
+    private static String outputPath = "output2/";
 
     public static void main(String[] args) throws IOException {
         String errorMessage = "notFound";
@@ -50,10 +54,10 @@ public class Main extends Worker {
         seed = Integer.parseInt(random);
         outputPath += Args.a(args, "output_name", "output") + ".csv";
         out = new PrintStream(new FileOutputStream(outputPath, true), true);
-        new Main(args);
+        new Main2(args);
     }
 
-    public Main(String[] args) {
+    public Main2(String[] args) {
         super(args);
     }
 
@@ -68,7 +72,7 @@ public class Main extends Worker {
 
     private void evolution() throws IOException, ExecutionException, InterruptedException {
         Random r = new Random(seed);
-        final ProblemClass<Signal<TrajectoryRecord>> p = new ProblemClass<>(grammarPath, true);
+        final ProblemClass<Signal<TrajectoryRecord>> p = new ProblemClass<>(grammarPath, false);
         AbstractFitnessFunction<Signal<TrajectoryRecord>> f = new /*I80FitnessFunction();*/MaritimeFitnessFunction(r);
         p.setFitnessFunction(f);
         Map<GeneticOperator<Tree<String>>, Double> operators = new LinkedHashMap<>();

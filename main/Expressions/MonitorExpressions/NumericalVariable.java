@@ -1,10 +1,12 @@
 package Expressions.MonitorExpressions;
 
 import BuildingBlocks.NodeType;
+import BuildingBlocks.ProblemClass;
 import BuildingBlocks.STLFormulaMapper;
 import BuildingBlocks.TreeNode;
 import Expressions.ValueExpressions.CompareSign;
 import Expressions.ValueExpressions.Digit;
+import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import it.units.malelab.jgea.representation.tree.Tree;
 
 import java.util.List;
@@ -28,11 +30,18 @@ public class NumericalVariable implements MonitorExpression {
     public TreeNode createMonitor(List<Tree<String>> siblings, List<Tree<String>> ancestors) {
         CompareSign firstSibling = (CompareSign) STLFormulaMapper.fromStringToValueExpression(siblings.get(0).childStream().collect(Collectors.toList()).get(0)).get();
         TreeNode newNode = new TreeNode();
-        newNode.setType(NodeType.NUMERIC_OPTIMIZABLE);
-        Double number = null;//this.parseNumber(siblings.get(1).childStream().collect(Collectors.toList()));
+        Double number;
+        if (ProblemClass.isLocalSearch) {
+            newNode.setType(NodeType.NUMERIC_OPTIMIZABLE);
+            number = null;
+            newNode.setSymbol(this.string + " " + firstSibling.toString() + " " + number);
+        }
+        else {
+            number = this.parseNumber(siblings.get(1).childStream().collect(Collectors.toList()));
+            newNode.setOperator(x -> TemporalMonitor.atomicMonitor(y -> firstSibling.getValue().apply(y.getDouble(this.string),
+                            number)));
+        }
         newNode.setSymbol(this.string + " " + firstSibling.toString() + " " + number);
-        //newNode.setOperator(x -> TemporalMonitor.atomicMonitor(y -> firstSibling.getValue().apply(y.getDouble(this.string),
-        //        number)));
         return newNode;
     }
 

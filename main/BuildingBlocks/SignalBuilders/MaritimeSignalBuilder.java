@@ -51,7 +51,6 @@ public class MaritimeSignalBuilder implements SignalBuilder<Signal<TrajectoryRec
             catch (NullPointerException | IOException e) {
                 break;
             }
-            //int j = 0;
             for (int k=0; k < varsData.length; ++k) {
                 double[] temp = this.varsBounds.get(header[k]);
                 temp[0] = Math.min(varsData[k], temp[0]);
