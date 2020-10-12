@@ -1,8 +1,9 @@
+
+import TreeNodes.AbstractTreeNode;
 import BuildingBlocks.FitnessFunctions.AbstractFitnessFunction;
 import BuildingBlocks.FitnessFunctions.MaritimeFitnessFunction;
 import BuildingBlocks.ProblemClass;
 import BuildingBlocks.TrajectoryRecord;
-import BuildingBlocks.TreeNode;
 import eu.quanticol.moonlight.signal.Signal;
 import it.units.malelab.jgea.Worker;
 import it.units.malelab.jgea.core.Individual;
@@ -43,7 +44,7 @@ public class Main2 extends Worker {
     private static int seed;
     private static PrintStream out;
     private final static String grammarPath = "./grammars/grammar_maritime.bnf";
-    private static String outputPath = "output2/";
+    private static String outputPath = "maritime/";
 
     public static void main(String[] args) throws IOException {
         String errorMessage = "notFound";
@@ -73,12 +74,12 @@ public class Main2 extends Worker {
     private void evolution() throws IOException, ExecutionException, InterruptedException {
         Random r = new Random(seed);
         final ProblemClass<Signal<TrajectoryRecord>> p = new ProblemClass<>(grammarPath, false);
-        AbstractFitnessFunction<Signal<TrajectoryRecord>> f = new /*I80FitnessFunction();*/MaritimeFitnessFunction(r);
+        AbstractFitnessFunction<Signal<TrajectoryRecord>> f = new /*I80FitnessFunction();*/MaritimeFitnessFunction("./data/navalData2.csv", r);
         p.setFitnessFunction(f);
         Map<GeneticOperator<Tree<String>>, Double> operators = new LinkedHashMap<>();
         operators.put(new GrammarBasedSubtreeMutation<>(12, p.getGrammar()), 0.2d);
         operators.put(new SameRootSubtreeCrossover<>(12), 0.8d);
-        StandardWithEnforcedDiversityEvolver<Tree<String>, TreeNode, Double> evolver = new StandardWithEnforcedDiversityEvolver<>(
+        StandardWithEnforcedDiversityEvolver<Tree<String>, AbstractTreeNode, Double> evolver = new StandardWithEnforcedDiversityEvolver<>(
                     p.getSolutionMapper(),
                     new GrammarRampedHalfAndHalf<>(0, 12, p.getGrammar()),
                     PartialComparator.from(Double.class).comparing(Individual::getFitness),
@@ -90,18 +91,19 @@ public class Main2 extends Worker {
                     true,
                 100
         );
-        Collection<TreeNode> solutions = evolver.solve(Misc.cached(p.getFitnessFunction(), 10), new Iterations(50),
+        Collection<AbstractTreeNode> solutions = evolver.solve(Misc.cached(p.getFitnessFunction(), 10), new Iterations(50),
                 r, this.executorService, Listener.onExecutor(new PrintStreamListener<>(out, false, 10,
                         ",", ",",  new Basic(), new Population(), new Diversity(), new BestInfo("%5.3f")), this.executorService));
+        AbstractTreeNode bestFormula = solutions.iterator().next();
+        Files.write(Paths.get(outputPath), (bestFormula.toString() + "\n").getBytes(), StandardOpenOption.APPEND);
         this.postProcess(solutions, p.getFitnessFunction());
     }
     // grammar only const terminal for optimizable variable, we evaluate the fitness of such a tree, we evaluate an expression template the best best fitness for that template,
     // fitness evaluates the template and internally tries the previous fitness, something that takes a tree, data, and gives a number, internally invokes the other
     // with the optimized values, Darwinian not Lamrckian because values are not inherited, for us stateless, might not be bad starting from previous knowledge, base case, everytime
     // I get a template I can try to copy from similar templates and restart optimization, if looking for optima complicated because of context
-    public void postProcess(Collection<TreeNode> solutions, AbstractFitnessFunction<Signal<TrajectoryRecord>> f) throws IOException {
-        TreeNode bestFormula = solutions.iterator().next();
-        Files.write(Paths.get(outputPath), (bestFormula.toString() + "\n").getBytes(), StandardOpenOption.APPEND);
+    public void postProcess(Collection<AbstractTreeNode> solutions, AbstractFitnessFunction<Signal<TrajectoryRecord>> f) throws IOException {
+        AbstractTreeNode bestFormula = solutions.iterator().next();
         double result;
         double count = 0.0;
         for (Signal<TrajectoryRecord> signal : f.getPositiveTest()) {

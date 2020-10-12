@@ -1,8 +1,8 @@
 package BuildingBlocks.FitnessFunctions;
 
+import TreeNodes.AbstractTreeNode;
 import BuildingBlocks.SignalBuilders.UdacitySignalBuilder;
 import BuildingBlocks.TrajectoryRecord;
-import BuildingBlocks.TreeNode;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import eu.quanticol.moonlight.signal.Signal;
 
@@ -26,7 +26,7 @@ public class UdacityFitnessFunction extends AbstractFitnessFunction<Signal<Traje
     }
 
     @Override
-    public Double apply(TreeNode monitor) {
+    public Double apply(AbstractTreeNode monitor) {
 //        System.out.println("INDIVIDUAL: " + this.num);
         double count = 0.0;
         for (Signal<TrajectoryRecord>[] l : this.signals) {
@@ -79,7 +79,7 @@ public class UdacityFitnessFunction extends AbstractFitnessFunction<Signal<Traje
     }
 
     @Override
-    public BiFunction<TreeNode, double[], Double> getObjective() {
+    public BiFunction<AbstractTreeNode, double[], Double> getObjective() {
         return null;
     }
 }

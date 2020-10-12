@@ -1,6 +1,7 @@
 package BuildingBlocks;
 
 import BuildingBlocks.FitnessFunctions.AbstractFitnessFunction;
+import TreeNodes.AbstractTreeNode;
 import it.units.malelab.jgea.representation.grammar.Grammar;
 import it.units.malelab.jgea.representation.grammar.GrammarBasedProblem;
 import it.units.malelab.jgea.representation.tree.Tree;
@@ -11,10 +12,10 @@ import java.util.Collection;
 import java.util.function.Function;
 
 
-public class ProblemClass<T> implements GrammarBasedProblem<String, TreeNode, Double> {
+public class ProblemClass<T> implements GrammarBasedProblem<String, AbstractTreeNode, Double> {
 
     private final Grammar<String> grammar;
-    private Function<Tree<String>, TreeNode> solutionMapper;
+    private Function<Tree<String>, AbstractTreeNode> solutionMapper;
     private AbstractFitnessFunction<T> fitnessFunction;
     private static String[] numericalNames;
     private static String[] booleanNames;
@@ -52,7 +53,7 @@ public class ProblemClass<T> implements GrammarBasedProblem<String, TreeNode, Do
     }
 
     @Override
-    public Function<Tree<String>, TreeNode> getSolutionMapper() {
+    public Function<Tree<String>, AbstractTreeNode> getSolutionMapper() {
         return this.solutionMapper;
     }
 

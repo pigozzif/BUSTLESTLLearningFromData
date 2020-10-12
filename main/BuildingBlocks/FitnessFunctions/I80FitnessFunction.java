@@ -1,9 +1,9 @@
 package BuildingBlocks.FitnessFunctions;
 
+import TreeNodes.AbstractTreeNode;
 import BuildingBlocks.ProblemClass;
 import BuildingBlocks.SignalBuilders.I80SignalBuilder;
 import BuildingBlocks.TrajectoryRecord;
-import BuildingBlocks.TreeNode;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import eu.quanticol.moonlight.signal.Signal;
 import localSearch.LocalSearch;
@@ -17,7 +17,7 @@ public class I80FitnessFunction extends AbstractFitnessFunction<Signal<Trajector
 
     private final List<Signal<TrajectoryRecord>[]> signals;
     private final int numFragments;
- //   private int num = 1;
+    private int num = 1;
 
     public I80FitnessFunction() throws IOException {
         this.signalBuilder = new I80SignalBuilder();
@@ -29,21 +29,30 @@ public class I80FitnessFunction extends AbstractFitnessFunction<Signal<Trajector
     }
 
     @Override
-    public Double apply(TreeNode monitor) {
-        // System.out.println("INDIVIDUAL: " + this.num);
+    public Double apply(AbstractTreeNode monitor) {
+//        System.out.println("INDIVIDUAL: " + this.num);
         double count = 0.0;
 //        int failedCount = 0;
 //        int discardedCount = 0;
 //        System.out.println(monitor);
         //System.out.println(monitor.equals(monitor.getFirstChild()));
 //        cache.forEach(x -> {if (x.equals(monitor)) System.out.println(x);});
-        if (ProblemClass.isLocalSearch) {
-            double[] newParams = LocalSearch.optimize(monitor, this, 25);
-            monitor.propagateParameters(newParams);
-        }
+//        try {
+            if (ProblemClass.isLocalSearch) {
+//                if (this.num == 6) {
+//                    boolean temp = true;
+//                }
+                double[] newParams = LocalSearch.optimize(monitor, this, 15);
+                monitor.propagateParameters(newParams);
+            }
+//        }
+//        catch (Exception e) {
+//            System.out.println(monitor);
+//            throw e;
+//        }
         for (Signal<TrajectoryRecord>[] l : this.signals) {
             for (Signal<TrajectoryRecord> s : l) {
- //               try {
+//                try {
                     if (s.size() <= monitor.getNecessaryLength()) {
 //                        discardedCount += 1;
                         count += PENALTY_VALUE;
@@ -55,14 +64,14 @@ public class I80FitnessFunction extends AbstractFitnessFunction<Signal<Trajector
 //                    System.out.println(monitor);
 //                    System.out.println(s);
 //                    failedCount += 1;
- //                   throw e;
- //               }
+//                    throw e;
+//                }
             }
         }
 //        System.out.println("FAILED " + failedCount + " over a total of: " + this.numFragments);
 //        System.out.println("DISCARDED " + discardedCount + " over a total of: " + this.numFragments + "\n");
-//        ++this.num;
-//        System.out.println("Fitness: " + count / this.signals.size() + "\n");
+        ++this.num;
+//        System.out.println("Fitness: " + count / this.numFragments + "\n");
         return count / this.numFragments;
     }
 
@@ -103,8 +112,8 @@ public class I80FitnessFunction extends AbstractFitnessFunction<Signal<Trajector
     }
 
     @Override
-    public BiFunction<TreeNode, double[], Double> getObjective() {
-        return (TreeNode node, double[] params) -> {node.propagateParameters(params);
+    public BiFunction<AbstractTreeNode, double[], Double> getObjective() {
+        return (AbstractTreeNode node, double[] params) -> {node.propagateParameters(params);
             double count = 0.0;
             for (Signal<TrajectoryRecord>[] l : this.signals) {
                 for (Signal<TrajectoryRecord> s : l) {
