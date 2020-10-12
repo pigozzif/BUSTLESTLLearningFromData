@@ -1,8 +1,8 @@
 package BuildingBlocks.FitnessFunctions;
 
+import TreeNodes.AbstractTreeNode;
 import BuildingBlocks.SignalBuilders.SignalBuilder;
 import BuildingBlocks.TrajectoryRecord;
-import BuildingBlocks.TreeNode;
 import eu.quanticol.moonlight.signal.Signal;
 
 import java.util.List;
@@ -10,14 +10,14 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 
-public abstract class AbstractFitnessFunction<T> implements Function<TreeNode, Double> {
+public abstract class AbstractFitnessFunction<T> implements Function<AbstractTreeNode, Double> {
 
     public final static double PENALTY_VALUE = 1.0;
     protected SignalBuilder<T> signalBuilder;
 
     public SignalBuilder<T> getSignalBuilder() {return this.signalBuilder;}
 
-    public abstract BiFunction<TreeNode, double[], Double> getObjective();
+    public abstract BiFunction<AbstractTreeNode, double[], Double> getObjective();
 
     public List<T> getPositiveTraining() {
         return null;
@@ -35,7 +35,7 @@ public abstract class AbstractFitnessFunction<T> implements Function<TreeNode, D
         return null;
     }
 
-    public double monitorSignal(Signal<TrajectoryRecord> signal, TreeNode solution, boolean min) {
+    public double monitorSignal(Signal<TrajectoryRecord> signal, AbstractTreeNode solution, boolean min) {
         if (signal.size() <= solution.getNecessaryLength()) {
             return - PENALTY_VALUE;
         }

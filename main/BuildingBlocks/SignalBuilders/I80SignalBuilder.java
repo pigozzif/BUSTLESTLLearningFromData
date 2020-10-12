@@ -25,7 +25,7 @@ public class I80SignalBuilder implements SignalBuilder<Signal<TrajectoryRecord>[
         for (Integer idx : doubleIndexes) {
             this.varsBounds.put(header[idx], new double[]{Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY});
         }
-        this.temporalBounds = new double[]{0, windowSize - 1};
+        this.temporalBounds = new double[]{0, 99};
         int vehicleIdx = 1;
         boolean isFinished = false;
         String[] line = new String[boolIndexes.size() + doubleIndexes.size() + 1];

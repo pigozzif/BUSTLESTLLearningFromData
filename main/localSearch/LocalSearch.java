@@ -1,7 +1,7 @@
 package localSearch;
 
+import TreeNodes.AbstractTreeNode;
 import BuildingBlocks.FitnessFunctions.AbstractFitnessFunction;
-import BuildingBlocks.TreeNode;
 import localSearch.gpOptimisation.GPOptimisation;
 import localSearch.gpOptimisation.GpoOptions;
 import localSearch.numeric.optimization.ObjectiveFunction;
@@ -14,8 +14,8 @@ import java.util.stream.IntStream;
 
 
 public class LocalSearch {
-    // TODO: introduce parameter object
-    public static double[] optimize(TreeNode monitor, AbstractFitnessFunction<?> ff, int maxIterations) {
+
+    public static double[] optimize(AbstractTreeNode monitor, AbstractFitnessFunction<?> ff, int maxIterations) {
         double[] timeBounds = ff.getSignalBuilder().getTemporalBounds();
         List<String[]> variables = monitor.getVariables();
         int numVariables = variables.size();
@@ -37,7 +37,30 @@ public class LocalSearch {
             monitor.propagateParameters(point);
             return ff.getObjective().apply(monitor, point);
         };
-        GridSampler custom = new GridSampler() {
+        GPOptimisation gpo = createOptimizer(numBounds, maxIterations);
+        double[] lbU = IntStream.range(0, lb.length).mapToDouble(i -> 0).toArray();
+        double[] ubU = IntStream.range(0, ub.length).mapToDouble(i -> 1).toArray();
+        double[] v = gpo.optimise(function, lbU, ubU).getSolution();
+        return IntStream.range(0, v.length).mapToDouble(i -> lb[i] + v[i] * (ub[i] - lb[i])).toArray();
+    }
+
+    public static GPOptimisation createOptimizer(int numBounds, int maxIterations) {
+        GridSampler custom = createSampler(numBounds);
+        GPOptimisation gpo = new GPOptimisation();
+        GpoOptions options = new GpoOptions();
+        options.setInitialSampler(custom);
+        options.setMaxIterations(maxIterations);
+        options.setHyperparamOptimisation(true);
+        options.setUseNoiseTermRatio(true);
+        options.setNoiseTerm(0);
+        options.setGridSampler(custom);
+        options.setGridSampleNumber(200);
+        gpo.setOptions(options);
+        return gpo;
+    }
+
+    public static GridSampler createSampler(int numBounds) {
+        return new GridSampler() {
             @Override
             public double[][] sample(int n, double[] lbounds, double[] ubounds) {
                 double[][] res = new double[n][lbounds.length];
@@ -58,36 +81,6 @@ public class LocalSearch {
                 return new double[0][];
             }
         };
-        GPOptimisation gpo = new GPOptimisation();
-        GpoOptions options = new GpoOptions();
-        options.setInitialSampler(custom);
-        options.setMaxIterations(maxIterations);
-        options.setHyperparamOptimisation(true);
-        options.setUseNoiseTermRatio(true);
-        options.setNoiseTerm(0);
-        options.setGridSampler(custom);
-        options.setGridSampleNumber(200);
-        gpo.setOptions(options);
-        double[] lbU = IntStream.range(0, lb.length).mapToDouble(i -> 0).toArray();
-        double[] ubU = IntStream.range(0, ub.length).mapToDouble(i -> 1).toArray();
-        double[] v = gpo.optimise(function, lbU, ubU).getSolution();
-        double[] vv = IntStream.range(0, v.length).mapToDouble(i -> lb[i] + v[i] * (ub[i] - lb[i])).toArray();
-        //double[] p1u1 = this.computeRobustness(monitor, this.positiveTraining, this.numPositive, vv);
-        //double[] p2u2 = this.computeRobustness(monitor, this.negativeTraining, this.numNegative, vv);
-        //double value;
-        /*if (p1u1[0] > p2u2[0]) {
-            value = ((p1u1[0] - p1u1[1]) + (p2u2[0] + p2u2[1])) / 2;
-        } else {
-            value = ((p2u2[0] - p2u2[1]) + (p1u1[0] + p1u1[1])) / 2;
-        }
-        for (int i = numBounds; i < vv.length; i++) {
-            if (variables.get(i - numBounds)[1].equals(">")) {  // TODO: a little bit hardcoded
-                vv[i] = Math.max(vv[i] + value, 0);
-            } else {
-                vv[i] = Math.max(vv[i] - value, 0);
-            }
-        }*/
-        return vv;
     }
 
 }
