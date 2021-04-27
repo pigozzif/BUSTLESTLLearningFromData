@@ -6,6 +6,7 @@ import BuildingBlocks.TrajectoryRecord;
 import eu.quanticol.moonlight.signal.Signal;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -14,6 +15,11 @@ public abstract class AbstractFitnessFunction<T> implements Function<AbstractTre
 
     public final static double PENALTY_VALUE = 1.0;
     protected SignalBuilder<T> signalBuilder;
+    protected final boolean isLocalSearch;
+
+    public AbstractFitnessFunction(boolean localSearch) {
+        this.isLocalSearch = localSearch;
+    }
 
     public SignalBuilder<T> getSignalBuilder() {return this.signalBuilder;}
 
@@ -35,7 +41,7 @@ public abstract class AbstractFitnessFunction<T> implements Function<AbstractTre
         return null;
     }
 
-    public double monitorSignal(Signal<TrajectoryRecord> signal, AbstractTreeNode solution, boolean min) {
+    public double monitorSignal(Signal<Map<String, Double>> signal, AbstractTreeNode solution, boolean min) {
         if (signal.size() <= solution.getNecessaryLength()) {
             return - PENALTY_VALUE;
         }

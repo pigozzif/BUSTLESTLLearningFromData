@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public interface SignalBuilder<T> {
@@ -21,7 +22,7 @@ public interface SignalBuilder<T> {
 
     List<T> parseSignals(String fileName, List<Integer> boolIndexes, List<Integer> doubleIndexes) throws IOException;
 
-    HashMap<String, double[]> getVarsBounds();
+    Map<String, double[]> getVarsBounds();
 
     double[] getTemporalBounds();
 

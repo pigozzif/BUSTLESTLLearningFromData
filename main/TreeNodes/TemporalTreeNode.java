@@ -1,5 +1,6 @@
 package TreeNodes;
 
+import BuildingBlocks.STLFormulaMapper;
 import eu.quanticol.moonlight.formula.Interval;
 import it.units.malelab.jgea.representation.tree.Tree;
 
@@ -11,11 +12,10 @@ public abstract class TemporalTreeNode extends AbstractTreeNode {
 
     protected int start;
     protected int end;
-    protected boolean isOptimizable;
 
-    public TemporalTreeNode(List<Tree<String>> siblings, String message, boolean optimize) {
+    public TemporalTreeNode(STLFormulaMapper mapper, List<Tree<String>> siblings, String message) {
+        super(mapper);
         this.equipTemporalOperator(siblings, message);
-        this.isOptimizable = optimize;
     }
 
     public Interval createInterval() {
@@ -34,7 +34,7 @@ public abstract class TemporalTreeNode extends AbstractTreeNode {
     private void equipTemporalOperator(List<Tree<String>> siblings, String message) {
         int start;
         int end;
-        if (!this.isOptimizable) {
+        if (!this.mapper.getOptimizability()) {
             start = (int) this.parseIntervalBound(siblings.get(1).childStream().collect(Collectors.toList()));
             end = start + (int) Math.max(1.0, this.parseIntervalBound(siblings.get(2).childStream().collect(Collectors.toList())));
         }

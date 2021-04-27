@@ -12,21 +12,17 @@ import java.util.Objects;
 
 public class BinaryTemporalTreeNode extends TemporalTreeNode {
 
-    public BinaryTemporalTreeNode(MonitorExpressions op, List<Tree<String>> siblings, String message, List<Tree<String>> ancestors, boolean optimize) {
-        super(siblings, message, optimize);
-        this.firstChild = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors);
-        this.secondChild = STLFormulaMapper.parseSubTree(siblings.get(3), ancestors);
+    public BinaryTemporalTreeNode(STLFormulaMapper mapper, MonitorExpressions op, List<Tree<String>> siblings, String message, List<Tree<String>> ancestors) {
+        super(mapper, siblings, message);
+        this.firstChild = this.mapper.parseSubTree(siblings.get(0), ancestors);
+        this.secondChild = this.mapper.parseSubTree(siblings.get(3), ancestors);
         switch (op) {
-            case SINCE:
-                this.func = x -> TemporalMonitor.sinceMonitor(this.firstChild.getOperator().apply(x),
-                        this.createInterval(), this.secondChild.getOperator().apply(x),
-                        new DoubleDomain());
-                break;
-            case UNTIL:
-                this.func = x -> TemporalMonitor.untilMonitor(this.firstChild.getOperator().apply(x),
-                        this.createInterval(), this.secondChild.getOperator().apply(x),
-                        new DoubleDomain());
-                break;
+            case SINCE -> this.func = x -> TemporalMonitor.sinceMonitor(this.firstChild.getOperator().apply(x),
+                    this.createInterval(), this.secondChild.getOperator().apply(x),
+                    new DoubleDomain());
+            case UNTIL -> this.func = x -> TemporalMonitor.untilMonitor(this.firstChild.getOperator().apply(x),
+                    this.createInterval(), this.secondChild.getOperator().apply(x),
+                    new DoubleDomain());
         }
     }
 
@@ -44,7 +40,7 @@ public class BinaryTemporalTreeNode extends TemporalTreeNode {
     @Override
     public int getNumBounds() {
         int ans = 0;
-        if (this.isOptimizable) {
+        if (this.mapper.getOptimizability()) {
             ans += 2;
         }
         ans += this.firstChild.getNumBounds();
@@ -55,7 +51,7 @@ public class BinaryTemporalTreeNode extends TemporalTreeNode {
     @Override
     public int[] propagateParametersAux(double[] parameters, int[] idxs) {
         if (idxs[1] >= parameters.length && idxs[0] >= this.getNumBounds()) return idxs;
-        if (this.isOptimizable) {
+        if (this.mapper.getOptimizability()) {
             int start = (int) parameters[idxs[0]];
             int length = (int) parameters[idxs[0] + 1];
             this.setInterval(start, start + length);

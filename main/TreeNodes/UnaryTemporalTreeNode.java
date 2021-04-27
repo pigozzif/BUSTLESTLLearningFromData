@@ -12,22 +12,14 @@ import java.util.Objects;
 
 public class UnaryTemporalTreeNode extends TemporalTreeNode {
 
-    public UnaryTemporalTreeNode(MonitorExpressions op, List<Tree<String>> siblings, String message, List<Tree<String>> ancestors, boolean optimize) {
-        super(siblings, message, optimize);
-        this.firstChild = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors);
+    public UnaryTemporalTreeNode(STLFormulaMapper mapper, MonitorExpressions op, List<Tree<String>> siblings, String message, List<Tree<String>> ancestors) {
+        super(mapper, siblings, message);
+        this.firstChild = this.mapper.parseSubTree(siblings.get(0), ancestors);
         switch (op) {
-            case ONCE:
-                this.func = x -> TemporalMonitor.onceMonitor(this.firstChild.getOperator().apply(x), new DoubleDomain(), this.createInterval());
-                break;
-            case EVENTUALLY:
-                this.func = x -> TemporalMonitor.eventuallyMonitor(this.firstChild.getOperator().apply(x), new DoubleDomain(), this.createInterval());
-                break;
-            case HISTORICALLY:
-                this.func = x -> TemporalMonitor.historicallyMonitor(this.firstChild.getOperator().apply(x), new DoubleDomain(), this.createInterval());
-                break;
-            case GLOBALLY:
-                this.func = x -> TemporalMonitor.globallyMonitor(this.firstChild.getOperator().apply(x), new DoubleDomain(), this.createInterval());
-                break;
+            case ONCE -> this.func = x -> TemporalMonitor.onceMonitor(this.firstChild.getOperator().apply(x), new DoubleDomain(), this.createInterval());
+            case EVENTUALLY -> this.func = x -> TemporalMonitor.eventuallyMonitor(this.firstChild.getOperator().apply(x), new DoubleDomain(), this.createInterval());
+            case HISTORICALLY -> this.func = x -> TemporalMonitor.historicallyMonitor(this.firstChild.getOperator().apply(x), new DoubleDomain(), this.createInterval());
+            case GLOBALLY -> this.func = x -> TemporalMonitor.globallyMonitor(this.firstChild.getOperator().apply(x), new DoubleDomain(), this.createInterval());
         }
     }
 
@@ -44,7 +36,7 @@ public class UnaryTemporalTreeNode extends TemporalTreeNode {
     @Override
     public int getNumBounds() {
         int ans = 0;
-        if (this.isOptimizable) {
+        if (this.mapper.getOptimizability()) {
             ans += 2;
         }
         ans += this.firstChild.getNumBounds();
@@ -54,7 +46,7 @@ public class UnaryTemporalTreeNode extends TemporalTreeNode {
     @Override
     public int[] propagateParametersAux(double[] parameters, int[] idxs) {
         if (idxs[1] >= parameters.length && idxs[0] >= this.getNumBounds()) return idxs;
-        if (this.isOptimizable) {
+        if (this.mapper.getOptimizability()) {
             int start = (int) parameters[idxs[0]];
             int length = (int) parameters[idxs[0] + 1];
             this.setInterval(start, start + length);

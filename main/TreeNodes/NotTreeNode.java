@@ -11,8 +11,9 @@ import java.util.Objects;
 
 public class NotTreeNode extends AbstractTreeNode {
 
-    public NotTreeNode(List<Tree<String>> siblings, List<Tree<String>> ancestors) {
-        this.firstChild = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors);
+    public NotTreeNode(STLFormulaMapper mapper, List<Tree<String>> siblings, List<Tree<String>> ancestors) {
+        super(mapper);
+        this.firstChild = this.mapper.parseSubTree(siblings.get(0), ancestors);
         this.symbol = "NOT";
         this.func = x -> TemporalMonitor.notMonitor(this.firstChild.getOperator().apply(x), new DoubleDomain());
     }

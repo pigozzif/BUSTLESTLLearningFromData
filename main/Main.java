@@ -1,9 +1,10 @@
 
+import BuildingBlocks.STLFormulaMapper;
 import TreeNodes.AbstractTreeNode;
 import BuildingBlocks.FitnessFunctions.AbstractFitnessFunction;
-import BuildingBlocks.FitnessFunctions.MaritimeFitnessFunction;
+import BuildingBlocks.FitnessFunctions.SupervisedFitnessFunction;
 import BuildingBlocks.ProblemClass;
-import BuildingBlocks.TrajectoryRecord;
+//import BuildingBlocks.Map<String, Double>;
 import eu.quanticol.moonlight.signal.Signal;
 import it.units.malelab.jgea.Worker;
 import it.units.malelab.jgea.core.Individual;
@@ -37,18 +38,23 @@ public class Main extends Worker {
 
     private static int seed;
     private static PrintStream out;
-    private final static String grammarPath = "./grammars/grammar_maritime_local_search.bnf";
-    private static String outputPath = "maritime_local_search/";
+    private static String grammarPath;
+    private static String outputPath;
+    private static String inputPath;
+    private static boolean isLocalSearch;
 
     public static void main(String[] args) throws IOException {
         String errorMessage = "notFound";
-        String random = Args.a(args, "random", errorMessage);
+        String random = Args.a(args, "seed", errorMessage);
         if (random.equals(errorMessage)) {
             throw new IllegalArgumentException("Random Seed not Valid");
         }
         seed = Integer.parseInt(random);
-        outputPath += Args.a(args, "output_name", "output") + ".csv";
+        grammarPath = Args.a(args, "grammar", null);
+        outputPath = Args.a(args, "output", null) + ".csv";
         out = new PrintStream(new FileOutputStream(outputPath, true), true);
+        inputPath = Args.a(args, "input", null);
+        isLocalSearch = Boolean.parseBoolean(Args.a(args, "local_search", null));
         new Main(args);
     }
 
@@ -67,9 +73,8 @@ public class Main extends Worker {
 
     private void evolution() throws IOException, ExecutionException, InterruptedException {
         Random r = new Random(seed);
-        final ProblemClass<Signal<TrajectoryRecord>> p = new ProblemClass<>(grammarPath, true);
-        AbstractFitnessFunction<Signal<TrajectoryRecord>> f = new /*I80FitnessFunction();*/MaritimeFitnessFunction("./data/navalData.csv", r);
-        p.setFitnessFunction(f);
+        AbstractFitnessFunction<Signal<Map<String, Double>>> f = new /*I80FitnessFunction();*/SupervisedFitnessFunction(inputPath, isLocalSearch, r);
+        final ProblemClass<Signal<Map<String, Double>>> p = new ProblemClass<>(grammarPath, f, new STLFormulaMapper(isLocalSearch));
         Map<GeneticOperator<Tree<String>>, Double> operators = new LinkedHashMap<>();
         operators.put(new GrammarBasedSubtreeMutation<>(12, p.getGrammar()), 0.2d);
         operators.put(new SameRootSubtreeCrossover<>(12), 0.8d);
@@ -85,7 +90,7 @@ public class Main extends Worker {
                     true,
                 100
         );
-        Collection<AbstractTreeNode> solutions = evolver.solve(Misc.cached(p.getFitnessFunction(), 10), new Iterations(1),
+        Collection<AbstractTreeNode> solutions = evolver.solve(Misc.cached(p.getFitnessFunction(), 10), new Iterations(50),
                 r, this.executorService, Listener.onExecutor(new PrintStreamListener<>(out, false, 10,
                         ",", ",",  new Basic(), new Population(), new Diversity(), new BestInfo("%5.3f")), this.executorService));
         AbstractTreeNode bestFormula = solutions.iterator().next();
@@ -96,11 +101,11 @@ public class Main extends Worker {
     // fitness evaluates the template and internally tries the previous fitness, something that takes a tree, data, and gives a number, internally invokes the other
     // with the optimized values, Darwinian not Lamrckian because values are not inherited, for us stateless, might not be bad starting from previous knowledge, base case, everytime
     // I get a template I can try to copy from similar templates and restart optimization, if looking for optima complicated because of context
-    public void postProcess(Collection<AbstractTreeNode> solutions, AbstractFitnessFunction<Signal<TrajectoryRecord>> f) throws IOException {
+    public void postProcess(Collection<AbstractTreeNode> solutions, AbstractFitnessFunction<Signal<Map<String, Double>>> f) throws IOException {
         AbstractTreeNode bestFormula = solutions.iterator().next();
         double result;
         double count = 0.0;
-        for (Signal<TrajectoryRecord> signal : f.getPositiveTest()) {
+        for (Signal<Map<String, Double>> signal : f.getPositiveTest()) {
             result = f.monitorSignal(signal, bestFormula, false);
             if (result > 0.0) {
                 ++count;
@@ -108,7 +113,7 @@ public class Main extends Worker {
         }
         Files.write(Paths.get(outputPath), ("Positive Test Misclassification Rate: " + (1.0 - count / f.getPositiveTest().size()) + "\n").getBytes(), StandardOpenOption.APPEND);
         count = 0.0;
-        for (Signal<TrajectoryRecord> signal : f.getNegativeTest()) {
+        for (Signal<Map<String, Double>> signal : f.getNegativeTest()) {
             result = f.monitorSignal(signal, bestFormula, true);
             if (result > 0.0) {
                 ++count;

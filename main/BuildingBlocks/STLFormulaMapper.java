@@ -10,12 +10,22 @@ import java.util.stream.Collectors;
 
 public class STLFormulaMapper implements Function<Tree<String>, AbstractTreeNode> {
 
-    @Override
-    public AbstractTreeNode apply(Tree<String> root) {
-        return parseSubTree(root, new ArrayList<Tree<String>>() {{ add(null); }});
+    private final boolean toOptimize;
+
+    public STLFormulaMapper(boolean localSearch) {
+        this.toOptimize = localSearch;
     }
 
-    public static AbstractTreeNode parseSubTree(Tree<String> currentNode, List<Tree<String>> ancestors) {
+    public boolean getOptimizability() {
+        return this.toOptimize;
+    }
+
+    @Override
+    public AbstractTreeNode apply(Tree<String> root) {
+        return parseSubTree(root, new ArrayList<>() {{ add(null); }});
+    }
+
+    public AbstractTreeNode parseSubTree(Tree<String> currentNode, List<Tree<String>> ancestors) {
         List<Tree<String>> children = currentNode.childStream().collect(Collectors.toList());
         Tree<String> testChild = children.get(0);
         for (MonitorExpressions op : MonitorExpressions.values()) {
@@ -28,7 +38,7 @@ public class STLFormulaMapper implements Function<Tree<String>, AbstractTreeNode
         return parseSubTree(testChild, ancestors);
     }
 
-    private static List<Tree<String>> getSiblings(Tree<String> node, List<Tree<String>> ancestors) {
+    private List<Tree<String>> getSiblings(Tree<String> node, List<Tree<String>> ancestors) {
         Tree<String> parent = ancestors.get(ancestors.size() - 1);
         if (parent == null) {
             return Collections.emptyList();
@@ -41,20 +51,14 @@ public class STLFormulaMapper implements Function<Tree<String>, AbstractTreeNode
         return res;
     }
 
-    public static AbstractTreeNode createMonitor(MonitorExpressions op, List<Tree<String>> siblings, List<Tree<String>> ancestors) {
-        boolean optimize = ProblemClass.isLocalSearch;
-        switch (op) {
-            case PROP:
-                return new NumericTreeNode(siblings, optimize);
-            case NOT:
-                return new NotTreeNode(siblings, ancestors);
-            case AND:
-                return new AndTreeNode(siblings, ancestors);
-            case UNTIL : case SINCE:
-                return new BinaryTemporalTreeNode(op, siblings, op.toString(), ancestors, optimize);
-            default:
-                return new UnaryTemporalTreeNode(op, siblings, op.toString(), ancestors, optimize);
-        }
+    private AbstractTreeNode createMonitor(MonitorExpressions op, List<Tree<String>> siblings, List<Tree<String>> ancestors) {
+        return switch (op) {
+            case PROP -> new NumericTreeNode(this, siblings);
+            case NOT -> new NotTreeNode(this, siblings, ancestors);
+            case AND -> new AndTreeNode(this, siblings, ancestors);
+            case UNTIL, SINCE -> new BinaryTemporalTreeNode(this, op, siblings, op.toString(), ancestors);
+            default -> new UnaryTemporalTreeNode(this, op, siblings, op.toString(), ancestors);
+        };
     }
 
 }

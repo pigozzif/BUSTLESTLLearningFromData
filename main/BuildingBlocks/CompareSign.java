@@ -24,7 +24,6 @@ public enum CompareSign {
         return sign;
     }
 
-    //@Override
     public BiFunction<Double, Double, Double> getValue() {
         return this.function;
     }

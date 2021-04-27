@@ -1,5 +1,6 @@
 package TreeNodes;
 
+import BuildingBlocks.STLFormulaMapper;
 import BuildingBlocks.TrajectoryRecord;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import eu.quanticol.moonlight.signal.Signal;
@@ -7,18 +8,24 @@ import it.units.malelab.jgea.core.util.Sized;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
 
 public abstract class AbstractTreeNode implements Sized {
 
-    protected Function<Signal<TrajectoryRecord>, TemporalMonitor<TrajectoryRecord, Double>> func;
+    protected Function<Signal<Map<String, Double>>, TemporalMonitor<Map<String, Double>, Double>> func;
     protected AbstractTreeNode firstChild;
     protected AbstractTreeNode secondChild;
     protected String symbol;
+    protected final STLFormulaMapper mapper;
 
-    public Function<Signal<TrajectoryRecord>, TemporalMonitor<TrajectoryRecord, Double>> getOperator() {
+    public AbstractTreeNode(STLFormulaMapper map) {
+        this.mapper = map;
+    }
+
+    public Function<Signal<Map<String, Double>>, TemporalMonitor<Map<String, Double>, Double>> getOperator() {
         return this.func;
     }
 

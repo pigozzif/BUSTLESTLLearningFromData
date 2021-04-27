@@ -1,6 +1,7 @@
 package TreeNodes;
 
 import BuildingBlocks.CompareSign;
+import BuildingBlocks.STLFormulaMapper;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import it.units.malelab.jgea.representation.tree.Tree;
 
@@ -10,12 +11,12 @@ import java.util.stream.Collectors;
 
 public class NumericTreeNode extends AbstractTreeNode {
 
-    private String var;
+    private final String var;
     private CompareSign cs;
     private Double number;
-    private boolean isOptimizable;
 
-    public NumericTreeNode(List<Tree<String>> siblings, boolean optimize) {
+    public NumericTreeNode(STLFormulaMapper mapper, List<Tree<String>> siblings) {
+        super(mapper);
         this.var = siblings.get(0).child(0).content();
         String test = siblings.get(1).child(0).content();
         for (CompareSign c : CompareSign.values()) {
@@ -24,15 +25,13 @@ public class NumericTreeNode extends AbstractTreeNode {
                 break;
             }
         }
-        if (optimize) {
+        if (this.mapper.getOptimizability()) {
             this.number = null;
         }
         else {
             this.number = this.parseNumber(siblings.get(2).childStream().collect(Collectors.toList()));
         }
-        this.func = x -> TemporalMonitor.atomicMonitor(y -> this.cs.getValue().apply(y.getDouble(this.var),
-                this.number));
-        this.isOptimizable = optimize;
+        this.func = x -> TemporalMonitor.atomicMonitor(y -> this.cs.getValue().apply(y.get(this.var), this.number));
     }
 
     private double parseNumber(List<Tree<String>> leaves) {
@@ -54,7 +53,7 @@ public class NumericTreeNode extends AbstractTreeNode {
 
     @Override
     public void getVariablesAux(List<String[]> temp) {
-        if (this.isOptimizable) {
+        if (this.mapper.getOptimizability()) {
             temp.add(new String[] {this.var, this.cs.toString(), "null"});
         }
     }
@@ -67,7 +66,7 @@ public class NumericTreeNode extends AbstractTreeNode {
     @Override
     public int[] propagateParametersAux(double[] parameters, int[] idxs) {
         if (idxs[1] >= parameters.length && idxs[0] >= this.getNumBounds()) return idxs;
-        if (this.isOptimizable) {
+        if (this.mapper.getOptimizability()) {
             this.number = parameters[idxs[1]];
             idxs[1]++;
         }
