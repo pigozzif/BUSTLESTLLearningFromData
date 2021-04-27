@@ -2,7 +2,6 @@ package BuildingBlocks.FitnessFunctions;
 
 import TreeNodes.AbstractTreeNode;
 import BuildingBlocks.SignalBuilders.SignalBuilder;
-import BuildingBlocks.TrajectoryRecord;
 import eu.quanticol.moonlight.signal.Signal;
 
 import java.util.List;

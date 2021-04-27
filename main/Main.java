@@ -4,7 +4,6 @@ import TreeNodes.AbstractTreeNode;
 import BuildingBlocks.FitnessFunctions.AbstractFitnessFunction;
 import BuildingBlocks.FitnessFunctions.SupervisedFitnessFunction;
 import BuildingBlocks.ProblemClass;
-//import BuildingBlocks.Map<String, Double>;
 import eu.quanticol.moonlight.signal.Signal;
 import it.units.malelab.jgea.Worker;
 import it.units.malelab.jgea.core.Individual;

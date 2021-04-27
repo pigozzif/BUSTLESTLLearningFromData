@@ -1,7 +1,6 @@
 package TreeNodes;
 
 import BuildingBlocks.STLFormulaMapper;
-import BuildingBlocks.TrajectoryRecord;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import eu.quanticol.moonlight.signal.Signal;
 import it.units.malelab.jgea.core.util.Sized;

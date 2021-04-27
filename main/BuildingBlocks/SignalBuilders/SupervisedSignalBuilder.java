@@ -1,6 +1,5 @@
 package BuildingBlocks.SignalBuilders;
 
-import BuildingBlocks.TrajectoryRecord;
 import eu.quanticol.moonlight.signal.Signal;
 
 import java.io.*;
