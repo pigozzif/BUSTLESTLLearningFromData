@@ -25,9 +25,7 @@ public class SupervisedFitnessFunction extends AbstractFitnessFunction<Signal<Ma
     public SupervisedFitnessFunction(String path, boolean localSearch, Random random) throws IOException {
         super(localSearch);
         this.signalBuilder = new SupervisedSignalBuilder();
-        List<Integer> boolIndexes = new ArrayList<>() {{ }};
-        List<Integer> doubleIndexes = new ArrayList<>() {{ add(0); add(1); }};
-        List<Signal<Map<String, Double>>> signals = this.signalBuilder.parseSignals(path, boolIndexes, doubleIndexes);
+        List<Signal<Map<String, Double>>> signals = this.signalBuilder.parseSignals(path);
         this.labels = this.signalBuilder.readVectorFromFile(path + "/labels.csv");
         this.splitSignals(signals, 0.8, random);
         this.numPositive = Arrays.stream(this.labels).filter(x -> x > 0).count();
@@ -42,39 +40,20 @@ public class SupervisedFitnessFunction extends AbstractFitnessFunction<Signal<Ma
         //    return 0.0;
         //}
         if (this.isLocalSearch) {
-            double[] newParams = LocalSearch.optimize(monitor, this, 1);
-            monitor.propagateParameters(newParams);
-            double[] p1u1 = this.computeRobustness(monitor, this.getPositiveTraining(), numPositive);
-            double[] p2u2 = this.computeRobustness(monitor, this.getNegativeTraining(), numNegative);
-            double value;
-            if (p1u1[0] > p2u2[0]) {
-                value = ((p1u1[0] - p1u1[1]) + (p2u2[0] + p2u2[1])) / 2;
-            } else {
-                value = ((p2u2[0] - p2u2[1]) + (p1u1[0] + p1u1[1])) / 2;
-            }
-            int numBounds = monitor.getNumBounds();
-            List<String[]> variables = monitor.getVariables();
-            for (int i = numBounds; i < newParams.length; i++) {
-                if (variables.get(i - numBounds)[1].equals(">")) {
-                    newParams[i] = Math.max(newParams[i] + value, 0);
-                } else {
-                    newParams[i] = Math.max(newParams[i] - value, 0);
-                }
-            }
-            monitor.propagateParameters(newParams);
+            this.optimizeAndUpdateParams(monitor, 1);
         }
-        double[] positiveResult = this.computeRobustness(monitor, this.positiveTraining, this.numPositive);
-        double[] negativeResult = this.computeRobustness(monitor, this.negativeTraining, this.numNegative);
+        double[] positiveResult = this.computeRobustness(monitor, this.positiveTraining, this.numPositive, false);
+        double[] negativeResult = this.computeRobustness(monitor, this.negativeTraining, this.numNegative, true);
         ++this.num;
         // System.out.println("INDIVIDUAL: " + this.num);
         return - this.function.apply(positiveResult, negativeResult);
     }
 
-    public double[] computeRobustness(AbstractTreeNode monitor, List<Signal<Map<String, Double>>> data, long num) {
+    public double[] computeRobustness(AbstractTreeNode monitor, List<Signal<Map<String, Double>>> data, long num, boolean isNegative) {
         double[] result = new double[3];
         double robustness;
         for (Signal<Map<String, Double>> signal : data) {
-            robustness = this.monitorSignal(signal, monitor, false);
+            robustness = this.monitorSignal(signal, monitor, isNegative);
             result[0] += robustness;
             result[1] += robustness * robustness;
         }
@@ -116,11 +95,34 @@ public class SupervisedFitnessFunction extends AbstractFitnessFunction<Signal<Ma
         }
     }
 
+    public void optimizeAndUpdateParams(AbstractTreeNode monitor, int maxIterations) {
+        double[] newParams = LocalSearch.optimize(monitor, this, maxIterations);
+        monitor.propagateParameters(newParams);
+        double[] p1u1 = this.computeRobustness(monitor, this.getPositiveTraining(), numPositive, false);
+        double[] p2u2 = this.computeRobustness(monitor, this.getNegativeTraining(), numNegative, true);
+        double value;
+        if (p1u1[0] > p2u2[0]) {
+            value = ((p1u1[0] - p1u1[1]) + (p2u2[0] + p2u2[1])) / 2;
+        } else {
+            value = ((p2u2[0] - p2u2[1]) + (p1u1[0] + p1u1[1])) / 2;
+        }
+        int numBounds = monitor.getNumBounds();
+        List<String[]> variables = monitor.getVariables();
+        for (int i = numBounds; i < newParams.length; i++) {
+            if (variables.get(i - numBounds)[1].equals(">")) {
+                newParams[i] = Math.max(newParams[i] + value, 0);
+            } else {
+                newParams[i] = Math.max(newParams[i] - value, 0);
+            }
+        }
+        monitor.propagateParameters(newParams);
+    }
+
     @Override
     public BiFunction<AbstractTreeNode, double[], Double> getObjective() {
         return (AbstractTreeNode node, double[] params) -> {node.propagateParameters(params);
-            double[] value1 = this.computeRobustness(node, this.positiveTraining, this.numPositive);
-            double[] value2 = this.computeRobustness(node, this.negativeTraining, this.numNegative);
+            double[] value1 = this.computeRobustness(node, this.positiveTraining, this.numPositive, false);
+            double[] value2 = this.computeRobustness(node, this.negativeTraining, this.numNegative, true);
             return this.function.apply(value1, value2);};
     }
 

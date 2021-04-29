@@ -1,4 +1,3 @@
-
 import BuildingBlocks.STLFormulaMapper;
 import TreeNodes.AbstractTreeNode;
 import BuildingBlocks.FitnessFunctions.AbstractFitnessFunction;
@@ -50,7 +49,7 @@ public class Main extends Worker {
         }
         seed = Integer.parseInt(random);
         grammarPath = Args.a(args, "grammar", null);
-        outputPath = Args.a(args, "output", null) + ".csv";
+        outputPath = Args.a(args, "output", null) + seed + ".csv";
         out = new PrintStream(new FileOutputStream(outputPath, true), true);
         inputPath = Args.a(args, "input", null);
         isLocalSearch = Boolean.parseBoolean(Args.a(args, "local_search", null));
@@ -72,8 +71,9 @@ public class Main extends Worker {
 
     private void evolution() throws IOException, ExecutionException, InterruptedException {
         Random r = new Random(seed);
-        AbstractFitnessFunction<Signal<Map<String, Double>>> f = new /*I80FitnessFunction();*/SupervisedFitnessFunction(inputPath, isLocalSearch, r);
-        final ProblemClass<Signal<Map<String, Double>>> p = new ProblemClass<>(grammarPath, f, new STLFormulaMapper(isLocalSearch));
+        SupervisedFitnessFunction f = new /*I80FitnessFunction();*/SupervisedFitnessFunction(inputPath, isLocalSearch, r);
+        STLFormulaMapper m = new STLFormulaMapper(isLocalSearch);
+        final ProblemClass<Signal<Map<String, Double>>> p = new ProblemClass<>(grammarPath, f, m);
         Map<GeneticOperator<Tree<String>>, Double> operators = new LinkedHashMap<>();
         operators.put(new GrammarBasedSubtreeMutation<>(12, p.getGrammar()), 0.2d);
         operators.put(new SameRootSubtreeCrossover<>(12), 0.8d);
@@ -93,32 +93,33 @@ public class Main extends Worker {
                 r, this.executorService, Listener.onExecutor(new PrintStreamListener<>(out, false, 10,
                         ",", ",",  new Basic(), new Population(), new Diversity(), new BestInfo("%5.3f")), this.executorService));
         AbstractTreeNode bestFormula = solutions.iterator().next();
+        //m.setOptimizability(true);
+        //f.optimizeAndUpdateParams(bestFormula, 200);
         Files.write(Paths.get(outputPath), (bestFormula.toString() + "\n").getBytes(), StandardOpenOption.APPEND);
-        this.postProcess(solutions, p.getFitnessFunction());
+        this.postProcess(bestFormula, p.getFitnessFunction());
     }
     // grammar only const terminal for optimizable variable, we evaluate the fitness of such a tree, we evaluate an expression template the best best fitness for that template,
     // fitness evaluates the template and internally tries the previous fitness, something that takes a tree, data, and gives a number, internally invokes the other
-    // with the optimized values, Darwinian not Lamrckian because values are not inherited, for us stateless, might not be bad starting from previous knowledge, base case, everytime
+    // with the optimized values, Darwinian not Lamarckian because values are not inherited, for us stateless, might not be bad starting from previous knowledge, base case, everytime
     // I get a template I can try to copy from similar templates and restart optimization, if looking for optima complicated because of context
-    public void postProcess(Collection<AbstractTreeNode> solutions, AbstractFitnessFunction<Signal<Map<String, Double>>> f) throws IOException {
-        AbstractTreeNode bestFormula = solutions.iterator().next();
+    public void postProcess(AbstractTreeNode bestFormula, AbstractFitnessFunction<Signal<Map<String, Double>>> f) throws IOException {
         double result;
         double count = 0.0;
         for (Signal<Map<String, Double>> signal : f.getPositiveTest()) {
             result = f.monitorSignal(signal, bestFormula, false);
-            if (result > 0.0) {
+            if (result <= 0.0) {
                 ++count;
             }
         }
-        Files.write(Paths.get(outputPath), ("Positive Test Misclassification Rate: " + (1.0 - count / f.getPositiveTest().size()) + "\n").getBytes(), StandardOpenOption.APPEND);
+        Files.write(Paths.get(outputPath), ("Positive Test Misclassification Rate: " + count / f.getPositiveTest().size() + "\n").getBytes(), StandardOpenOption.APPEND);
         count = 0.0;
         for (Signal<Map<String, Double>> signal : f.getNegativeTest()) {
             result = f.monitorSignal(signal, bestFormula, true);
-            if (result > 0.0) {
+            if (result <= 0.0) {
                 ++count;
             }
         }
-        Files.write(Paths.get(outputPath), ("Negative Test Misclassification Rate: " + (1.0 - count / f.getNegativeTest().size()) + "\n").getBytes(), StandardOpenOption.APPEND);
+        Files.write(Paths.get(outputPath), ("Negative Test Misclassification Rate: " + count / f.getNegativeTest().size() + "\n").getBytes(), StandardOpenOption.APPEND);
     }
 
 }

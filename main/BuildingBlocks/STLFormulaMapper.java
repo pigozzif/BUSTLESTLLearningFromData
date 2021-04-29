@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class STLFormulaMapper implements Function<Tree<String>, AbstractTreeNode> {
 
-    private final boolean toOptimize;
+    private boolean toOptimize;
 
     public STLFormulaMapper(boolean localSearch) {
         this.toOptimize = localSearch;
@@ -19,6 +19,8 @@ public class STLFormulaMapper implements Function<Tree<String>, AbstractTreeNode
     public boolean getOptimizability() {
         return this.toOptimize;
     }
+
+    public void setOptimizability(boolean opt) { this.toOptimize = opt; }
 
     @Override
     public AbstractTreeNode apply(Tree<String> root) {

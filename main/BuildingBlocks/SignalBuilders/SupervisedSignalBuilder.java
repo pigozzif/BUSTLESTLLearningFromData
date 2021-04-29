@@ -26,7 +26,7 @@ public class SupervisedSignalBuilder implements SignalBuilder<Signal<Map<String,
         return out;
     }
 
-    public List<Signal<Map<String, Double>>> parseSignals(String path, List<Integer> boolIndexes, List<Integer> doubleIndexes) throws IOException {
+    public List<Signal<Map<String, Double>>> parseSignals(String path) throws IOException {
         List<Signal<Map<String, Double>>> signals = new ArrayList<>();
         double[] times = this.readVectorFromFile(path + "/times.csv");
         for (int i=0; i < times.length; ++i) {
@@ -43,7 +43,7 @@ public class SupervisedSignalBuilder implements SignalBuilder<Signal<Map<String,
         //boolean[] dummy = new boolean[0];
         int numVars = header.length;
         //String[] boolNames = boolIndexes.stream().map(i -> header[i]).toArray(String[]::new);
-        String[] doubleNames = doubleIndexes.stream().map(i -> header[i]).toArray(String[]::new);
+        //String[] doubleNames = doubleIndexes.stream().map(i -> header[i]).toArray(String[]::new);
         Signal<Map<String, Double>> currSignal = new Signal<>();
         while (true) {
             try {
@@ -56,8 +56,8 @@ public class SupervisedSignalBuilder implements SignalBuilder<Signal<Map<String,
             for (int i=0; i < varsData.length; i+=numVars) {
                 Map<String, Double> trajectoryRecord = new HashMap<>();
                 for (int j=0; j < numVars; ++j) {
-                    double[] bounds = this.varsBounds.get(doubleNames[j]);
-                    trajectoryRecord.put(doubleNames[j], (varsData[i + j] - bounds[0]) / (bounds[1] - bounds[0]));
+                    double[] bounds = this.varsBounds.get(header[j]);
+                    trajectoryRecord.put(header[j], (varsData[i + j] - bounds[0]) / (bounds[1] - bounds[0]));
                     //currData[j] = varsData[i + j];
                 }
                 currSignal.add(times[k++], trajectoryRecord);//new TrajectoryRecord(dummy, boolNames, currData, doubleNames));

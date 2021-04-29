@@ -9,7 +9,6 @@ import LocalSearch.sampler.GridSampler;
 import LocalSearch.sampler.Parameter;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.IntStream;
 
 
@@ -20,7 +19,7 @@ public class LocalSearch {
         List<String[]> variables = monitor.getVariables();
         int numVariables = variables.size();
         int numBounds = monitor.getNumBounds();
-        Map<String, double[]> temp = ff.getSignalBuilder().getVarsBounds();
+        //Map<String, double[]> temp = ff.getSignalBuilder().getVarsBounds();
         double[] lb = new double[numBounds + numVariables];
         double[] ub = new double[numBounds + numVariables];
         for (int i = 0; i < numBounds; ++i) {
@@ -28,8 +27,8 @@ public class LocalSearch {
             ub[i] = timeBounds[1];
         }
         for (int j = 0; j < numVariables; ++j) {
-            lb[j + numBounds] = temp.get(variables.get(j)[0])[0];
-            ub[j + numBounds] = temp.get(variables.get(j)[0])[1];
+            lb[j + numBounds] = 0.0;//temp.get(variables.get(j)[0])[0];
+            ub[j + numBounds] = 1.0;//temp.get(variables.get(j)[0])[1];
         }
         ObjectiveFunction function = point -> {
             final double[] p = point;
@@ -66,8 +65,8 @@ public class LocalSearch {
                 double[][] res = new double[n][lbounds.length];
                 for (int i = 0; i < n; i++) {
                     for (int j = 0; j < numBounds; j += 2) {
-                        res[i][j] = lbounds[j] + (Math.random() * (ubounds[j] - lbounds[j]));
-                        res[i][j + 1] = (Math.random() * (ubounds[j + 1] - res[i][j]));
+                        res[i][j] = (int) lbounds[j] + (Math.random() * (ubounds[j] - lbounds[j]));
+                        res[i][j + 1] = (int) Math.max(1.0, res[i][j] + (Math.random() * (ubounds[j + 1] - res[i][j])));
                     }
                     for (int j = numBounds; j < res[i].length; j++) {
                         res[i][j] = lbounds[j] + Math.random() * (ubounds[j] - lbounds[j]);

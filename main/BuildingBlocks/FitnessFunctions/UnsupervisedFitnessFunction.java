@@ -20,10 +20,10 @@ public class UnsupervisedFitnessFunction extends AbstractFitnessFunction<Signal<
     public UnsupervisedFitnessFunction(boolean localSearch) throws IOException {
         super(localSearch);
         this.signalBuilder = new UnsupervisedSignalBuilder();
-        List<Integer> boolIndexes = new ArrayList<>() {{ }};
-        List<Integer> doubleIndexes = new ArrayList<>() {{add(4); add(6); add(7); add(8); add(9); add(10); add(11);
-            add(12); add(13);/* add(12); add(13); add(14); add(15); add(16); add(17); add(18); add(19);*/ }};
-        this.signals = this.signalBuilder.parseSignals("./data/Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data9.csv", boolIndexes, doubleIndexes);
+        //List<Integer> boolIndexes = new ArrayList<>() {{ }};
+        //List<Integer> doubleIndexes = new ArrayList<>() {{add(4); add(6); add(7); add(8); add(9); add(10); add(11);
+        //    add(12); add(13);/* add(12); add(13); add(14); add(15); add(16); add(17); add(18); add(19);*/ }};
+        this.signals = this.signalBuilder.parseSignals("./data/Next_Generation_Simulation__NGSIM__Vehicle_Trajectories_and_Supporting_Data9.csv");//, boolIndexes, doubleIndexes);
         this.numFragments = this.signals.stream().mapToInt(x -> x.length).sum();
     }
 

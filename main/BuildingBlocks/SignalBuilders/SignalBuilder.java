@@ -19,7 +19,7 @@ public interface SignalBuilder<T> {
         return new BufferedReader(new InputStreamReader(in));
     }
 
-    List<T> parseSignals(String fileName, List<Integer> boolIndexes, List<Integer> doubleIndexes) throws IOException;
+    List<T> parseSignals(String fileName) throws IOException;
 
     Map<String, double[]> getVarsBounds();
 

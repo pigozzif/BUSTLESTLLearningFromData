@@ -40,12 +40,12 @@ public abstract class AbstractFitnessFunction<T> implements Function<AbstractTre
         return null;
     }
 
-    public double monitorSignal(Signal<Map<String, Double>> signal, AbstractTreeNode solution, boolean min) {
+    public double monitorSignal(Signal<Map<String, Double>> signal, AbstractTreeNode solution, boolean isNegative) {
         if (signal.size() <= solution.getNecessaryLength()) {
             return - PENALTY_VALUE;
         }
         double temp = solution.getOperator().apply(signal).monitor(signal).valueAt(signal.start());
-        return (min) ? temp : - temp;
+        return (isNegative) ? - temp : temp;
     }
 
 }

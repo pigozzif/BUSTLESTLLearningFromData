@@ -18,23 +18,22 @@ public class UnsupervisedSignalBuilder implements SignalBuilder<Signal<Map<Strin
 
     // TODO: maybe fix Long Method
     // TODO: does not work at all with latest refactor, BEWARE!
-    public List<Signal<Map<String, Double>>[]> parseSignals(String fileName, List<Integer> boolIndexes,
-                                                              List<Integer> doubleIndexes) throws IOException {
+    public List<Signal<Map<String, Double>>[]> parseSignals(String fileName) throws IOException {
         List<Signal<Map<String, Double>>[]> signals = new ArrayList<>();
         BufferedReader reader = this.createReaderFromFile(fileName);
         String[] header = reader.readLine().split(",");
-        for (Integer idx : doubleIndexes) {
-            this.varsBounds.put(header[idx], new double[]{Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY});
+        for (String var : header) {
+            this.varsBounds.put(var, new double[]{Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY});
         }
         this.temporalBounds = new double[]{0, 99};
         int vehicleIdx = 1;
         boolean isFinished = false;
-        String[] line = new String[boolIndexes.size() + doubleIndexes.size() + 1];
+        String[] line = new String[header.length + 1];
         List<Map<String, Double>> trajectory = new ArrayList<>();
         List<Long> times = new ArrayList<>();
         //String[] boolNames = boolIndexes.stream().map(i -> header[i]).toArray(String[]::new);
-        String[] doubleNames = doubleIndexes.stream().map(i -> header[i]).toArray(String[]::new);
-        boolean[] boolVars = new boolean[boolIndexes.size()];
+        //String[] doubleNames = doubleIndexes.stream().map(i -> header[i]).toArray(String[]::new);
+        //boolean[] boolVars = new boolean[boolIndexes.size()];
         //double[] doubleVars = new double[doubleIndexes.size()];
         while (!isFinished) {
             while (true) {
@@ -45,17 +44,17 @@ public class UnsupervisedSignalBuilder implements SignalBuilder<Signal<Map<Strin
                     isFinished = true;
                     break;
                 }
-                for (int idx=0; idx < boolIndexes.size(); ++idx) {
-                    boolVars[idx] = line[boolIndexes.get(idx)].equals("1");
-                }
+                //for (int idx=0; idx < boolIndexes.size(); ++idx) {
+                //    boolVars[idx] = line[boolIndexes.get(idx)].equals("1");
+                //}
                 Map<String, Double> trajectoryRecord = new HashMap<>();
-                for (int idx=0; idx < doubleIndexes.size(); ++idx) {
-                    double val = Double.parseDouble(line[doubleIndexes.get(idx)]);
-                    double[] temp = this.varsBounds.get(header[doubleIndexes.get(idx)]);
+                for (int idx=0; idx < header.length; ++idx) {
+                    double val = Double.parseDouble(line[idx]);
+                    double[] temp = this.varsBounds.get(header[idx]);
                     temp[0] = Math.min(val, temp[0]);
                     temp[1] = Math.max(val, temp[1]);
                     //doubleVars[idx] = val;
-                    trajectoryRecord.put(doubleNames[idx], val);
+                    trajectoryRecord.put(header[idx], val);
                 }
                 if (vehicleIdx != Integer.parseInt(line[14])) {
                     break;
