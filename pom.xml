@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>it.units.malelab</groupId>
-    <artifactId>STLRealTrafficRuleEvolutionaryInference</artifactId>
+    <artifactId>STLRuleEvolutionaryInference</artifactId>
     <version>1.0</version>
 
     <dependencies>

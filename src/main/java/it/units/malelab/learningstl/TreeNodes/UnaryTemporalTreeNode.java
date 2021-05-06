@@ -36,9 +36,7 @@ public class UnaryTemporalTreeNode extends TemporalTreeNode {
     @Override
     public int getNumBounds() {
         int ans = 0;
-        //if (this.mapper.getOptimizability()) {
-            ans += 2;
-        //}
+        ans += 2;
         ans += this.firstChild.getNumBounds();
         return ans;
     }
@@ -46,12 +44,11 @@ public class UnaryTemporalTreeNode extends TemporalTreeNode {
     @Override
     public int[] propagateParametersAux(double[] parameters, int[] idxs) {
         if (idxs[1] >= parameters.length && idxs[0] >= this.getNumBounds()) return idxs;
-        //if (this.mapper.getOptimizability()) {
-            int start = (int) parameters[idxs[0]];
-            int length = (int) parameters[idxs[0] + 1];
-            this.setInterval(start, start + length);
-            idxs[0] += 2;
-       // }
+        // first parameter is start, second is offset with respect to start (to get interval end)
+        int start = (int) parameters[idxs[0]];
+        int length = (int) parameters[idxs[0] + 1];
+        this.setInterval(start, start + length);
+        idxs[0] += 2;
         return this.firstChild.propagateParametersAux(parameters, idxs);
     }
 

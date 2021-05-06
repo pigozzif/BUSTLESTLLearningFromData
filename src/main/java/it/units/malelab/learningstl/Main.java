@@ -95,14 +95,11 @@ public class Main extends Worker {
                 r, this.executorService, Listener.onExecutor(new PrintStreamListener<>(out, false, 10,
                         ",", ",",  new Basic(), new Population(), new Diversity(), new BestInfo("%5.3f")), this.executorService));
         AbstractTreeNode bestFormula = solutions.iterator().next();
-        f.optimizeAndUpdateParams(bestFormula, 1000);
+        f.optimizeAndUpdateParams(bestFormula, 1);
         Files.write(Paths.get(outputPath), (bestFormula.toString() + "\n").getBytes(), StandardOpenOption.APPEND);
         this.postProcess(bestFormula, p.getFitnessFunction());
     }
-    // grammar only const terminal for optimizable variable, we evaluate the fitness of such a tree, we evaluate an expression template the best best fitness for that template,
-    // fitness evaluates the template and internally tries the previous fitness, something that takes a tree, data, and gives a number, internally invokes the other
-    // with the optimized values, Darwinian not Lamarckian because values are not inherited, for us stateless, might not be bad starting from previous knowledge, base case, everytime
-    // I get a template I can try to copy from similar templates and restart optimization, if looking for optima complicated because of context
+
     public void postProcess(AbstractTreeNode bestFormula, AbstractFitnessFunction<Signal<Map<String, Double>>> f) throws IOException {
         double result;
         double count = 0.0;

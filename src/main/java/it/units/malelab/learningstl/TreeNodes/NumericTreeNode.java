@@ -24,7 +24,6 @@ public class NumericTreeNode extends AbstractTreeNode {
                 break;
             }
         }
-        //if (this.mapper.getOptimizability()) {
         if (siblings.get(2).content().equals("const_num")) {
             this.number = null;
         }
@@ -53,9 +52,7 @@ public class NumericTreeNode extends AbstractTreeNode {
 
     @Override
     public void getVariablesAux(List<String[]> temp) {
-        //if (this.mapper.getOptimizability()) {
-            temp.add(new String[] {this.var, this.cs.toString(), "null"});
-        //}
+        temp.add(new String[] {this.var, this.cs.toString(), "null"});
     }
 
     @Override
@@ -66,10 +63,8 @@ public class NumericTreeNode extends AbstractTreeNode {
     @Override
     public int[] propagateParametersAux(double[] parameters, int[] idxs) {
         if (idxs[1] >= parameters.length && idxs[0] >= this.getNumBounds()) return idxs;
-        //if (this.mapper.getOptimizability()) {
-            this.number = parameters[idxs[1]];
-            idxs[1]++;
-        //}
+        this.number = parameters[idxs[1]];
+        idxs[1]++;
         return idxs;
     }
 

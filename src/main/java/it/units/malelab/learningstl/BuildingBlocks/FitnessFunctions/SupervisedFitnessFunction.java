@@ -20,7 +20,7 @@ public class SupervisedFitnessFunction extends AbstractFitnessFunction<Signal<Ma
     private final double[] labels;
     private final long numPositive;
     private final long numNegative;
-    private int num = 0;
+    private int fitnessEval = 0;
 
     public SupervisedFitnessFunction(String path, boolean localSearch, Random random) throws IOException {
         super(localSearch);
@@ -34,18 +34,12 @@ public class SupervisedFitnessFunction extends AbstractFitnessFunction<Signal<Ma
 
     @Override
     public Double apply(AbstractTreeNode monitor) {
-        //System.out.println(monitor);
-        //if (this.num < 0) {
-        //    this.num++;
-        //    return 0.0;
-        //}
-        if (this.isLocalSearch) {
+        ++this.fitnessEval;
+        if (this.isLocalSearch || this.fitnessEval > 25000) {
             this.optimizeAndUpdateParams(monitor, 1);
         }
         double[] positiveResult = this.computeRobustness(monitor, this.positiveTraining, this.numPositive, false);
         double[] negativeResult = this.computeRobustness(monitor, this.negativeTraining, this.numNegative, false);
-        ++this.num;
-        // System.out.println("INDIVIDUAL: " + this.num);
         return - this.function.apply(positiveResult, negativeResult);
     }
 
