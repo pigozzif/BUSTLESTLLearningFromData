@@ -1,4 +1,4 @@
-package it.units.malelab.BuildingBlocks;
+package it.units.malelab.learningstl.BuildingBlocks;
 
 
 public enum MonitorExpressions {

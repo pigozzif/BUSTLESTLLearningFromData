@@ -1,7 +1,7 @@
-package it.units.malelab.BuildingBlocks.FitnessFunctions;
+package it.units.malelab.learningstl.BuildingBlocks.FitnessFunctions;
 
-import it.units.malelab.TreeNodes.AbstractTreeNode;
-import it.units.malelab.BuildingBlocks.SignalBuilders.SignalBuilder;
+import it.units.malelab.learningstl.TreeNodes.AbstractTreeNode;
+import it.units.malelab.learningstl.BuildingBlocks.SignalBuilders.SignalBuilder;
 import eu.quanticol.moonlight.signal.Signal;
 
 import java.util.List;
@@ -46,6 +46,25 @@ public abstract class AbstractFitnessFunction<T> implements Function<AbstractTre
         }
         double temp = solution.getOperator().apply(signal).monitor(signal).valueAt(signal.start());
         return (isNegative) ? - temp : temp;
+    }
+
+    public void adjustParams(AbstractTreeNode monitor, double[] newParams, double[] p1u1, double[] p2u2) {
+        double value;
+        if (p1u1[0] > p2u2[0]) {
+            value = ((p1u1[0] - p1u1[1]) + (p2u2[0] + p2u2[1])) / 2;
+        } else {
+            value = ((p2u2[0] - p2u2[1]) + (p1u1[0] + p1u1[1])) / 2;
+        }
+        int numBounds = monitor.getNumBounds();
+        List<String[]> variables = monitor.getVariables();
+        for (int i = numBounds; i < newParams.length; i++) {
+            if (variables.get(i - numBounds)[1].equals(">")) {
+                newParams[i] = Math.max(newParams[i] + value, 0);
+            } else {
+                newParams[i] = Math.max(newParams[i] - value, 0);
+            }
+        }
+        monitor.propagateParameters(newParams);
     }
 
 }

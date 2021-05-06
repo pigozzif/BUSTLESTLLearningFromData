@@ -1,7 +1,7 @@
-package it.units.malelab.BuildingBlocks;
+package it.units.malelab.learningstl.BuildingBlocks;
 
-import it.units.malelab.BuildingBlocks.FitnessFunctions.AbstractFitnessFunction;
-import it.units.malelab.TreeNodes.AbstractTreeNode;
+import it.units.malelab.learningstl.BuildingBlocks.FitnessFunctions.AbstractFitnessFunction;
+import it.units.malelab.learningstl.TreeNodes.AbstractTreeNode;
 import it.units.malelab.jgea.representation.grammar.Grammar;
 import it.units.malelab.jgea.representation.grammar.GrammarBasedProblem;
 import it.units.malelab.jgea.representation.tree.Tree;

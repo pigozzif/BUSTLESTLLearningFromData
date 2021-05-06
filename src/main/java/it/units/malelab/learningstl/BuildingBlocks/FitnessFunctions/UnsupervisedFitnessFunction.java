@@ -1,10 +1,10 @@
-package it.units.malelab.BuildingBlocks.FitnessFunctions;
+package it.units.malelab.learningstl.BuildingBlocks.FitnessFunctions;
 
-import it.units.malelab.TreeNodes.AbstractTreeNode;
-import it.units.malelab.BuildingBlocks.SignalBuilders.UnsupervisedSignalBuilder;
+import it.units.malelab.learningstl.TreeNodes.AbstractTreeNode;
+import it.units.malelab.learningstl.BuildingBlocks.SignalBuilders.UnsupervisedSignalBuilder;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import eu.quanticol.moonlight.signal.Signal;
-import it.units.malelab.LocalSearch.LocalSearch;
+import it.units.malelab.learningstl.LocalSearch.LocalSearch;
 
 import java.io.IOException;
 import java.util.*;

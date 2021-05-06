@@ -1,6 +1,6 @@
-package it.units.malelab.BuildingBlocks;
+package it.units.malelab.learningstl.BuildingBlocks;
 
-import it.units.malelab.TreeNodes.*;
+import it.units.malelab.learningstl.TreeNodes.*;
 import it.units.malelab.jgea.representation.tree.Tree;
 
 import java.util.*;
@@ -33,7 +33,7 @@ public class STLFormulaMapper implements Function<Tree<String>, AbstractTreeNode
         for (MonitorExpressions op : MonitorExpressions.values()) {
             if (op.toString().equals(testChild.content())) {
                 ancestors.add(currentNode);
-                return createMonitor(op, getSiblings(testChild, ancestors), ancestors);//expression.get().createMonitor(getSiblings(testChild, ancestors), ancestors);
+                return createMonitor(op, getSiblings(testChild, ancestors), ancestors);
             }
         }
         ancestors.add(currentNode);

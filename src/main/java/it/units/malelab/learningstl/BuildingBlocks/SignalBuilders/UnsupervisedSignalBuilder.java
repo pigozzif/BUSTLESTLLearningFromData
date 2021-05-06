@@ -1,4 +1,4 @@
-package it.units.malelab.BuildingBlocks.SignalBuilders;
+package it.units.malelab.learningstl.BuildingBlocks.SignalBuilders;
 
 import eu.quanticol.moonlight.signal.Signal;
 
