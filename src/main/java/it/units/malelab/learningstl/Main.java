@@ -1,10 +1,10 @@
-package it.units.malelab;
+package it.units.malelab.learningstl;
 
-import it.units.malelab.BuildingBlocks.STLFormulaMapper;
-import it.units.malelab.TreeNodes.AbstractTreeNode;
-import it.units.malelab.BuildingBlocks.FitnessFunctions.AbstractFitnessFunction;
-import it.units.malelab.BuildingBlocks.FitnessFunctions.SupervisedFitnessFunction;
-import it.units.malelab.BuildingBlocks.ProblemClass;
+import it.units.malelab.learningstl.BuildingBlocks.FitnessFunctions.AbstractFitnessFunction;
+import it.units.malelab.learningstl.BuildingBlocks.FitnessFunctions.SupervisedFitnessFunction;
+import it.units.malelab.learningstl.BuildingBlocks.ProblemClass;
+import it.units.malelab.learningstl.BuildingBlocks.STLFormulaMapper;
+import it.units.malelab.learningstl.TreeNodes.AbstractTreeNode;
 import eu.quanticol.moonlight.signal.Signal;
 import it.units.malelab.jgea.Worker;
 import it.units.malelab.jgea.core.Individual;
@@ -95,8 +95,8 @@ public class Main extends Worker {
                 r, this.executorService, Listener.onExecutor(new PrintStreamListener<>(out, false, 10,
                         ",", ",",  new Basic(), new Population(), new Diversity(), new BestInfo("%5.3f")), this.executorService));
         AbstractTreeNode bestFormula = solutions.iterator().next();
-        //m.setOptimizability(true);
-        //f.optimizeAndUpdateParams(bestFormula, 200);
+        m.setOptimizability(true);
+        f.optimizeAndUpdateParams(bestFormula, 1000);
         Files.write(Paths.get(outputPath), (bestFormula.toString() + "\n").getBytes(), StandardOpenOption.APPEND);
         this.postProcess(bestFormula, p.getFitnessFunction());
     }
