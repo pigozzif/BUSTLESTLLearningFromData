@@ -11,10 +11,10 @@ import java.util.Objects;
 
 public class AndTreeNode extends AbstractTreeNode {
 
-    public AndTreeNode(STLFormulaMapper mapper, List<Tree<String>> siblings, List<Tree<String>> ancestors) {
-        super(mapper);
-        this.firstChild = this.mapper.parseSubTree(siblings.get(0), ancestors);
-        this.secondChild = this.mapper.parseSubTree(siblings.get(1), ancestors);
+    public AndTreeNode(List<Tree<String>> siblings, List<Tree<String>> ancestors) {
+        super();
+        this.firstChild = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors);
+        this.secondChild = STLFormulaMapper.parseSubTree(siblings.get(1), ancestors);
         this.symbol = "AND";
         this.func = x -> TemporalMonitor.andMonitor(this.firstChild.getOperator().apply(x), new DoubleDomain(),
                 this.secondChild.getOperator().apply(x));

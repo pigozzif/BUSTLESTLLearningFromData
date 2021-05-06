@@ -1,6 +1,5 @@
 package it.units.malelab.learningstl.TreeNodes;
 
-import it.units.malelab.learningstl.BuildingBlocks.STLFormulaMapper;
 import eu.quanticol.moonlight.formula.Interval;
 import it.units.malelab.jgea.representation.tree.Tree;
 
@@ -13,8 +12,8 @@ public abstract class TemporalTreeNode extends AbstractTreeNode {
     protected int start;
     protected int end;
 
-    public TemporalTreeNode(STLFormulaMapper mapper, List<Tree<String>> siblings, String message) {
-        super(mapper);
+    public TemporalTreeNode(List<Tree<String>> siblings, String message) {
+        super();
         this.equipTemporalOperator(siblings, message);
     }
 

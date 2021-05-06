@@ -1,6 +1,5 @@
 package it.units.malelab.learningstl.TreeNodes;
 
-import it.units.malelab.learningstl.BuildingBlocks.STLFormulaMapper;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import eu.quanticol.moonlight.signal.Signal;
 import it.units.malelab.jgea.core.util.Sized;
@@ -18,11 +17,6 @@ public abstract class AbstractTreeNode implements Sized {
     protected AbstractTreeNode firstChild;
     protected AbstractTreeNode secondChild;
     protected String symbol;
-    protected final STLFormulaMapper mapper;
-
-    public AbstractTreeNode(STLFormulaMapper map) {
-        this.mapper = map;
-    }
 
     public Function<Signal<Map<String, Double>>, TemporalMonitor<Map<String, Double>, Double>> getOperator() {
         return this.func;

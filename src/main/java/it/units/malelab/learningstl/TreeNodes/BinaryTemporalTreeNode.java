@@ -12,10 +12,10 @@ import java.util.Objects;
 
 public class BinaryTemporalTreeNode extends TemporalTreeNode {
 
-    public BinaryTemporalTreeNode(STLFormulaMapper mapper, MonitorExpressions op, List<Tree<String>> siblings, String message, List<Tree<String>> ancestors) {
-        super(mapper, siblings, message);
-        this.firstChild = this.mapper.parseSubTree(siblings.get(0), ancestors);
-        this.secondChild = this.mapper.parseSubTree(siblings.get(3), ancestors);
+    public BinaryTemporalTreeNode(MonitorExpressions op, List<Tree<String>> siblings, String message, List<Tree<String>> ancestors) {
+        super(siblings, message);
+        this.firstChild = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors);
+        this.secondChild = STLFormulaMapper.parseSubTree(siblings.get(3), ancestors);
         switch (op) {
             case SINCE -> this.func = x -> TemporalMonitor.sinceMonitor(this.firstChild.getOperator().apply(x),
                     this.createInterval(), this.secondChild.getOperator().apply(x),

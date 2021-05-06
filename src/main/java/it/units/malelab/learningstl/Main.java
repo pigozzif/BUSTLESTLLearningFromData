@@ -74,7 +74,7 @@ public class Main extends Worker {
     private void evolution() throws IOException, ExecutionException, InterruptedException {
         Random r = new Random(seed);
         SupervisedFitnessFunction f = new /*I80FitnessFunction();*/SupervisedFitnessFunction(inputPath, isLocalSearch, r);
-        STLFormulaMapper m = new STLFormulaMapper(isLocalSearch);
+        STLFormulaMapper m = new STLFormulaMapper();
         final ProblemClass<Signal<Map<String, Double>>> p = new ProblemClass<>(grammarPath, f, m);
         Map<GeneticOperator<Tree<String>>, Double> operators = new LinkedHashMap<>();
         operators.put(new GrammarBasedSubtreeMutation<>(12, p.getGrammar()), 0.2d);
@@ -95,7 +95,6 @@ public class Main extends Worker {
                 r, this.executorService, Listener.onExecutor(new PrintStreamListener<>(out, false, 10,
                         ",", ",",  new Basic(), new Population(), new Diversity(), new BestInfo("%5.3f")), this.executorService));
         AbstractTreeNode bestFormula = solutions.iterator().next();
-        m.setOptimizability(true);
         f.optimizeAndUpdateParams(bestFormula, 1000);
         Files.write(Paths.get(outputPath), (bestFormula.toString() + "\n").getBytes(), StandardOpenOption.APPEND);
         this.postProcess(bestFormula, p.getFitnessFunction());

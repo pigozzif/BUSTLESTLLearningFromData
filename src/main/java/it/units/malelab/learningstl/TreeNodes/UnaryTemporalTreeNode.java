@@ -12,9 +12,9 @@ import java.util.Objects;
 
 public class UnaryTemporalTreeNode extends TemporalTreeNode {
 
-    public UnaryTemporalTreeNode(STLFormulaMapper mapper, MonitorExpressions op, List<Tree<String>> siblings, String message, List<Tree<String>> ancestors) {
-        super(mapper, siblings, message);
-        this.firstChild = this.mapper.parseSubTree(siblings.get(0), ancestors);
+    public UnaryTemporalTreeNode(MonitorExpressions op, List<Tree<String>> siblings, String message, List<Tree<String>> ancestors) {
+        super(siblings, message);
+        this.firstChild = STLFormulaMapper.parseSubTree(siblings.get(0), ancestors);
         switch (op) {
             case ONCE -> this.func = x -> TemporalMonitor.onceMonitor(this.firstChild.getOperator().apply(x), new DoubleDomain(), this.createInterval());
             case EVENTUALLY -> this.func = x -> TemporalMonitor.eventuallyMonitor(this.firstChild.getOperator().apply(x), new DoubleDomain(), this.createInterval());

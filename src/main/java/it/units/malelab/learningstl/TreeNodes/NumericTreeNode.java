@@ -1,7 +1,6 @@
 package it.units.malelab.learningstl.TreeNodes;
 
 import it.units.malelab.learningstl.BuildingBlocks.CompareSign;
-import it.units.malelab.learningstl.BuildingBlocks.STLFormulaMapper;
 import eu.quanticol.moonlight.monitoring.temporal.TemporalMonitor;
 import it.units.malelab.jgea.representation.tree.Tree;
 
@@ -15,8 +14,8 @@ public class NumericTreeNode extends AbstractTreeNode {
     private CompareSign cs;
     private Double number;
 
-    public NumericTreeNode(STLFormulaMapper mapper, List<Tree<String>> siblings) {
-        super(mapper);
+    public NumericTreeNode(List<Tree<String>> siblings) {
+        super();
         this.var = siblings.get(0).child(0).content();
         String test = siblings.get(1).child(0).content();
         for (CompareSign c : CompareSign.values()) {
@@ -54,9 +53,9 @@ public class NumericTreeNode extends AbstractTreeNode {
 
     @Override
     public void getVariablesAux(List<String[]> temp) {
-        if (this.mapper.getOptimizability()) {
+        //if (this.mapper.getOptimizability()) {
             temp.add(new String[] {this.var, this.cs.toString(), "null"});
-        }
+        //}
     }
 
     @Override
