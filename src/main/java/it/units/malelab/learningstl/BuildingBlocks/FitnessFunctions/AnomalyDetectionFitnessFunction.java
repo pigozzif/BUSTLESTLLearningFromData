@@ -8,31 +8,27 @@ import it.units.malelab.learningstl.TreeNodes.AbstractTreeNode;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 
-public class AnomalyDetectionFitnessFunction extends AbstractFitnessFunction<Signal<Map<String, Double>>> {
+public class AnomalyDetectionFitnessFunction extends AbstractFitnessFunction {
 
     private final double alpha;
-    private final List<Signal<Map<String, Double>>> positive;
-    private final List<Signal<Map<String, Double>>> negative;
-    private final double[] labels;
 
-    public AnomalyDetectionFitnessFunction(double a, String path, boolean localSearch) throws IOException {
+    public AnomalyDetectionFitnessFunction(double a, String path, boolean localSearch, Random random) throws IOException {
         super(localSearch);
         this.alpha = a;
         this.signalBuilder = new SupervisedSignalBuilder();
         List<Signal<Map<String, Double>>> signals = this.signalBuilder.parseSignals(path);
         this.labels = this.signalBuilder.readVectorFromFile(path + "/labels.csv");
-        this.positive = IntStream.range(0, signals.size()).filter(x -> this.labels[x] > 0).mapToObj(signals::get).collect(Collectors.toList());
-        this.negative = IntStream.range(0, signals.size()).filter(x -> this.labels[x] < 0).mapToObj(signals::get).collect(Collectors.toList());
+        this.splitSignals(signals, 0.8, random);
+        this.negativeTest.addAll(this.negativeTraining);
+        this.negativeTraining.clear();
     }
 
     @Override
     public Double apply(AbstractTreeNode monitor) {
         if (this.isLocalSearch) {
-            double[] newParams = LocalSearch.optimize(monitor, this, 1);
+            double[] newParams = LocalSearch.optimize(monitor, this, 15);
             monitor.propagateParameters(newParams);
         }
         return - this.computeFitness(monitor);
@@ -40,17 +36,17 @@ public class AnomalyDetectionFitnessFunction extends AbstractFitnessFunction<Sig
 
     private double computeFitness(AbstractTreeNode monitor) {
         double robustness = 0.0;
-        int average = 0;
-        for (Signal<Map<String, Double>> s : this.positive) {
+        double average = 0.0;
+        for (Signal<Map<String, Double>> s : this.positiveTraining) {
             double result = this.monitorSignal(s, monitor, false);
             if (result <= 0.0) {
                 ++average;
             }
             robustness += Math.abs(result);
         }
-        average /= this.positive.size();
-        robustness /= this.positive.size();
-        return this.alpha * average + robustness;
+        average /= this.positiveTraining.size();
+        robustness /= this.positiveTraining.size();
+        return - (robustness + this.alpha * average);
     }
 
     @Override
@@ -61,12 +57,12 @@ public class AnomalyDetectionFitnessFunction extends AbstractFitnessFunction<Sig
 
     @Override
     public List<Signal<Map<String, Double>>> getPositiveTest() {
-        return this.positive;
+        return this.positiveTest;
     }
 
     @Override
     public List<Signal<Map<String, Double>>> getNegativeTest() {
-        return this.negative;
+        return this.negativeTest;
     }
 
 }

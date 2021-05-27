@@ -45,8 +45,8 @@ public class UnaryTemporalTreeNode extends TemporalTreeNode {
     public int[] propagateParametersAux(double[] parameters, int[] idxs) {
         if (idxs[1] >= parameters.length && idxs[0] >= this.getNumBounds()) return idxs;
         // first parameter is start, second is offset with respect to start (to get interval end)
-        int start = (int) parameters[idxs[0]];
-        int length = (int) parameters[idxs[0] + 1];
+        int start = (int) Math.round(parameters[idxs[0]]);
+        int length = (int) Math.round(parameters[idxs[0] + 1]);
         this.setInterval(start, start + length);
         idxs[0] += 2;
         return this.firstChild.propagateParametersAux(parameters, idxs);

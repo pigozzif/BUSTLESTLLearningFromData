@@ -11,13 +11,13 @@ import java.io.IOException;
 import java.util.function.Function;
 
 
-public class ProblemClass<T> implements GrammarBasedProblem<String, AbstractTreeNode, Double> {
+public class ProblemClass implements GrammarBasedProblem<String, AbstractTreeNode, Double> {
 
     private final Grammar<String> grammar;
     private final Function<Tree<String>, AbstractTreeNode> solutionMapper;
-    private final AbstractFitnessFunction<T> fitnessFunction;
+    private final AbstractFitnessFunction fitnessFunction;
 
-    public ProblemClass(String grammarPath, AbstractFitnessFunction<T> fitness, STLFormulaMapper mapper) throws IOException {
+    public ProblemClass(String grammarPath, AbstractFitnessFunction fitness, STLFormulaMapper mapper) throws IOException {
         this.grammar = Grammar.fromFile(new File(grammarPath));
         this.fitnessFunction = fitness;
         this.solutionMapper = mapper;
@@ -34,7 +34,7 @@ public class ProblemClass<T> implements GrammarBasedProblem<String, AbstractTree
     }
 
     @Override
-    public AbstractFitnessFunction<T> getFitnessFunction() {
+    public AbstractFitnessFunction getFitnessFunction() {
         return this.fitnessFunction;
     }
 

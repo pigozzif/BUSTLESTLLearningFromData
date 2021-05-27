@@ -1,6 +1,8 @@
 package it.units.malelab.learningstl;
 
+import it.units.malelab.jgea.core.listener.Event;
 import it.units.malelab.learningstl.BuildingBlocks.FitnessFunctions.AbstractFitnessFunction;
+import it.units.malelab.learningstl.BuildingBlocks.FitnessFunctions.AnomalyDetectionFitnessFunction;
 import it.units.malelab.learningstl.BuildingBlocks.FitnessFunctions.SupervisedFitnessFunction;
 import it.units.malelab.learningstl.BuildingBlocks.ProblemClass;
 import it.units.malelab.learningstl.BuildingBlocks.STLFormulaMapper;
@@ -42,6 +44,8 @@ public class Main extends Worker {
     private static String outputPath;
     private static String inputPath;
     private static boolean isLocalSearch;
+    private static String modality;
+    private AbstractFitnessFunction f;
 
     public static void main(String[] args) throws IOException {
         String errorMessage = "notFound";
@@ -55,6 +59,7 @@ public class Main extends Worker {
         out = new PrintStream(new FileOutputStream(outputPath, true), true);
         inputPath = Args.a(args, "input", null);
         isLocalSearch = Boolean.parseBoolean(Args.a(args, "local_search", null));
+        modality = Args.a(args, "mod", null);
         new Main(args);
     }
 
@@ -73,9 +78,17 @@ public class Main extends Worker {
 
     private void evolution() throws IOException, ExecutionException, InterruptedException {
         Random r = new Random(seed);
-        SupervisedFitnessFunction f = new /*I80FitnessFunction();*/SupervisedFitnessFunction(inputPath, isLocalSearch, r);
+        if (modality.equals("supervised")) {
+            this.f = new SupervisedFitnessFunction(inputPath, isLocalSearch, r);
+        }
+        else if (modality.equals("anomaly")) {
+            this.f = new AnomalyDetectionFitnessFunction(0.1, inputPath, isLocalSearch, r);
+        }
+        else {
+            throw new IllegalArgumentException("Unknown modality: " + modality);
+        }
         STLFormulaMapper m = new STLFormulaMapper();
-        final ProblemClass<Signal<Map<String, Double>>> p = new ProblemClass<>(grammarPath, f, m);
+        final ProblemClass p = new ProblemClass(grammarPath, this.f, m);
         Map<GeneticOperator<Tree<String>>, Double> operators = new LinkedHashMap<>();
         operators.put(new GrammarBasedSubtreeMutation<>(12, p.getGrammar()), 0.2d);
         operators.put(new SameRootSubtreeCrossover<>(12), 0.8d);
@@ -92,32 +105,50 @@ public class Main extends Worker {
                 100
         );
         Collection<AbstractTreeNode> solutions = evolver.solve(Misc.cached(p.getFitnessFunction(), 10), new Iterations(50),
-                r, this.executorService, Listener.onExecutor(new PrintStreamListener<>(out, false, 10,
-                        ",", ",",  new Basic(), new Population(), new Diversity(), new BestInfo("%5.3f")), this.executorService));
+                r, this.executorService, Listener.onExecutor(new PrintStreamListener<>(out, false, 0,
+                        ",", ",",  new Basic(), new Population(), new Diversity(), new BestInfo("%5.3f"), (DataCollector<Tree<String>, AbstractTreeNode, Double>) this::saveData), this.executorService));
         AbstractTreeNode bestFormula = solutions.iterator().next();
-        f.optimizeAndUpdateParams(bestFormula, 1);
-        Files.write(Paths.get(outputPath), (bestFormula.toString() + "\n").getBytes(), StandardOpenOption.APPEND);
-        this.postProcess(bestFormula, p.getFitnessFunction());
+ //       if (modality.equals("supervised")) {
+ //           ((SupervisedFitnessFunction) f).optimizeAndUpdateParams(bestFormula, 1);
+ //       }
+        //Files.write(Paths.get(outputPath), (bestFormula.toString() + "\n").getBytes(), StandardOpenOption.APPEND);
+        postProcess(bestFormula, this.f);
     }
 
-    public void postProcess(AbstractTreeNode bestFormula, AbstractFitnessFunction<Signal<Map<String, Double>>> f) throws IOException {
+    public static double[] postProcess(AbstractTreeNode bestFormula, AbstractFitnessFunction f) {
         double result;
         double count = 0.0;
+        double robustness = 0.0;
+        double[] out = new double[2];
         for (Signal<Map<String, Double>> signal : f.getPositiveTest()) {
             result = f.monitorSignal(signal, bestFormula, false);
             if (result <= 0.0) {
                 ++count;
             }
+            robustness += result;
         }
-        Files.write(Paths.get(outputPath), ("Positive Test Misclassification Rate: " + count / f.getPositiveTest().size() + "\n").getBytes(), StandardOpenOption.APPEND);
+        out[0] = count / f.getPositiveTest().size();
+        //Files.write(Paths.get(outputPath), ("Positive Test Misclassification Rate: " + count / f.getPositiveTest().size() + "\n").getBytes(), StandardOpenOption.APPEND);
+        //Files.write(Paths.get(outputPath), ("Positive Test Mean Robustness: " + robustness / f.getPositiveTest().size() + "\n").getBytes(), StandardOpenOption.APPEND);
         count = 0.0;
         for (Signal<Map<String, Double>> signal : f.getNegativeTest()) {
             result = f.monitorSignal(signal, bestFormula, true);
             if (result <= 0.0) {
                 ++count;
             }
+            robustness += f.monitorSignal(signal, bestFormula, false);
         }
-        Files.write(Paths.get(outputPath), ("Negative Test Misclassification Rate: " + count / f.getNegativeTest().size() + "\n").getBytes(), StandardOpenOption.APPEND);
+        out[1] = count / f.getNegativeTest().size();
+        //Files.write(Paths.get(outputPath), ("Negative Test Misclassification Rate: " + count / f.getNegativeTest().size() + "\n").getBytes(), StandardOpenOption.APPEND);
+        //Files.write(Paths.get(outputPath), ("Negative Test Mean Robustness: " + robustness / f.getNegativeTest().size() + "\n").getBytes(), StandardOpenOption.APPEND);
+        return out;
+    }
+
+    private List<Item> saveData(Event<? extends Tree<String>, ? extends AbstractTreeNode, ? extends Double> event) {
+        AbstractTreeNode best = event.getOrderedPopulation().firsts().iterator().next().getSolution();
+        double[] perf = postProcess(best, this.f);
+        return new ArrayList<>() {{ add(new Item("positive.miss", perf[0], "%1.2"));
+        add(new Item("negative.miss", perf[1], "%1.2")); add(new Item("local", (isLocalSearch) ? 1 : 0, "%1d")); }};
     }
 
 }
