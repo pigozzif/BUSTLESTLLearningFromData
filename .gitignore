@@ -1,4 +1,5 @@
-*.iml
 .idea/*
-*.csv
-*.sh
+./output/*
+job.sh
+to_Ulysses.sh
+STLRealTrafficRulesEvolutionaryInference.iml
