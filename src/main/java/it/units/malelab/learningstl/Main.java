@@ -53,10 +53,18 @@ public class Main extends Worker {
             throw new IllegalArgumentException("Random Seed Not Valid");
         }
         seed = Integer.parseInt(random);
-        grammarPath = Args.a(args, "grammar", null);
-        inputPath = Args.a(args, "input", null);
-        isLocalSearch = Boolean.parseBoolean(Args.a(args, "local_search", null));
+        String dataset = Args.a(args, "dataset", null);
+        inputPath = String.join("/", "data", dataset);
+        isLocalSearch = Boolean.parseBoolean(Args.a(args, "local", null));
         modality = Args.a(args, "mod", null);
+        grammarPath = "./grammars/grammar";
+        if (dataset.equals("maritime")) {
+            grammarPath += "_maritime";
+        }
+        if (isLocalSearch) {
+            grammarPath += "_local_search";
+        }
+        grammarPath += ".bnf";
         if (modality.equals("anomaly")) {
             alpha = Args.d(Args.a(args, "alpha", null).replace(",", "."));
         }

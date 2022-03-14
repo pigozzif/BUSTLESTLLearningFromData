@@ -28,7 +28,7 @@ public class AnomalyDetectionFitnessFunction extends AbstractFitnessFunction {
     @Override
     public Double apply(AbstractTreeNode monitor) {
         if (this.isLocalSearch) {
-            double[] newParams = LocalSearch.optimize(monitor, this, 15);
+            double[] newParams = LocalSearch.optimize(monitor, this, 1);
             monitor.propagateParameters(newParams);
         }
         return - this.computeFitness(monitor);
@@ -37,16 +37,20 @@ public class AnomalyDetectionFitnessFunction extends AbstractFitnessFunction {
     private double computeFitness(AbstractTreeNode monitor) {
         double robustness = 0.0;
         double average = 0.0;
+        List<Double> values = new ArrayList<>();
         for (Signal<Map<String, Double>> s : this.positiveTraining) {
             double result = this.monitorSignal(s, monitor, false);
             if (result <= 0.0) {
                 ++average;
             }
             robustness += Math.abs(result);
+            values.add(Math.abs(result));
         }
         average /= this.positiveTraining.size();
         robustness /= this.positiveTraining.size();
-        return - (robustness + this.alpha * average);
+        double mean = values.stream().mapToDouble(d -> d).sum() / values.size();
+        double variance = Math.sqrt(values.stream().mapToDouble(d -> Math.pow(d - mean, 2) / (values.size() - 1)).sum());
+        return - (robustness / variance + this.alpha * average);
     }
 
     @Override
