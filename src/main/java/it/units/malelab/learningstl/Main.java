@@ -126,7 +126,7 @@ public class Main extends Worker {
         double[] out = new double[4];
         for (Signal<Map<String, Double>> signal : f.getPositiveTest()) {
             result = f.monitorSignal(signal, bestFormula, false);
-            if (Math.abs(result) > epsilon) {
+            if (result < - epsilon) {
                 ++count;
             }
             robustness += result;
@@ -136,7 +136,7 @@ public class Main extends Worker {
         count = 0.0;
         for (Signal<Map<String, Double>> signal : f.getNegativeTest()) {
             result = f.monitorSignal(signal, bestFormula, false);
-            if (Math.abs(result) <= epsilon) {
+            if (result >= - epsilon) {
                 ++count;
             }
             robustness += f.monitorSignal(signal, bestFormula, false);
