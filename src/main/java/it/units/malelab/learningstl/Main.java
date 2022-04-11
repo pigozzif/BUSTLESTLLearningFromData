@@ -44,7 +44,7 @@ public class Main extends Worker {
     private static String modality;
     private static AbstractFitnessFunction f;
     private static double alpha;
-    private static final List<Double> eps = new ArrayList<>() {{ add(0.001); add(0.0025); add(0.005); add(0.01); add(0.02); add(0.03); add(0.04); add(0.05); }};
+    private static final List<Double> eps = new ArrayList<>() {{ add(0.001); add(0.0025); add(0.005); add(0.01); add(0.02); add(0.03); add(0.04); add(0.05); add(0.1); add(0.2); add(0.3); add(0.4); add(0.5); }};
 
     public static void main(String[] args) throws IOException {
         String errorMessage = "notFound";
@@ -153,6 +153,12 @@ public class Main extends Worker {
         out.add(new Item("local", (isLocalSearch) ? 1 : 0, "%1d"));
         for (double epsilon : eps) {
             double[] perf = postProcess(best, f, epsilon);
+            out.add(new Item(epsilon + ".positive.miss", perf[0], "%1.2"));
+            out.add(new Item(epsilon + ".negative.miss", perf[2], "%1.2"));
+            out.add(new Item(epsilon + ".positive.rob", perf[1], "%4.8f"));
+            out.add(new Item(epsilon + ".negative.rob", perf[3], "%4.8f"));
+            epsilon = - epsilon;
+            perf = postProcess(best, f, epsilon);
             out.add(new Item(epsilon + ".positive.miss", perf[0], "%1.2"));
             out.add(new Item(epsilon + ".negative.miss", perf[2], "%1.2"));
             out.add(new Item(epsilon + ".positive.rob", perf[1], "%4.8f"));
