@@ -44,7 +44,7 @@ public class Main extends Worker {
     private static String modality;
     private static AbstractFitnessFunction f;
     private static double alpha;
-    private static final List<Double> eps = new ArrayList<>() {{ add(0.001); add(0.0025); add(0.005); add(0.01); add(0.02); add(0.03); add(0.04); add(0.05); add(0.1); add(0.15); add(0.2); add(0.25); add(0.3); add(0.35); add(0.4); add(0.45); add(0.5); add(0.55); add(0.6); add(0.65); add(0.7); add(0.75); add(0.8); add(0.85); add(0.9); add(0.95); add(1); }};
+    private static final List<Double> eps = new ArrayList<>() {{ add(0.001); add(0.0025); add(0.005); add(0.01); add(0.02); add(0.03); add(0.04); add(0.05); add(0.1); add(0.15); add(0.2); add(0.25); add(0.3); add(0.35); add(0.4); add(0.45); add(0.5); add(0.55); add(0.6); add(0.65); add(0.7); add(0.75); add(0.8); add(0.85); add(0.9); add(0.95); add(1.0); }};
 
     public static void main(String[] args) throws IOException {
         String errorMessage = "notFound";
