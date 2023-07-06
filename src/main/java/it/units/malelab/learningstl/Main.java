@@ -1,6 +1,8 @@
 package it.units.malelab.learningstl;
 
 import it.units.malelab.jgea.core.evolver.Evolver;
+import it.units.malelab.jgea.core.evolver.RandomSearch;
+import it.units.malelab.jgea.core.evolver.StandardEvolver;
 import it.units.malelab.jgea.core.listener.Event;
 import it.units.malelab.learningstl.BuildingBlocks.FitnessFunctions.AbstractFitnessFunction;
 import it.units.malelab.learningstl.BuildingBlocks.FitnessFunctions.AnomalyDetectionFitnessFunction;
@@ -26,6 +28,7 @@ import it.units.malelab.jgea.representation.grammar.cfggp.GrammarBasedSubtreeMut
 import it.units.malelab.jgea.representation.grammar.cfggp.GrammarRampedHalfAndHalf;
 import it.units.malelab.jgea.representation.tree.SameRootSubtreeCrossover;
 import it.units.malelab.jgea.representation.tree.Tree;
+import it.units.malelab.learningstl.roge.Proportional;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,6 +45,7 @@ public class Main extends Worker {
     private static String inputPath;
     private static boolean isLocalSearch;
     private static String modality;
+    private static String evolverName;
     private static AbstractFitnessFunction f;
     private static double alpha;
     private static final List<Double> eps = new ArrayList<>() {{ add(0.001); add(0.0025); add(0.005); add(0.01); add(0.02); add(0.03); add(0.04); add(0.05); add(0.1); add(0.15); add(0.2); add(0.25); add(0.3); add(0.35); add(0.4); add(0.45); add(0.5); add(0.55); add(0.6); add(0.65); add(0.7); add(0.75); add(0.8); add(0.85); add(0.9); add(0.95); add(1.0); }};
@@ -57,6 +61,7 @@ public class Main extends Worker {
         inputPath = String.join("/", "data", dataset);
         isLocalSearch = Boolean.parseBoolean(Args.a(args, "local", null));
         modality = Args.a(args, "mod", null);
+        evolverName = Args.a(args, "evolver", "bustle");
         grammarPath = "./grammars/grammar";
         if (dataset.equals("maritime")) {
             grammarPath += "_maritime";
@@ -68,7 +73,7 @@ public class Main extends Worker {
         if (modality.equals("anomaly")) {
             alpha = Args.d(Args.a(args, "alpha", null).replace(",", "."));
         }
-        String outputPath = Args.a(args, "output", null) + seed + ".csv";
+        String outputPath = Args.a(args, "output", null) + seed + "." + evolverName + ".csv";
         out = new PrintStream(new FileOutputStream(outputPath, true), true);
         new Main(args);
     }
@@ -102,18 +107,41 @@ public class Main extends Worker {
         Map<GeneticOperator<Tree<String>>, Double> operators = new LinkedHashMap<>();
         operators.put(new GrammarBasedSubtreeMutation<>(12, p.getGrammar()), 0.2d);
         operators.put(new SameRootSubtreeCrossover<>(12), 0.8d);
-        Evolver<Tree<String>, AbstractTreeNode, Double> evolver = new StandardWithEnforcedDiversityEvolver<>(
-                    p.getSolutionMapper(),
-                    new GrammarRampedHalfAndHalf<>(0, 12, p.getGrammar()),
-                    PartialComparator.from(Double.class).comparing(Individual::getFitness),
-                    500,
-                    operators,
-                    new Tournament(5),
-                    new Worst(),
-                    500,
-                    true,
-                    100
-        );
+        Evolver<Tree<String>, AbstractTreeNode, Double> evolver;
+        if (evolverName.equals("bustle")) {
+            evolver = new StandardWithEnforcedDiversityEvolver<>(
+                p.getSolutionMapper(),
+                new GrammarRampedHalfAndHalf<>(0, 12, p.getGrammar()),
+                PartialComparator.from(Double.class).comparing(Individual::getFitness),
+                500,
+                operators,
+                new Tournament(5),
+                new Worst(),
+                500,
+                true,
+                100
+            );
+        }
+        else if (evolverName.equals("random")) {
+            evolver = new RandomSearch<>(
+                p.getSolutionMapper(),
+                new GrammarRampedHalfAndHalf<>(0, 12, p.getGrammar()),
+                PartialComparator.from(Double.class).comparing(Individual::getFitness)
+            );
+        }
+        else {
+            evolver = new StandardEvolver<>(
+                p.getSolutionMapper(),
+                new GrammarRampedHalfAndHalf<>(0, 6, p.getGrammar()),
+                PartialComparator.from(Double.class).comparing(Individual::getFitness),
+                500,
+                operators,
+                new Proportional(),
+                new Worst(),
+                500,
+                true
+            );
+        }
         Collection<AbstractTreeNode> solutions = evolver.solve(Misc.cached(p.getFitnessFunction(), 10), new Iterations(50),
                 r, this.executorService, Listener.onExecutor(new PrintStreamListener<>(out, false, 0,
                         ";", ";",  new Basic(), new Population(), new Diversity(), new BestInfo("%5.3f"), (DataCollector<Tree<String>, AbstractTreeNode, Double>) this::saveData), this.executorService));
@@ -169,3 +197,4 @@ public class Main extends Worker {
     }
 
 }
+
