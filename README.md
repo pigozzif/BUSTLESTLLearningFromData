@@ -63,7 +63,7 @@ The description for each argument is as follows:
 * threads: the number of threads with which to perform evolution. Defaults to the number of available cores on the current CPU. Parallelization is taken care of by JGEA, which implements a distributed fitness assessment.
 
 ## Bibliography
-Please cite as
+Please cite as:
 ```
 @article{pigozzi2024bustle,
   title={BUSTLE: a Versatile Tool for the Evolutionary Learning of STL Specifications from Data},
